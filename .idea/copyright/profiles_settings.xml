@@ -1,3 +1,27 @@
 <component name="CopyrightManager">
-  <settings default="" />
+  <settings default="">
+    <LanguageOptions name="CSS" />
+    <LanguageOptions name="Erlang">
+      <option name="block" value="false" />
+      <option name="filler" value="=" />
+    </LanguageOptions>
+    <LanguageOptions name="Groovy" />
+    <LanguageOptions name="HTML">
+      <option name="prefixLines" value="false" />
+    </LanguageOptions>
+    <LanguageOptions name="JAVA" />
+    <LanguageOptions name="JSP">
+      <option name="prefixLines" value="false" />
+    </LanguageOptions>
+    <LanguageOptions name="JSPX">
+      <option name="prefixLines" value="false" />
+    </LanguageOptions>
+    <LanguageOptions name="JavaScript" />
+    <LanguageOptions name="Kotlin" />
+    <LanguageOptions name="Properties" />
+    <LanguageOptions name="SPI" />
+    <LanguageOptions name="XML">
+      <option name="prefixLines" value="false" />
+    </LanguageOptions>
+  </settings>
 </component>
