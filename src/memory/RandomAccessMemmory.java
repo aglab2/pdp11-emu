@@ -4,6 +4,8 @@ import memory.primitives.Addr;
 import memory.primitives.MemSize;
 import memory.primitives.Word;
 
+import java.util.Arrays;
+
 public class RandomAccessMemmory {
     public final MemSize size;
     private final Word[] data;
@@ -11,6 +13,7 @@ public class RandomAccessMemmory {
     public RandomAccessMemmory(MemSize size) {
         this.size = size;
         this.data = new Word[size.value];
+        Arrays.fill(data, Word.ZERO);
     }
 
     public Word fetch(Addr address) {
