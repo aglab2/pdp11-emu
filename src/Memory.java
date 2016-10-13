@@ -1,8 +1,6 @@
-import java.nio.ByteBuffer;
+import memory.MemoryModel;
 
-/**
- * Created by aglab2(Denis Kopyrin) on 07/10/16.
- */
+import java.nio.ByteBuffer;
 
 public class Memory {
     private byte[] raw_data = new byte[65535];
