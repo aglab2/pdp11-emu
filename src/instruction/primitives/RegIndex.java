@@ -6,6 +6,9 @@ import memory.primitives.Word;
 /**
  * Created by voddan on 12/10/16.
  */
+
+/* TODO: replace by a enum*/
+
 public class RegIndex {
     public final int value;
 
