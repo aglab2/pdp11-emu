@@ -4,12 +4,19 @@ import kotlin.jvm.JvmClassMappingKt;
 import tornadofx.App;
 
 /**
- * Created by aglab2 on 07/10/16.
- */
+ *  NOTE: all start-up code is in the `MainController`.
+ *  MVC architecture is used.
+ *  */
+
 public class Main extends App {
+
     public Main() {
-        // some magic to initialise TornadoFX
         super(JvmClassMappingKt.getKotlinClass(MainView.class));
+
+//        Thread.setDefaultUncaughtExceptionHandler((thread, e) -> {
+//            Logger.getAnonymousLogger().log(Level.SEVERE, "JavaFX exception:", e);
+//            System.exit(1);
+//        });
     }
 
     public static void main(String[] args) {
