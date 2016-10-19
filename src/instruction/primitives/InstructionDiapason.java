@@ -5,6 +5,7 @@ import memory.primitives.Word;
 /**
  * Created by voddan on 12/10/16.
  */
+
 /* TODO: the aesthetics needs unit-testing */
 public class InstructionDiapason {
     public final Word start;

@@ -16,7 +16,7 @@ public class Main extends App {
 //        Thread.setDefaultUncaughtExceptionHandler((thread, e) -> {
 //            Logger.getAnonymousLogger().log(Level.SEVERE, "JavaFX exception:", e);
 //            System.exit(1);
-//        });
+//        });ParallelsTasks
     }
 
     public static void main(String[] args) {
