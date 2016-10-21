@@ -15,6 +15,14 @@ public class RandomAccessMemory extends ReadWriteMemory {
         Arrays.fill(data, Word.ZERO);
     }
 
+    public RandomAccessMemory(short[] arr) {
+        super(new MemSize(arr.length));
+        this.data = new Word[size.value];
+
+        for(int i = 0; i < size.value; i++)
+            data[i] = new Word(arr[i] & 0xFFFF);
+    }
+
     @Override
     public Word fetch(Addr address) {
         assert containsAddr(address);

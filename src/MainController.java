@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
 
 /**
  * Here is the start-up code and all the data.
@@ -20,7 +21,8 @@ public class MainController extends Controller {
     public MainController() throws IOException, URISyntaxException {
         System.out.println("Hello, world!");
 
-        URL defaultRom = MainController.class.getClassLoader().getResource("resources/rom_default.hex");
-        this.memoryModel = new MemoryModel(new MemSize(1024), new MemSize(1024), new File(defaultRom.toURI()).toPath());
+        URL defaultRom = MainController.class.getClassLoader().getResource("rom_default.hex");
+        Path path = new File(defaultRom.toURI()).toPath();
+        this.memoryModel = new MemoryModel(new MemSize(1024), new MemSize(1024), path);
     }
 }

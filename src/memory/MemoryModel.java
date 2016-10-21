@@ -1,12 +1,9 @@
 package memory;
 
 
-import memory.primitives.Addr;
 import memory.primitives.MemSize;
 import memory.primitives.Word;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,17 +31,16 @@ public class MemoryModel {
         Arrays.fill(registers, Word.ZERO);
 
         // must be in constructor because we need to know the rom size before initing it
-        byte[] data = Files.readAllBytes(romFile);
-        if (data.length % 2 != 0) {
-            throw new IOException("A rom file must contain shorts (2n bytes)");
-        }
+        byte[] bytes = Files.readAllBytes(romFile);
+        if (bytes.length % 2 != 0) throw new IOException("A rom file must contain shorts (2n bytes)");
 
-        int romLength = data.length / 2;
-        this.rom = new RandomAccessMemory(new MemSize(romLength));
+//        short[] shorts = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().array();
+        int num  = bytes.length / 2;
+        short[] shorts = new short[num];
+        for(int i = 0; i < num; i++)
+            shorts[i] = (short) (bytes[2 * i] | bytes[2 * i + 1] << 8); // Little Endian
 
-        DataInputStream romStream = new DataInputStream(new ByteArrayInputStream(data));
-        for (int index = 0; index < romLength; index++)
-            ((ReadWriteMemory) rom).load(new Addr(index), new Word(romStream.readShort()));  // TODO: implement via `loadAll`
+        this.rom = new RandomAccessMemory(shorts);
     }
 
 }
