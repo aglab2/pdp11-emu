@@ -6,11 +6,11 @@ import memory.primitives.Word;
 
 import java.util.Arrays;
 
-public class RandomAccessMemmory {
+public class RandomAccessMemory {
     public final MemSize size;
     private final Word[] data;
 
-    public RandomAccessMemmory(MemSize size) {
+    public RandomAccessMemory(MemSize size) {
         this.size = size;
         this.data = new Word[size.value];
         Arrays.fill(data, Word.ZERO);
