@@ -18,8 +18,8 @@ public class MemoryModel {
     public static final int PROGRAM_COUNTER_INDEX = 7;
 
 
-    public final RandomAccessMemory ram;
-    public final RandomAccessMemory rom;
+    public final ReadWriteMemory ram;
+    public final ReadOnlyMemory rom;
 
     /* TODO: same addresation ar `ram` */
     public final RandomAccessMemory vram;
@@ -44,7 +44,7 @@ public class MemoryModel {
 
         DataInputStream romStream = new DataInputStream(new ByteArrayInputStream(data));
         for (int index = 0; index < romLength; index++)
-            rom.load(new Addr(index), new Word(romStream.readShort()));  // TODO: implement via `loadAll`
+            ((ReadWriteMemory) rom).load(new Addr(index), new Word(romStream.readShort()));  // TODO: implement via `loadAll`
     }
 
 }
