@@ -1,3 +1,6 @@
+import gui.MainView;
+import javafx.scene.control.Button;
+import javafx.scene.image.WritableImage;
 import memory.MemoryModel;
 import memory.primitives.MemSize;
 import tornadofx.Controller;
@@ -14,15 +17,17 @@ import java.nio.file.Path;
  * */
 
 public class MainController extends Controller {
-
-
     public final MemoryModel memoryModel;
+    public final WritableImage screen = new WritableImage(/*width*/ 300, /*height*/ 300);
 
     public MainController() throws IOException, URISyntaxException {
-        System.out.println("Hello, world!");
-
         URL defaultRom = MainController.class.getClassLoader().getResource("rom_default.hex");
         Path path = new File(defaultRom.toURI()).toPath();
         this.memoryModel = new MemoryModel(new MemSize(1024), new MemSize(1024), path);
     }
+
+    public void startButtonHandler(Button button) {}
+    public void pauseButtonHandler(Button button) {}
+    public void resetButtonHandler(Button button) {}
+    public void stepButtonHandler(Button button) {}
 }

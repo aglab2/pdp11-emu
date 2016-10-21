@@ -11,13 +11,11 @@ import tornadofx.*
 class MainView : View() {
     val controller: MainController by inject()
     val memoryModel: MemoryModel = controller.memoryModel
-
-
-    /* Write pixels here with `screen.pixelWriter` */
-    val screen: WritableImage = WritableImage(/*width*/ 300, /*height*/ 300)
+    val screen: WritableImage = controller.screen
 
 
     override val root = vbox(1.0) {
+
         padding = Insets(3.0)
 
         label("Hello world")
@@ -45,14 +43,16 @@ class MainView : View() {
                         }
                     }
                 }
+
+//                listView
             }
         }
 
         buttonbar {
-            button("Start") {}
-            button("Pause") {}
-            button("Reset") {}
-            button("Step") {}
+            button("Start", op = controller::startButtonHandler)
+            button("Pause", op = controller::pauseButtonHandler)
+            button("Reset", op = controller::resetButtonHandler)
+            button("Step", op = controller::stepButtonHandler)
 
             style {
                 padding = box(1.px)
