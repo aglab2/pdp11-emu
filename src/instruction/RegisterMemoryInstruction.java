@@ -18,7 +18,7 @@ public class RegisterMemoryInstruction extends Instruction {
 
     @Override
     public Word getCode() {
-        return new Word(diapason.start.value + reg.value << 6 +
-                dstMode.value << 3 + dstIndex.value);
+        return new Word(diapason.start.value + reg.ordinal() << 6 +
+                dstMode.value << 3 + dstIndex.ordinal());
     }
 }

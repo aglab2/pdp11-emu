@@ -23,7 +23,7 @@ public class DoubleOperandInstruction extends Instruction {
     @Override
     public Word getCode() {
         return new Word(diapason.start.value +
-                dstMode.value << 9 + dstIndex.value << 6 +
-                dstMode.value << 3 + dstIndex.value);
+                dstMode.value << 9 + dstIndex.ordinal() << 6 +
+                dstMode.value << 3 + dstIndex.ordinal());
     }
 }
