@@ -47,10 +47,18 @@ class MainView : View() {
         }
 
         buttonbar {
-            button("Start", op = {controller.startButtonHandler(this)})
-            button("Pause", op = {controller.pauseButtonHandler(this)})
-            button("Reset", op = {controller.resetButtonHandler(this)})
-            button("Step",  op = {controller.stepButtonHandler(this)})
+            button("Start") {
+                setOnMouseClicked  { controller.startButtonHandler() }
+            }
+            button("Pause") {
+                setOnMouseClicked  { controller.pauseButtonHandler() }
+            }
+            button("Reset") {
+                setOnMouseClicked  { controller.resetButtonHandler() }
+            }
+            button("Step") {
+                setOnMouseClicked  { controller.stepButtonHandler() }
+            }
 
             style {
                 padding = box(1.px)

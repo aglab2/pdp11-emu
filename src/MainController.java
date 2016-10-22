@@ -26,8 +26,10 @@ public class MainController extends Controller {
         this.memoryModel = new MemoryModel(new MemSize(1024), new MemSize(1024), path);
     }
 
-    public void startButtonHandler(Button button) {}
-    public void pauseButtonHandler(Button button) {}
-    public void resetButtonHandler(Button button) {}
-    public void stepButtonHandler(Button button) {}
+    public void startButtonHandler() {
+        System.out.println("start");
+    }
+    public void pauseButtonHandler() {}
+    public void resetButtonHandler() {}
+    public void stepButtonHandler() {}
 }
