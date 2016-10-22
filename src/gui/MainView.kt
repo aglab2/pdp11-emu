@@ -47,10 +47,10 @@ class MainView : View() {
         }
 
         buttonbar {
-            button("Start", op = controller::startButtonHandler)
-            button("Pause", op = controller::pauseButtonHandler)
-            button("Reset", op = controller::resetButtonHandler)
-            button("Step", op = controller::stepButtonHandler)
+            button("Start", op = {controller.startButtonHandler(this)})
+            button("Pause", op = {controller.pauseButtonHandler(this)})
+            button("Reset", op = {controller.resetButtonHandler(this)})
+            button("Step",  op = {controller.stepButtonHandler(this)})
 
             style {
                 padding = box(1.px)
