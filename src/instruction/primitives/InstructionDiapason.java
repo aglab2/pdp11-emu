@@ -17,11 +17,14 @@ public class InstructionDiapason {
         this.endExclusive = endExclusive;
     }
 
+    /**
+     * @param code
+     * @param expSize - size of the diapason
+     */
     public InstructionDiapason(Word code, int expSize) {
-        assert 0 < expSize && expSize < 16;
-        assert code.value > (1 << (expSize - 1));
-        this.start = code;
-        this.endExclusive = new Word(code.value + (1 << expSize));
+        assert 0 <= expSize && expSize <= 16;
+        this.start = new Word(code.value & (0xFFFF << expSize));
+        this.endExclusive = new Word(start.value + (1 << expSize));
     }
 
     public boolean contains(Word w) {
