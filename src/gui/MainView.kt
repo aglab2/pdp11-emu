@@ -5,6 +5,7 @@ import javafx.geometry.*
 import javafx.scene.image.*
 import javafx.scene.paint.*
 import memory.*
+import memory.primitives.*
 import tornadofx.*
 
 
@@ -12,6 +13,7 @@ class MainView : View() {
     val controller: MainController by inject()
     val memoryModel: MemoryModel = controller.memoryModel
     val screen: WritableImage = controller.screen
+    val rom = (memoryModel.rom as RandomAccessMemory).__data__.toMutableList().observable()
 
 
     override val root = vbox(1.0) {
@@ -32,19 +34,13 @@ class MainView : View() {
             }
 
             vbox(1.0) {
-                for ((index, reg) in memoryModel.registers.withIndex()) {
-                    hbox(5.0) {
-                        label("reg$index")
+                for ((index, reg) in memoryModel.registers.withIndex())
+                    this.add(RegisterFragment(index, reg).root)
 
-                        // TODO: bind
-                        textfield("%04x".format(reg.value)) {
-                            alignment = Pos.BASELINE_CENTER
-                            prefWidth = 60.0
-                        }
-                    }
+                listview(rom) {
+                    cellFragment(InstructionFragment::class)
+                    prefHeight = 150.0
                 }
-
-//                listView
             }
         }
 
@@ -57,6 +53,23 @@ class MainView : View() {
             style {
                 padding = box(1.px)
             }
+        }
+    }
+}
+
+class InstructionFragment() : ListCellFragment<Word>() {
+    override val root = label("%h".format(item?.value ?: 239))
+}
+
+
+class RegisterFragment(index: Int, reg: Word) : Fragment() {
+    override val root = hbox(5.0) {
+        label("reg$index")
+
+        // TODO: bind
+        textfield("%04x".format(reg.value)) {
+            alignment = Pos.BASELINE_CENTER
+            prefWidth = 60.0
         }
     }
 }

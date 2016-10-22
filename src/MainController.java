@@ -12,7 +12,7 @@ import java.net.URL;
 import java.nio.file.Path;
 
 /**
- * Here is the start-up code and all the data.
+ * Here is the start-up code and all the __data__.
  * All the property of `MainController` are accessible from the GUI.
  * */
 
