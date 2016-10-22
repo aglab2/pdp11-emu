@@ -1,6 +1,5 @@
-package videocard;
+package videomanager;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /**
@@ -12,10 +11,10 @@ import java.awt.image.BufferedImage;
   This will take 256*256/4/1024=16 kB of memory
 */
 
-public class ImageGenerator {
+public class VideoManager {
     public BufferedImage image;
 
-    public ImageGenerator(int size){
+    public VideoManager(int size){
         image = new BufferedImage(size, size, BufferedImage.TYPE_BYTE_GRAY);
     }
 
