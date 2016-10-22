@@ -38,8 +38,10 @@ class MainView : View() {
                     this.add(RegisterFragment(index, reg).root)
 
                 listview(rom) {
-                    cellFragment(InstructionFragment::class)
                     prefHeight = 150.0
+                    cellCache {
+                        label("%4X".format(it.value))
+                    }
                 }
             }
         }
@@ -57,14 +59,13 @@ class MainView : View() {
     }
 }
 
-class InstructionFragment() : ListCellFragment<Word>() {
-    override val root = label("%h".format(item?.value ?: 239))
-}
-
 
 class RegisterFragment(index: Int, reg: Word) : Fragment() {
     override val root = hbox(5.0) {
-        label("reg$index")
+        label("reg$index") {
+            prefWidth = 45.0
+            alignment = Pos.CENTER_RIGHT
+        }
 
         // TODO: bind
         textfield("%04x".format(reg.value)) {
