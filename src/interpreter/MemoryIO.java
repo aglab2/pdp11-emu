@@ -16,23 +16,23 @@ public class MemoryIO {
 
 
     public Addr getStackPointer() {
-        return memory.registers[MemoryModel.STACK_POINTER_INDEX].toAddr();
+        return memory.registers.fetch(MemoryModel.STACK_POINTER_INDEX).toAddr();
     }
 
     /* should it be? Public? */
     private void setStackPointer(Addr value) {
-        memory.registers[MemoryModel.STACK_POINTER_INDEX] = value;
+        memory.registers.load(MemoryModel.STACK_POINTER_INDEX, value);
     }
 
 
 
     public Addr getProgramCounter() {
-        return memory.registers[MemoryModel.PROGRAM_COUNTER_INDEX].toAddr();
+        return memory.registers.fetch(MemoryModel.PROGRAM_COUNTER_INDEX).toAddr();
     }
 
     /* should it be? Public? */
     private void setProgramCounter(Addr value) {
-        memory.registers[MemoryModel.PROGRAM_COUNTER_INDEX] = value;
+        memory.registers.load(MemoryModel.PROGRAM_COUNTER_INDEX, value);
     }
 
 

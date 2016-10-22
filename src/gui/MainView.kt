@@ -34,7 +34,7 @@ class MainView : View() {
             }
 
             vbox(1.0) {
-                for ((index, reg) in memoryModel.registers.withIndex())
+                for ((index, reg) in (memoryModel.registers as RandomAccessMemory).__data__.withIndex())
                     this.add(RegisterFragment(index, reg).root)
 
                 listview(rom) {
