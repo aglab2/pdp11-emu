@@ -5,6 +5,7 @@ import memory.primitives.Addr;
 import memory.primitives.MemSize;
 import memory.primitives.Word;
 
+import javax.xml.bind.ValidationException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,18 +29,15 @@ public class MemoryModel {
         this.ram = new RandomAccessMemory(ramSize);
         this.vram = new RandomAccessMemory(vramSize);
 
-        // must be in constructor because we need to know the rom size before initing it
+        // must be in constructor because we need to know the rom size before initialising it
         byte[] bytes = Files.readAllBytes(romFile);
-        if (bytes.length % 2 != 0) throw new IOException("A rom file must contain shorts (2n bytes)");
 
-        /*TODO: encapsulate*/
-//        short[] shorts = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().array();
-        int num  = bytes.length / 2;
-        short[] shorts = new short[num];
-        for(int i = 0; i < num; i++)
-            shorts[i] = (short) (bytes[2 * i] | bytes[2 * i + 1] << 8); // Little Endian
-
-        this.rom = new RandomAccessMemory(shorts);
+        try {
+            this.rom = new RandomAccessMemory(bytes);
+        }
+        catch (ValidationException e) {
+            throw new IOException("A rom file must contain shorts (2n bytes)");
+        }
     }
 
 }
