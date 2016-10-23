@@ -2,6 +2,7 @@ package videomanager;
 
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import memory.primitives.Word;
@@ -11,52 +12,60 @@ import memory.primitives.Word;
  */
 
 /*
-  Image size is 256x256, 2 bits per pixel
-  This will take 256*256/4/1024=16 kB of memory
+    Image size is 256x256, 2 bits per pixel
+    This will take 256*256/4/1024=16 kB of memory
 */
 
+/*
+    Image data is written line-by-line, so indexing is
+    x = index % width; y = index / width;
+    One byte sets 4 pixels, so pixel_index = 4*byte_index+k, k=0..3
+ */
+
+
 public class VideoManager {
-    WritableImage screen;
-    Color[] colors  = {Color.BLACK, Color.DARKGRAY, Color.GRAY, Color.BLACK};
-    ObservableList<Word> vramObservableList;
+    static Color[] colors  = {Color.BLACK, Color.LIGHTGRAY, Color.DARKGRAY, Color.BLACK};
 
-    public VideoManager(WritableImage screen, ObservableList<Word> vramObservableList){
-        this.screen = screen;
-        this.vramObservableList = vramObservableList;
-        this.vramObservableList.addListener(new ListChangeListener<Word>() {
-            @Override
-            public void onChanged(Change<? extends Word> c) {
-                System.out.println("A");
-                while (c.next()) {
-                    System.out.println("B");
-                    if (c.wasPermutated()) {
-                        System.out.println("C");
-                    }
-                    if (c.wasUpdated()) {
-                        System.out.println("D");
-                    }
+    private int width;
+    private int height;
+    private PixelWriter pixelWriter;
+    private ObservableList<Word> vramObservableList;
 
-                    /* if (c.wasPermutated()) {
-                        for (int i = c.getFrom(); i < c.getTo(); ++i) {
-                            //permutate
-                        }
-                    } else if (c.wasUpdated()) {
-                        //update item
-                    } else {
-                        for (Word remitem : c.getRemoved()) {
-                            remitem.remove(Outer.this);
-                        }
-                        for (Item additem : c.getAddedSubList()) {
-                            additem.add(Outer.this);
-                        }
-                    }*/
-                }
-            }
-        });
-
+    void drawPixel(int pixelIndex, int colorCode){
+        int x = pixelIndex % width;
+        int y = pixelIndex / width;
+        pixelWriter.setColor(x, y, colors[colorCode]);
     }
 
-    public void setPixel(int x, int y, int colorCode){
-        screen.getPixelWriter().setColor(x, y, colors[colorCode]);
+    void drawByte(int index, byte colorByte){ //TODO: Make this function not require 2BPP
+        drawPixel(index*4+0, (colorByte & 0xC0) >> 6);
+        drawPixel(index*4+1, (colorByte & 0x30) >> 4);
+        drawPixel(index*4+2, (colorByte & 0x0C) >> 2);
+        drawPixel(index*4+3, (colorByte & 0x03) >> 0);
+    }
+
+    private ListChangeListener<Word> listener = new ListChangeListener<Word>() {
+        @Override
+        public void onChanged(Change<? extends Word> c) {
+            ObservableList<? extends Word> list = c.getList();
+            while (c.next()) {
+                if (c.wasAdded()) {
+                    for (int addr = c.getFrom(); addr < c.getTo(); addr++){
+                        Word colorWord = list.get(addr);
+
+                        drawByte(2*addr+0, colorWord.highByte());
+                        drawByte(2*addr+1, colorWord.lowByte());
+                    }
+                }
+            }
+        }
+    };
+
+    public VideoManager(WritableImage screen, ObservableList<Word> vramObservableList){
+        this.width = (int) screen.getWidth();
+        this.height = (int) screen.getHeight();
+        this.pixelWriter = screen.getPixelWriter();
+        this.vramObservableList = vramObservableList;
+        this.vramObservableList.addListener(this.listener);
     }
 }
