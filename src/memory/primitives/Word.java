@@ -50,11 +50,7 @@ public class Word {
         return (byte) (value & 0xFF);
     }
 
-    ;
-
     public byte lowByte() {
         return (byte) ((value & 0xFF00) >> 8);
     }
-
-    ;
 }
