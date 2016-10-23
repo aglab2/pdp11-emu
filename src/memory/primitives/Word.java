@@ -46,6 +46,15 @@ public class Word {
         return "Word{" + value + '}';
     }
 
-    public byte highByte() { return (byte) (value & 0xFF); };
-    public byte lowByte() { return (byte) ((value & 0xFF00) >> 8); };
+    public byte highByte() {
+        return (byte) (value & 0xFF);
+    }
+
+    ;
+
+    public byte lowByte() {
+        return (byte) ((value & 0xFF00) >> 8);
+    }
+
+    ;
 }

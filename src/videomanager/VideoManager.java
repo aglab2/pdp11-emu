@@ -24,24 +24,24 @@ import memory.primitives.Word;
 
 
 public class VideoManager {
-    static Color[] colors  = {Color.BLACK, Color.LIGHTGRAY, Color.DARKGRAY, Color.BLACK};
+    static Color[] colors = {Color.BLACK, Color.LIGHTGRAY, Color.DARKGRAY, Color.BLACK};
 
     private int width;
     private int height;
     private PixelWriter pixelWriter;
     private ObservableList<Word> vramObservableList;
 
-    void drawPixel(int pixelIndex, int colorCode){
+    void drawPixel(int pixelIndex, int colorCode) {
         int x = pixelIndex % width;
         int y = pixelIndex / width;
         pixelWriter.setColor(x, y, colors[colorCode]);
     }
 
-    void drawByte(int index, byte colorByte){ //TODO: Make this function not require 2BPP
-        drawPixel(index*4+0, (colorByte & 0xC0) >> 6);
-        drawPixel(index*4+1, (colorByte & 0x30) >> 4);
-        drawPixel(index*4+2, (colorByte & 0x0C) >> 2);
-        drawPixel(index*4+3, (colorByte & 0x03) >> 0);
+    void drawByte(int index, byte colorByte) { //TODO: Make this function not require 2BPP
+        drawPixel(index * 4 + 0, (colorByte & 0b1100_0000) >> 6);
+        drawPixel(index * 4 + 1, (colorByte & 0x0011_0000) >> 4);
+        drawPixel(index * 4 + 2, (colorByte & 0x0000_1100) >> 2);
+        drawPixel(index * 4 + 3, (colorByte & 0x0000_0011) >> 0);
     }
 
     private ListChangeListener<Word> listener = new ListChangeListener<Word>() {
@@ -50,18 +50,18 @@ public class VideoManager {
             ObservableList<? extends Word> list = c.getList();
             while (c.next()) {
                 if (c.wasAdded()) {
-                    for (int addr = c.getFrom(); addr < c.getTo(); addr++){
+                    for (int addr = c.getFrom(); addr < c.getTo(); addr++) {
                         Word colorWord = list.get(addr);
 
-                        drawByte(2*addr+0, colorWord.highByte());
-                        drawByte(2*addr+1, colorWord.lowByte());
+                        drawByte(2 * addr + 0, colorWord.highByte());
+                        drawByte(2 * addr + 1, colorWord.lowByte());
                     }
                 }
             }
         }
     };
 
-    public VideoManager(WritableImage screen, ObservableList<Word> vramObservableList){
+    public VideoManager(WritableImage screen, ObservableList<Word> vramObservableList) {
         this.width = (int) screen.getWidth();
         this.height = (int) screen.getHeight();
         this.pixelWriter = screen.getPixelWriter();

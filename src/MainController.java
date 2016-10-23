@@ -26,12 +26,12 @@ public class MainController extends Controller {
     public MainController() throws IOException, URISyntaxException {
         URL defaultRom = MainController.class.getClassLoader().getResource("rom_default.hex");
         Path path = new File(defaultRom.toURI()).toPath();
-        this.memoryModel = new MemoryModel(new MemSize(1024*8), new MemSize(1024*8), path);
+        this.memoryModel = new MemoryModel(new MemSize(1024 * 8), new MemSize(1024 * 8), path);
         this.videoManager = new VideoManager(screen, memoryModel.vram.dataObservableList);
     }
 
     public void startButtonHandler() {
-        for (int i = 0; i < 1024*8; i++)
+        for (int i = 0; i < 1024 * 8; i++)
             this.memoryModel.vram.load(new Addr(i), new Word((int) (Math.random() * 65535)));
     }
 
