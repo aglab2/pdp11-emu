@@ -1,6 +1,5 @@
 package videocard;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /**
@@ -15,11 +14,11 @@ import java.awt.image.BufferedImage;
 public class ImageGenerator {
     public BufferedImage image;
 
-    public ImageGenerator(int size){
+    public ImageGenerator(int size) {
         image = new BufferedImage(size, size, BufferedImage.TYPE_BYTE_GRAY);
     }
 
-    public void setPixel(int x, int y, int color){
+    public void setPixel(int x, int y, int color) {
         image.setRGB(x, y, color);
     }
 }

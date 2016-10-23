@@ -7,10 +7,7 @@ package interpreter;
 import instruction.Instruction;
 import memory.primitives.Word;
 
-import java.util.Dictionary;
-import java.util.List;
 import java.util.Map;
-import java.util.function.IntBinaryOperator;
 
 public class InstructionParser {
     private Map<Word, Instruction> commands;

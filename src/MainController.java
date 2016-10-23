@@ -1,5 +1,3 @@
-import gui.MainView;
-import javafx.scene.control.Button;
 import javafx.scene.image.WritableImage;
 import memory.MemoryModel;
 import memory.primitives.MemSize;
@@ -14,7 +12,7 @@ import java.nio.file.Path;
 /**
  * Here is the start-up code and all the __data__.
  * All the property of `MainController` are accessible from the GUI.
- * */
+ */
 
 public class MainController extends Controller {
     public final MemoryModel memoryModel;
@@ -29,7 +27,13 @@ public class MainController extends Controller {
     public void startButtonHandler() {
         System.out.println("start");
     }
-    public void pauseButtonHandler() {}
-    public void resetButtonHandler() {}
-    public void stepButtonHandler() {}
+
+    public void pauseButtonHandler() {
+    }
+
+    public void resetButtonHandler() {
+    }
+
+    public void stepButtonHandler() {
+    }
 }

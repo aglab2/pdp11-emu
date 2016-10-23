@@ -32,8 +32,7 @@ public class MemoryModel {
 
         try {
             this.rom = new MemoryStorage(bytes);
-        }
-        catch (ValidationException e) {
+        } catch (ValidationException e) {
             throw new IOException("A rom file must contain shorts (2n bytes)");
         }
     }

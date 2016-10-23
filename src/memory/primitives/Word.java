@@ -1,7 +1,7 @@
 package memory.primitives;
 
 
-public class Word{
+public class Word {
     public static final Word ZERO = new Word(0);
 
     public final int value;

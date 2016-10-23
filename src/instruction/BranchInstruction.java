@@ -1,8 +1,5 @@
 package instruction;
 
-import instruction.primitives.InstructionDiapason;
-import instruction.primitives.RegIndex;
-import instruction.primitives.RegMode;
 import memory.primitives.Addr;
 import memory.primitives.Word;
 

@@ -20,18 +20,18 @@ public class MemoryStorage extends ReadWriteMemory {
         super(new MemSize(arr.length));
         this.__data__ = new Word[size.value];
 
-        for(int i = 0; i < size.value; i++)
+        for (int i = 0; i < size.value; i++)
             __data__[i] = new Word(arr[i]);
     }
 
     public MemoryStorage(byte[] arr) throws ValidationException {
         super(new MemSize(arr.length / 2));
-        if(arr.length % 2 != 0) throw new ValidationException("Cannot convert `byte[] arr` to `short[]`");
+        if (arr.length % 2 != 0) throw new ValidationException("Cannot convert `byte[] arr` to `short[]`");
         int length = arr.length / 2;
 
         this.__data__ = new Word[length];
 
-        for(int i = 0; i < length; i++)
+        for (int i = 0; i < length; i++)
             __data__[i] = new Word(arr[2 * i], arr[2 * i + 1]);
     }
 

@@ -48,16 +48,16 @@ class MainView : View() {
 
         buttonbar {
             button("Start") {
-                setOnMouseClicked  { controller.startButtonHandler() }
+                setOnMouseClicked { controller.startButtonHandler() }
             }
             button("Pause") {
-                setOnMouseClicked  { controller.pauseButtonHandler() }
+                setOnMouseClicked { controller.pauseButtonHandler() }
             }
             button("Reset") {
-                setOnMouseClicked  { controller.resetButtonHandler() }
+                setOnMouseClicked { controller.resetButtonHandler() }
             }
             button("Step") {
-                setOnMouseClicked  { controller.stepButtonHandler() }
+                setOnMouseClicked { controller.stepButtonHandler() }
             }
 
             style {
