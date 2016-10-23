@@ -19,7 +19,7 @@ public class InstructionDiapasonTest {
     Word word5 = new Word(0x1201);
 
     @Test
-    public void test_diapason_from_boundaries() throws Exception {
+    public void test_contains() throws Exception {
         InstructionDiapason diapason = new InstructionDiapason(word1, word4);
 
         assertFalse(diapason.contains(word0));
@@ -31,7 +31,7 @@ public class InstructionDiapasonTest {
     }
 
     @Test
-    public void test_diapason_with_expSize() throws Exception {
+    public void init_diapason_with_expSize() throws Exception {
         Word word = new Word(0xA671);
 
         assertEquals(new InstructionDiapason(word, 4),
@@ -47,7 +47,7 @@ public class InstructionDiapasonTest {
     }
 
     @Test
-    public void test_diapason_with_expSize_high_end() throws Exception {
+    public void init_diapason_with_expSize_high_end() throws Exception {
         Word word = new Word(0b1111_1111_1111_1111);
 
         assertEquals(new InstructionDiapason(word, 0),
@@ -64,7 +64,7 @@ public class InstructionDiapasonTest {
     }
 
     @Test
-    public void test_diapason_with_expSize_low_end() throws Exception {
+    public void init_diapason_with_expSize_low_end() throws Exception {
         Word word = new Word(0b1111_1111_1111_1111);
 
         assertEquals(new InstructionDiapason(word, 16),

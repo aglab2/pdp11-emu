@@ -7,24 +7,24 @@ import memory.primitives.Word;
 import javax.xml.bind.ValidationException;
 import java.util.Arrays;
 
-public class RandomAccessMemory extends ReadWriteMemory {
+public class MemoryStorage extends ReadWriteMemory {
     public final Word[] __data__;
 
-    public RandomAccessMemory(MemSize size) {
+    public MemoryStorage(MemSize size) {
         super(size);
         this.__data__ = new Word[size.value];
         Arrays.fill(__data__, Word.ZERO);
     }
 
-    public RandomAccessMemory(short[] arr) {
+    public MemoryStorage(short[] arr) {
         super(new MemSize(arr.length));
         this.__data__ = new Word[size.value];
 
         for(int i = 0; i < size.value; i++)
-            __data__[i] = new Word(arr[i] & 0xFFFF);
+            __data__[i] = new Word(arr[i]);
     }
 
-    public RandomAccessMemory(byte[] arr) throws ValidationException {
+    public MemoryStorage(byte[] arr) throws ValidationException {
         super(new MemSize(arr.length / 2));
         if(arr.length % 2 != 0) throw new ValidationException("Cannot convert `byte[] arr` to `short[]`");
         int length = arr.length / 2;
@@ -32,7 +32,7 @@ public class RandomAccessMemory extends ReadWriteMemory {
         this.__data__ = new Word[length];
 
         for(int i = 0; i < length; i++)
-            __data__[i] = new Word((arr[2 * i] | arr[2 * i + 1] << 8) & 0xFFFF); // Little Endian
+            __data__[i] = new Word(arr[2 * i], arr[2 * i + 1]);
     }
 
     @Override

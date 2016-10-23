@@ -10,6 +10,10 @@ public class Word{
         this.value = value & 0xFFFF;
     }
 
+    public Word(byte b0, byte b1) {
+        this((b0 & 0xFF) | ((int) b1) << 8);   // Little Endian
+    }
+
     public Addr toAddr() {
         return new Addr(value);
     }
@@ -23,6 +27,21 @@ public class Word{
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Word)) return false;
+
+        return value == ((Word) o).value;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return value;
+    }
+
+    @Override
+
     public String toString() {
         return "Word{" + value + '}';
     }
