@@ -7,8 +7,7 @@ public class Word{
     public final int value;
 
     public Word(int value) {
-        Utill.assertIs2Bytes(value);
-        this.value = value;
+        this.value = value & 0xFFFF;
     }
 
     public Addr toAddr() {
@@ -21,5 +20,10 @@ public class Word{
 
     public Word dec() {
         return new Word(value - 1);
+    }
+
+    @Override
+    public String toString() {
+        return "Word{" + value + '}';
     }
 }
