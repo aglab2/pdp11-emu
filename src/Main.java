@@ -4,9 +4,9 @@ import kotlin.jvm.JvmClassMappingKt;
 import tornadofx.App;
 
 /**
- *  NOTE: all start-up code is in the `MainController`.
- *  MVC architecture is used.
- *  */
+ * NOTE: all start-up code is in the `MainController`.
+ * MVC architecture is used.
+ */
 
 public class Main extends App {
 

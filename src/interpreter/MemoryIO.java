@@ -25,7 +25,6 @@ public class MemoryIO {
     }
 
 
-
     public Addr getProgramCounter() {
         return memory.registers.fetch(MemoryModel.PROGRAM_COUNTER_INDEX).toAddr();
     }
@@ -34,7 +33,6 @@ public class MemoryIO {
     private void setProgramCounter(Addr value) {
         memory.registers.load(MemoryModel.PROGRAM_COUNTER_INDEX, value);
     }
-
 
 
     public void stackPut(Word value) {

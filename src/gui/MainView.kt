@@ -13,7 +13,7 @@ class MainView : View() {
     val controller: MainController by inject()
     val memoryModel: MemoryModel = controller.memoryModel
     val screen: WritableImage = controller.screen
-    val rom = (memoryModel.rom as RandomAccessMemory).__data__.toMutableList().observable()
+    val rom = (memoryModel.rom as MemoryStorage).__data__.toMutableList().observable()
 
 
     override val root = vbox(1.0) {
@@ -34,13 +34,13 @@ class MainView : View() {
             }
 
             vbox(1.0) {
-                for ((index, reg) in (memoryModel.registers as RandomAccessMemory).__data__.withIndex())
+                for ((index, reg) in (memoryModel.registers as MemoryStorage).__data__.withIndex())
                     this.add(RegisterFragment(index, reg).root)
 
                 listview(rom) {
                     prefHeight = 150.0
-                    cellCache {
-                        label("%4X".format(it.value))
+                    cellFormat {
+                        graphic = label(("000" + Integer.toHexString(it.value)).take(4))
                     }
                 }
             }
@@ -48,16 +48,16 @@ class MainView : View() {
 
         buttonbar {
             button("Start") {
-                setOnMouseClicked  { controller.startButtonHandler() }
+                setOnMouseClicked { controller.startButtonHandler() }
             }
             button("Pause") {
-                setOnMouseClicked  { controller.pauseButtonHandler() }
+                setOnMouseClicked { controller.pauseButtonHandler() }
             }
             button("Reset") {
-                setOnMouseClicked  { controller.resetButtonHandler() }
+                setOnMouseClicked { controller.resetButtonHandler() }
             }
             button("Step") {
-                setOnMouseClicked  { controller.stepButtonHandler() }
+                setOnMouseClicked { controller.stepButtonHandler() }
             }
 
             style {

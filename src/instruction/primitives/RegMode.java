@@ -18,7 +18,7 @@ public enum RegMode {
             return memory.registers.fetch(index.address).toAddr();
         }
     },
-    AutoInc(2){
+    AutoInc(2) {
         @Override
         Addr apply(MemoryModel memory, RegIndex index, @Nullable Word nextWord) {
             Addr addr = memory.registers.fetch(index.address).toAddr();
@@ -26,29 +26,29 @@ public enum RegMode {
             return addr;
         }
     },
-    AutoDec(4){
+    AutoDec(4) {
         @Override
         Addr apply(MemoryModel memory, RegIndex index, @Nullable Word nextWord) {
             Addr newAddr = memory.registers.fetch(index.address).toAddr().dec();
-            memory.registers.load(index.address,newAddr);
+            memory.registers.load(index.address, newAddr);
             return newAddr;
         }
     },
-    Index(6){
+    Index(6) {
         @Override
         Addr apply(MemoryModel memory, RegIndex index, @Nullable Word nextWord) {
             assert nextWord != null;
             return new Addr(memory.registers.fetch(index.address).value + nextWord.value);
         }
     },
-    DRegister(1){
+    DRegister(1) {
         @Override
         Addr apply(MemoryModel memory, RegIndex index, @Nullable Word nextWord) {
             Addr addr = memory.registers.fetch(index.address).toAddr();
             return memory.ram.fetch(addr).toAddr();
         }
     },
-    DAutoInc(3){
+    DAutoInc(3) {
         @Override
         Addr apply(MemoryModel memory, RegIndex index, @Nullable Word nextWord) {
             Addr addr = memory.registers.fetch(index.address).toAddr();
@@ -57,7 +57,7 @@ public enum RegMode {
             return content.toAddr();
         }
     },
-    DAutoDec(5){
+    DAutoDec(5) {
         @Override
         Addr apply(MemoryModel memory, RegIndex index, @Nullable Word nextWord) {
             Addr addr = memory.registers.fetch(index.address).toAddr();
@@ -66,7 +66,7 @@ public enum RegMode {
             return newContent.toAddr();
         }
     },
-    DIndex(7){
+    DIndex(7) {
         @Override
         Addr apply(MemoryModel memory, RegIndex index, @Nullable Word nextWord) {
             assert nextWord != null;

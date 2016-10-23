@@ -1,14 +1,17 @@
 package memory.primitives;
 
 
-public class Word{
+public class Word {
     public static final Word ZERO = new Word(0);
 
     public final int value;
 
     public Word(int value) {
-        Utill.assertIs2Bytes(value);
-        this.value = value;
+        this.value = value & 0xFFFF;
+    }
+
+    public Word(byte b0, byte b1) {
+        this((b0 & 0xFF) | ((int) b1) << 8);   // Little Endian
     }
 
     public Addr toAddr() {
@@ -21,5 +24,25 @@ public class Word{
 
     public Word dec() {
         return new Word(value - 1);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Word)) return false;
+
+        return value == ((Word) o).value;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return value;
+    }
+
+    @Override
+
+    public String toString() {
+        return "Word{" + value + '}';
     }
 }
