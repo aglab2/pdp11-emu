@@ -1,6 +1,7 @@
 import gui.MainView;
 import javafx.scene.control.Button;
 import javafx.scene.image.WritableImage;
+import javafx.scene.paint.Color;
 import memory.MemoryModel;
 import memory.primitives.MemSize;
 import tornadofx.Controller;
@@ -26,9 +27,7 @@ public class MainController extends Controller {
         this.memoryModel = new MemoryModel(new MemSize(1024), new MemSize(1024), path);
     }
 
-    public void startButtonHandler() {
-        System.out.println("start");
-    }
+    public void startButtonHandler() {}
     public void pauseButtonHandler() {}
     public void resetButtonHandler() {}
     public void stepButtonHandler() {}
