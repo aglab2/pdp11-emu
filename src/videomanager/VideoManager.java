@@ -1,11 +1,10 @@
 package videomanager;
 
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
-
-import java.awt.image.BufferedImage;
-import java.lang.reflect.Array;
+import memory.primitives.Word;
 
 /**
  * Created by aglab2 on 21/10/16.
@@ -19,9 +18,42 @@ import java.lang.reflect.Array;
 public class VideoManager {
     WritableImage screen;
     Color[] colors  = {Color.BLACK, Color.DARKGRAY, Color.GRAY, Color.BLACK};
+    ObservableList<Word> vramObservableList;
 
-    public VideoManager(WritableImage screen, ObservableList<Integer> list){
+    public VideoManager(WritableImage screen, ObservableList<Word> vramObservableList){
         this.screen = screen;
+        this.vramObservableList = vramObservableList;
+        this.vramObservableList.addListener(new ListChangeListener<Word>() {
+            @Override
+            public void onChanged(Change<? extends Word> c) {
+                System.out.println("A");
+                while (c.next()) {
+                    System.out.println("B");
+                    if (c.wasPermutated()) {
+                        System.out.println("C");
+                    }
+                    if (c.wasUpdated()) {
+                        System.out.println("D");
+                    }
+
+                    /* if (c.wasPermutated()) {
+                        for (int i = c.getFrom(); i < c.getTo(); ++i) {
+                            //permutate
+                        }
+                    } else if (c.wasUpdated()) {
+                        //update item
+                    } else {
+                        for (Word remitem : c.getRemoved()) {
+                            remitem.remove(Outer.this);
+                        }
+                        for (Item additem : c.getAddedSubList()) {
+                            additem.add(Outer.this);
+                        }
+                    }*/
+                }
+            }
+        });
+
     }
 
     public void setPixel(int x, int y, int colorCode){

@@ -1,8 +1,11 @@
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import memory.MemoryModel;
+import memory.primitives.Addr;
 import memory.primitives.MemSize;
+import memory.primitives.Word;
 import tornadofx.Controller;
+import videomanager.VideoManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,14 +21,17 @@ import java.nio.file.Path;
 public class MainController extends Controller {
     public final MemoryModel memoryModel;
     public final WritableImage screen = new WritableImage(/*width*/ 300, /*height*/ 300);
+    public final VideoManager videoManager;
 
     public MainController() throws IOException, URISyntaxException {
         URL defaultRom = MainController.class.getClassLoader().getResource("rom_default.hex");
         Path path = new File(defaultRom.toURI()).toPath();
         this.memoryModel = new MemoryModel(new MemSize(1024), new MemSize(1024), path);
+        this.videoManager = new VideoManager(screen, memoryModel.vram.dataObservableList);
     }
 
     public void startButtonHandler() {
+        this.memoryModel.vram.load(new Addr(0), new Word(123));
         System.out.println("start");
     }
 

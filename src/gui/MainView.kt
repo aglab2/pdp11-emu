@@ -13,7 +13,7 @@ class MainView : View() {
     val controller: MainController by inject()
     val memoryModel: MemoryModel = controller.memoryModel
     val screen: WritableImage = controller.screen
-    val rom = (memoryModel.rom as MemoryStorage).__data__.toMutableList().observable()
+    val rom = (memoryModel.rom as MemoryStorage).dataObservableList
 
 
     override val root = vbox(1.0) {
@@ -34,7 +34,7 @@ class MainView : View() {
             }
 
             vbox(1.0) {
-                for ((index, reg) in (memoryModel.registers as MemoryStorage).__data__.withIndex())
+                for ((index, reg) in (memoryModel.registers as MemoryStorage).dataObservableList.withIndex())
                     this.add(RegisterFragment(index, reg).root)
 
                 listview(rom) {
