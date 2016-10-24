@@ -39,9 +39,9 @@ public class VideoManager {
 
     void drawByte(int index, byte colorByte) { //TODO: Make this function not require 2BPP
         drawPixel(index * 4 + 0, (colorByte & 0b1100_0000) >> 6);
-        drawPixel(index * 4 + 1, (colorByte & 0x0011_0000) >> 4);
-        drawPixel(index * 4 + 2, (colorByte & 0x0000_1100) >> 2);
-        drawPixel(index * 4 + 3, (colorByte & 0x0000_0011) >> 0);
+        drawPixel(index * 4 + 1, (colorByte & 0b0011_0000) >> 4);
+        drawPixel(index * 4 + 2, (colorByte & 0b0000_1100) >> 2);
+        drawPixel(index * 4 + 3, (colorByte & 0b0000_0011) >> 0);
     }
 
     private ListChangeListener<Word> listener = new ListChangeListener<Word>() {
@@ -62,8 +62,10 @@ public class VideoManager {
     };
 
     public VideoManager(WritableImage screen, ObservableList<Word> vramObservableList) {
-        this.width = (int) screen.getWidth();
-        this.height = (int) screen.getHeight();
+        this.width = 256;
+        this.height = 256;
+        //this.width = (int) screen.getWidth();
+        //this.height = (int) screen.getHeight();
         this.pixelWriter = screen.getPixelWriter();
         this.vramObservableList = vramObservableList;
         this.vramObservableList.addListener(this.listener);
