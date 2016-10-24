@@ -1,29 +1,36 @@
 package instruction;
 
-import instruction.primitives.RegIndex;
+import com.sun.istack.internal.Nullable;
+import instruction.primitives.RegAddr;
 import instruction.primitives.RegMode;
 import memory.primitives.Word;
 
-public class DoubleOperandInstruction extends Instruction {
+public abstract class DoubleOperandInstruction extends Instruction {
     public final RegMode srcMode;
-    public final RegIndex srcIndex;
+    public final RegAddr srcAddr;
     public final RegMode dstMode;
-    public final RegIndex dstIndex;
+    public final RegAddr dstAddr;
 
     public DoubleOperandInstruction(Word code,
-                                    RegMode srcMode, RegIndex srcIndex,
-                                    RegMode dstMode, RegIndex dstIndex) {
-        super(code, 4);
+                                    RegMode srcMode, RegAddr srcAddr,
+                                    RegMode dstMode, RegAddr dstAddr,
+                                    @Nullable Word nextWord) {
+        super(code, 4, nextWord);
         this.srcMode = srcMode;
-        this.srcIndex = srcIndex;
+        this.srcAddr = srcAddr;
         this.dstMode = dstMode;
-        this.dstIndex = dstIndex;
+        this.dstAddr = dstAddr;
     }
 
     @Override
     public Word getCode() {
         return new Word(diapason.start.value +
-                dstMode.value << 9 + dstIndex.ordinal() << 6 +
-                dstMode.value << 3 + dstIndex.ordinal());
+                dstMode.value << 9 + dstAddr.ordinal() << 6 +
+                dstMode.value << 3 + dstAddr.ordinal());
+    }
+
+    @Override
+    public boolean needsNextWord() {
+        return srcMode.needsNextWord() || dstMode.needsNextWord();
     }
 }
