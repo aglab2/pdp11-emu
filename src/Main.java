@@ -12,6 +12,12 @@ public class Main extends App {
 
     public Main() {
         super(JvmClassMappingKt.getKotlinClass(MainView.class));
+
+        /* Uncomment when debugging. Do not delete! */
+//        Thread.setDefaultUncaughtExceptionHandler((thread, e) -> {
+//            Logger.getAnonymousLogger().log(Level.SEVERE, "JavaFX exception:", e);
+//            System.exit(1);
+//        });
     }
 
     public static void main(String[] args) {
