@@ -4,6 +4,7 @@ package memory;
 import bus.MemoryBus;
 import memory.primitives.Addr;
 import memory.primitives.MemSize;
+import memory.primitives.Word;
 
 import javax.xml.bind.ValidationException;
 import java.io.IOException;
@@ -58,4 +59,32 @@ public class MemoryModel {
         this.bus.addRegion(regOffset, (MemoryStorage) this.registers);
     }
 
+    public Addr getStackPointer() {
+        return registers.fetch(MemoryModel.STACK_POINTER_INDEX).toAddr();
+    }
+
+    public void setStackPointer(Addr value) {
+        registers.load(MemoryModel.STACK_POINTER_INDEX, value);
+    }
+
+
+    public Addr getProgramCounter() {
+        return registers.fetch(MemoryModel.PROGRAM_COUNTER_INDEX).toAddr();
+    }
+
+    public void setProgramCounter(Addr value) {
+        registers.load(MemoryModel.PROGRAM_COUNTER_INDEX, value);
+    }
+
+
+    public void stackPut(Word value) {
+        ram.load(getStackPointer(), value);
+        setStackPointer(getStackPointer().inc());
+    }
+
+    public Word stackPop() {
+        Word value = ram.fetch(getStackPointer());
+        setStackPointer(getStackPointer().dec());
+        return value;
+    }
 }

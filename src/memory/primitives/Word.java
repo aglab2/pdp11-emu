@@ -10,8 +10,8 @@ public class Word {
         this.value = value & 0xFFFF;
     }
 
-    public Word(byte b0, byte b1) {
-        this((b0 & 0xFF) | ((int) b1) << 8);   // Little Endian
+    public Word(byte lowByte, byte highByte) {
+        this((lowByte & 0xFF) | ((int) highByte) << 8);   // Little Endian
     }
 
     public Addr toAddr() {
@@ -51,5 +51,9 @@ public class Word {
 
     public byte lowByte() {
         return (byte) ((value & 0xFF00) >> 8);
+    }
+
+    public short toShort() {
+        return (short) ((value < 128) ? value : value - 256);
     }
 }

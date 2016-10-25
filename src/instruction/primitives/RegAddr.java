@@ -14,11 +14,11 @@ public enum RegAddr {
 
     public final Addr address = new Addr(ordinal());
 
-    public Word fetch(MemoryModel memory) {
-        return memory.registers.fetch(this.address);
-    }
-
-    public void load(MemoryModel memory, Word value) {
-        memory.registers.load(this.address, value);
-    }
+//    public Word fetch(MemoryModel memory) {
+//        return memory.registers.fetch(this.address);
+//    }
+//
+//    public void load(MemoryModel memory, Word value) {
+//        memory.registers.load(this.address, value);
+//    }
 }
