@@ -31,8 +31,9 @@ public class MainController extends Controller {
     }
 
     public void startButtonHandler() {
+        //Show off loading from data bus
         for (int i = 0; i < 1024 * 8; i++)
-            this.memoryModel.vram.load(new Addr(i), new Word((int) (Math.random() * 65535)));
+            this.memoryModel.bus.load(memoryModel.vramOffset + i, new Word((int) (Math.random() * 65535)));
     }
 
     public void pauseButtonHandler() {

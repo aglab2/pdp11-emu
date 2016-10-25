@@ -20,6 +20,7 @@ public class MemoryModel {
     public final int romOffset;
     public final int regOffset;
 
+    /* TODO: Should this be private as we can access to them from bus? */
     public final ReadWriteMemory ram;
     public final ReadOnlyMemory rom;
     public final ReadWriteMemory registers = new MemoryStorage(NUMBER_OF_REGISTERS);
