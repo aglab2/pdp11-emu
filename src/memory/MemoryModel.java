@@ -6,10 +6,6 @@ import memory.primitives.Addr;
 import memory.primitives.MemSize;
 import memory.primitives.Word;
 
-import javax.xml.bind.ValidationException;
-import java.io.IOException;
-import java.nio.file.Files;
-
 public class MemoryModel {
     public static final MemSize NUMBER_OF_REGISTERS = new MemSize(8);
     public static final Addr STACK_POINTER_INDEX = new Addr(6);

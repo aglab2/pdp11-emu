@@ -3,7 +3,6 @@ package instruction.instuctions;
 import bus.BusAddr;
 import com.sun.istack.internal.Nullable;
 import instruction.DoubleOperandInstruction;
-import instruction.SingleOperandInstruction;
 import instruction.primitives.RegAddr;
 import instruction.primitives.RegMode;
 import memory.MemoryModel;

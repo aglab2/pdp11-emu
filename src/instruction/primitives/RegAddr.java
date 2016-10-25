@@ -1,8 +1,6 @@
 package instruction.primitives;
 
-import memory.MemoryModel;
 import memory.primitives.Addr;
-import memory.primitives.Word;
 
 /**
  * Created by voddan on 12/10/16.
