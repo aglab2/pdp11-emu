@@ -1,6 +1,7 @@
 package memory;
 
 
+import bus.MemoryBus;
 import memory.primitives.Addr;
 import memory.primitives.MemSize;
 
@@ -22,10 +23,12 @@ public class MemoryModel {
     /* TODO: same addresation ar `ram` */
     public final MemoryStorage vram;
 
+    public final MemoryBus bus;
 
     public MemoryModel(MemSize ramSize, MemSize vramSize, Path romFile) throws IOException {
         this.ram = new MemoryStorage(ramSize);
         this.vram = new MemoryStorage(vramSize);
+        this.bus = new MemoryBus();
 
         // must be in constructor because we need to know the rom size before initialising it
         byte[] bytes = Files.readAllBytes(romFile);
@@ -35,6 +38,21 @@ public class MemoryModel {
         } catch (ValidationException e) {
             throw new IOException("A rom file must contain shorts (2n bytes)");
         }
+
+        int offset = 0;
+
+        System.out.printf("RAM  Start: 0x%08X\n", 2*offset);
+        this.bus.addRegion(offset, (MemoryStorage) this.ram);
+        offset += ((MemoryStorage) this.ram).size.value;
+        System.out.printf("VRAM Start: 0x%08X\n", 2*offset);
+
+        this.bus.addRegion(offset, this.vram);
+        offset += this.vram.size.value;
+        System.out.printf("ROM : 0x%08X\n", 2*offset);
+
+        this.bus.addRegion(offset, (MemoryStorage) this.rom);
+        offset += this.rom.size.value;
+        this.bus.addRegion(0xFFFF, (MemoryStorage) this.registers);
     }
 
 }
