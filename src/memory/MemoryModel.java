@@ -56,12 +56,6 @@ public class MemoryModel {
 
         this.regOffset = 0x8000;
         this.bus.addRegion(regOffset, (MemoryStorage) this.registers);
-
-
-        System.out.printf("RAM : 0x%08X\n", ramOffset);
-        System.out.printf("VRAM: 0x%08X\n", vramOffset);
-        System.out.printf("ROM : 0x%08X\n", romOffset);
-        System.out.printf("REG : 0x%08X\n", regOffset);
     }
 
 }
