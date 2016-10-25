@@ -41,7 +41,6 @@ public class Word {
     }
 
     @Override
-
     public String toString() {
         return "Word{" + value + '}';
     }

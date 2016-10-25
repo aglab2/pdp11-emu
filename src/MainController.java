@@ -1,7 +1,8 @@
+import instruction.instuctions.INC;
+import instruction.primitives.RegAddr;
+import instruction.primitives.RegMode;
 import javafx.scene.image.WritableImage;
-import javafx.scene.paint.Color;
 import memory.MemoryModel;
-import memory.primitives.Addr;
 import memory.primitives.MemSize;
 import memory.primitives.Word;
 import tornadofx.Controller;
@@ -31,8 +32,13 @@ public class MainController extends Controller {
     }
 
     public void startButtonHandler() {
+        //Show off loading from data bus
         for (int i = 0; i < 1024 * 8; i++)
-            this.memoryModel.vram.load(new Addr(i), new Word((int) (Math.random() * 65535)));
+            this.memoryModel.bus.load(memoryModel.vramOffset + i, new Word((int) (Math.random() * 65535)));
+
+        INC op = new INC(RegMode.Index, RegAddr.R0, Word.ZERO);
+        op.apply(memoryModel);
+        System.out.println("yeah");
     }
 
     public void pauseButtonHandler() {

@@ -10,7 +10,9 @@ import memory.primitives.Word;
  */
 public abstract class Instruction {
     public final InstructionRange diapason;
-    public final @Nullable Word nextWord;
+    public final
+    @Nullable
+    Word nextWord;
 
     public Instruction(Word code, int bitSize, @Nullable Word nextWord) {
         this.diapason = new InstructionRange(code, 16 - bitSize);
