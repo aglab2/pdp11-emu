@@ -9,7 +9,6 @@ import memory.primitives.Word;
 import javax.xml.bind.ValidationException;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class MemoryModel {
     public static final MemSize NUMBER_OF_REGISTERS = new MemSize(8);
@@ -31,20 +30,11 @@ public class MemoryModel {
 
     public final MemoryBus bus;
 
-    public MemoryModel(MemSize ramSize, MemSize vramSize, Path romFile) throws IOException {
+    public MemoryModel(MemSize ramSize, MemSize vramSize, MemoryStorage rom) {
         this.ram = new MemoryStorage(ramSize);
         this.vram = new MemoryStorage(vramSize);
+        this.rom = rom;
         this.bus = new MemoryBus();
-
-        // must be in constructor because we need to know the rom size before initialising it
-        byte[] bytes = Files.readAllBytes(romFile);
-
-        try {
-            this.rom = new MemoryStorage(bytes);
-        } catch (ValidationException e) {
-            throw new IOException("A rom file must contain shorts (2n bytes)");
-        }
-
 
         this.ramOffset = 0;
         this.bus.addRegion(ramOffset, (MemoryStorage) this.ram);

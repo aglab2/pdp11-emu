@@ -9,11 +9,11 @@ public class Addr extends Word {
 
     @Override
     public Addr inc() {
-        return (Addr) super.inc();
+        return new Addr(value + 1);
     }
 
     @Override
     public Addr dec() {
-        return (Addr) super.dec();
+        return new Addr(value - 1);
     }
 }
