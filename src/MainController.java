@@ -2,9 +2,7 @@ import instruction.instuctions.INC;
 import instruction.primitives.RegAddr;
 import instruction.primitives.RegMode;
 import javafx.scene.image.WritableImage;
-import javafx.scene.paint.Color;
 import memory.MemoryModel;
-import memory.primitives.Addr;
 import memory.primitives.MemSize;
 import memory.primitives.Word;
 import tornadofx.Controller;
@@ -15,8 +13,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
-
-import static memory.primitives.Word.ZERO;
 
 /**
  * Here is the start-up code and all the __data__.

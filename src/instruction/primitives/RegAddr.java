@@ -17,6 +17,7 @@ public enum RegAddr {
     public Word fetch(MemoryModel memory) {
         return memory.registers.fetch(this.address);
     }
+
     public void load(MemoryModel memory, Word value) {
         memory.registers.load(this.address, value);
     }

@@ -10,11 +10,14 @@ public class BusAddr {
     private final int address; //Addresses on Bus are bigger then Word!
 
     public BusAddr(int address) {
-            this.address = address;
-        }
+        this.address = address;
+    }
 
-    public Word fetch(MemoryModel memory) { return memory.bus.fetch(this.address); }
+    public Word fetch(MemoryModel memory) {
+        return memory.bus.fetch(this.address);
+    }
+
     public void load(MemoryModel memory, Word value) {
-            memory.bus.load(this.address, value);
-        }
+        memory.bus.load(this.address, value);
+    }
 }

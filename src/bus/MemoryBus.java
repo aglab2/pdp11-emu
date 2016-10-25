@@ -4,7 +4,8 @@ import memory.MemoryStorage;
 import memory.primitives.Addr;
 import memory.primitives.Word;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by aglab2 on 10/25/16.
@@ -16,23 +17,23 @@ class MemoryRegion {
     int start;
     MemoryStorage storage;
 
-    public MemoryRegion(int start, MemoryStorage storage) {
+    MemoryRegion(int start, MemoryStorage storage) {
         this.start = start;
         this.storage = storage;
     }
 }
 
 public class MemoryBus {
-    Map<Integer, MemoryRegion> regions; //start -> region
+    private Map<Integer, MemoryRegion> regions; //start -> region
 
     public MemoryBus() {
-        this.regions = new HashMap<Integer, MemoryRegion>();
+        this.regions = new HashMap();
     }
 
     public void addRegion(int start, MemoryStorage storage) {
         int size = storage.size.value;
         MemoryRegion region = new MemoryRegion(start, storage);
-        for (int offset = start; offset < start + size; offset++){
+        for (int offset = start; offset < start + size; offset++) {
             regions.put(offset, region);
         }
     }
