@@ -6,7 +6,7 @@ import memory.primitives.Word;
  * Created by voddan on 12/10/16.
  */
 
-public class InstructionDiapason {
+public class InstructionRange {
     public final Word start;
     public final Word endInclusive;
 
@@ -18,7 +18,7 @@ public class InstructionDiapason {
                 '}';
     }
 
-    public InstructionDiapason(Word start, Word endInclusive) {
+    public InstructionRange(Word start, Word endInclusive) {
         assert start.value <= endInclusive.value;
         this.start = start;
         this.endInclusive = endInclusive;
@@ -28,7 +28,7 @@ public class InstructionDiapason {
      * @param code
      * @param expSize - size of the diapason
      */
-    public InstructionDiapason(Word code, int expSize) {
+    public InstructionRange(Word code, int expSize) {
         assert 0 <= expSize && expSize <= 16;
         int mask = 0xFFFF << expSize;
         this.start = new Word(code.value & mask);
