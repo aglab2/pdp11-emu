@@ -1,6 +1,5 @@
 package bus;
 
-import instruction.primitives.GenAddr;
 import memory.MemoryStorage;
 import memory.primitives.Addr;
 import memory.primitives.Word;

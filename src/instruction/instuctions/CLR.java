@@ -2,7 +2,6 @@ package instruction.instuctions;
 
 import bus.BusAddr;
 import instruction.SingleOperandInstruction;
-import instruction.primitives.GenAddr;
 import instruction.primitives.RegAddr;
 import instruction.primitives.RegMode;
 import memory.MemoryModel;
