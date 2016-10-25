@@ -1,3 +1,6 @@
+import instruction.instuctions.INC;
+import instruction.primitives.RegAddr;
+import instruction.primitives.RegMode;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import memory.MemoryModel;
@@ -12,6 +15,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
+
+import static memory.primitives.Word.ZERO;
 
 /**
  * Here is the start-up code and all the __data__.
@@ -34,6 +39,10 @@ public class MainController extends Controller {
         //Show off loading from data bus
         for (int i = 0; i < 1024 * 8; i++)
             this.memoryModel.bus.load(memoryModel.vramOffset + i, new Word((int) (Math.random() * 65535)));
+
+        INC op = new INC(RegMode.Index, RegAddr.R0, Word.ZERO);
+        op.apply(memoryModel);
+        System.out.println("yeah");
     }
 
     public void pauseButtonHandler() {

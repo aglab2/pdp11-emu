@@ -1,5 +1,6 @@
 package instruction.instuctions;
 
+import bus.BusAddr;
 import instruction.SingleOperandInstruction;
 import instruction.primitives.GenAddr;
 import instruction.primitives.RegAddr;
@@ -17,7 +18,7 @@ public class INC extends SingleOperandInstruction {
 
     @Override
     public void apply(MemoryModel memory) {
-        GenAddr dst = dstMode.apply(memory, dstAddr, nextWord);
+        BusAddr dst = dstMode.apply(memory, dstAddr, nextWord);
         dst.load(memory, dst.fetch(memory).inc());
     }
 }
