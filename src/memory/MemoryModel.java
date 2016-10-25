@@ -15,6 +15,10 @@ public class MemoryModel {
     public static final Addr STACK_POINTER_INDEX = new Addr(6);
     public static final Addr PROGRAM_COUNTER_INDEX = new Addr(7);
 
+    public final int ramOffset;
+    public final int vramOffset;
+    public final int romOffset;
+    public final int regOffset;
 
     public final ReadWriteMemory ram;
     public final ReadOnlyMemory rom;
@@ -39,20 +43,24 @@ public class MemoryModel {
             throw new IOException("A rom file must contain shorts (2n bytes)");
         }
 
-        int offset = 0;
 
-        System.out.printf("RAM  Start: 0x%08X\n", 2*offset);
-        this.bus.addRegion(offset, (MemoryStorage) this.ram);
-        offset += ((MemoryStorage) this.ram).size.value;
-        System.out.printf("VRAM Start: 0x%08X\n", 2*offset);
+        this.ramOffset = 0;
+        this.bus.addRegion(ramOffset, (MemoryStorage) this.ram);
 
-        this.bus.addRegion(offset, this.vram);
-        offset += this.vram.size.value;
-        System.out.printf("ROM : 0x%08X\n", 2*offset);
+        this.vramOffset = this.ramOffset + ((MemoryStorage) this.ram).size.value;
+        this.bus.addRegion(vramOffset, this.vram);
 
-        this.bus.addRegion(offset, (MemoryStorage) this.rom);
-        offset += this.rom.size.value;
-        this.bus.addRegion(0xFFFF, (MemoryStorage) this.registers);
+        this.romOffset = this.vramOffset + this.vram.size.value;
+        this.bus.addRegion(romOffset, (MemoryStorage) this.rom);
+
+        this.regOffset = 0x8000;
+        this.bus.addRegion(regOffset, (MemoryStorage) this.registers);
+
+
+        System.out.printf("RAM : 0x%08X\n", ramOffset);
+        System.out.printf("VRAM: 0x%08X\n", vramOffset);
+        System.out.printf("ROM : 0x%08X\n", romOffset);
+        System.out.printf("REG : 0x%08X\n", regOffset);
     }
 
 }
