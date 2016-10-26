@@ -76,24 +76,31 @@ public class MainController extends Controller {
     }
 
     public void resetButtonHandler() {
-        int romOffset = memoryModel.romOffset + 0x1000; //Start of zram picture
-        int vramOffset = 0;
+        //R0 - romOffset
+        //R1 - vramOffset
+        //R2 - curCnt(Word)
+        //R3 - curWord
+        //R4 -
+        //R5 -
 
-        Word curCntWord = memoryModel.bus.fetch(romOffset);
-        romOffset += 2;
-        while(curCntWord.value != 0) {
-            int curCnt = curCntWord.value;
-            Word curWord = memoryModel.bus.fetch(romOffset);
-            romOffset += 2;
-            for (int i = 0; i < curCnt; i++, vramOffset += 2) {
-                this.memoryModel.bus.load(memoryModel.vramOffset + vramOffset, curWord);
-            }
-            curCntWord = memoryModel.bus.fetch(romOffset);
-            romOffset += 2;
-        }
-        System.out.print(vramOffset);
+        int romOffset = memoryModel.romOffset + 0x1000; //Start of zram picture             //
+        int vramOffset = memoryModel.vramOffset;                                                                 //
+
+        Word curCntWord = memoryModel.bus.fetch(romOffset);                                 //
+        romOffset += 2;                                                                     //
+        while(curCntWord.value != 0) {                                                      //
+            int curCnt = curCntWord.value;                                                  //
+            Word curWord = memoryModel.bus.fetch(romOffset);                                //
+            romOffset += 2;                                                                 //
+            for (int i = 0; i < curCnt; i++, vramOffset += 2) {                             //
+                this.memoryModel.bus.load(vramOffset, curWord);    //
+            }                                                                               //
+            curCntWord = memoryModel.bus.fetch(romOffset);                                  //
+            romOffset += 2;                                                                 //
+        }                                                                                   //
     }
 
     public void stepButtonHandler() {
+        //Here should be rom, but ehh
     }
 }
