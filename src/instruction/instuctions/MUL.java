@@ -15,13 +15,13 @@ import memory.primitives.Word;
 /* TODO: test arithmetic */
 public class MUL extends RegisterMemoryInstruction {
 
-    public MUL(RegAddr reg, RegMode srcMode, RegAddr srcAddr, @Nullable Word nextWord) {
-        super(new Word(0b0_111000_000_0000000), reg, srcMode, srcAddr, nextWord);
+    public MUL(RegAddr reg, RegMode srcMode, RegAddr srcAddr, @Nullable Word index) {
+        super(new Word(0b0_111000_000_0000000), reg, srcMode, srcAddr, index);
     }
 
     @Override
     public void apply(MemoryModel memory) {
-        BusAddr src = sodMode.apply(memory, sodAddr, nextWord);
+        BusAddr src = sodMode.apply(memory, sodAddr, index);
         int result = memory.registers.fetch(reg.address).value * src.fetch(memory).value;
 
         memory.registers.load(reg.address, new Word(result & 0xFFFF));

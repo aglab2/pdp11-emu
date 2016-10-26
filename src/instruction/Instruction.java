@@ -10,19 +10,16 @@ import memory.primitives.Word;
  */
 public abstract class Instruction {
     public final InstructionRange diapason;
-    public final
-    @Nullable
-    Word nextWord;
 
-    public Instruction(Word code, int bitSize, @Nullable Word nextWord) {
+    public Instruction(Word code, int bitSize) {
         this.diapason = new InstructionRange(code, 16 - bitSize);
-        this.nextWord = nextWord;
     }
 
     public abstract Word getCode();
 
     public abstract void apply(MemoryModel memory);
 
-    public abstract boolean needsNextWord();
+    /** returns the number {0, 1, 2} of words it needs as indexes */
+    public abstract int indexСapacity();
 }
 

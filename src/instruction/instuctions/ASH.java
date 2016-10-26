@@ -14,13 +14,13 @@ import memory.primitives.Word;
 /* TODO: test arithmetic */
 public class ASH extends RegisterMemoryInstruction {
 
-    public ASH(RegAddr reg, RegMode srcMode, RegAddr srcAddr, @Nullable Word nextWord) {
-        super(new Word(0b0_111010_000_0000000), reg, srcMode, srcAddr, nextWord);
+    public ASH(RegAddr reg, RegMode srcMode, RegAddr srcAddr, @Nullable Word index) {
+        super(new Word(0b0_111010_000_0000000), reg, srcMode, srcAddr, index);
     }
 
     @Override
     public void apply(MemoryModel memory) {
-        BusAddr src = sodMode.apply(memory, sodAddr, nextWord);
+        BusAddr src = sodMode.apply(memory, sodAddr, index);
         int num = src.fetch(memory).value;
         int data = memory.registers.fetch(reg.address).value;
 

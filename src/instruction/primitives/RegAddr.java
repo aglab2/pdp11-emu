@@ -16,7 +16,7 @@ public enum RegAddr {
 
     /** has no other register after itself */
     public final boolean isLast() {
-        return value != RegAddr.values().length - 1;
+        return value == RegAddr.values().length - 1;
     }
 
 //    public Word fetch(MemoryModel memory) {

@@ -10,27 +10,37 @@ public abstract class DoubleOperandInstruction extends Instruction {
     public final RegAddr srcAddr;
     public final RegMode dstMode;
     public final RegAddr dstAddr;
+    public final @Nullable Word srcIndex;
+    public final @Nullable Word dstIndex;
 
+
+    /**
+     * @param index1    the first `Word` after the instruction
+     * @param index2    the second `Word` after the instruction
+     */
     public DoubleOperandInstruction(Word code,
                                     RegMode srcMode, RegAddr srcAddr,
                                     RegMode dstMode, RegAddr dstAddr,
-                                    @Nullable Word nextWord) {
-        super(code, 4, nextWord);
+                                    @Nullable Word index1, @Nullable Word index2) {
+        super(code, 4);
         this.srcMode = srcMode;
         this.srcAddr = srcAddr;
         this.dstMode = dstMode;
         this.dstAddr = dstAddr;
+
+        this.srcIndex = index1;
+        this.dstIndex = (srcMode.needsIndex()) ? index2 : index1;
     }
 
     @Override
     public Word getCode() {
-        return new Word(diapason.start.value +
-                dstMode.value << 9 + dstAddr.value << 6 +
-                dstMode.value << 3 + dstAddr.value);
+        return new Word(diapason.start.value |
+                srcMode.value << 9 | srcAddr.value << 6 |
+                dstMode.value << 3 | dstAddr.value);
     }
 
     @Override
-    public boolean needsNextWord() {
-        return srcMode.needsNextWord() || dstMode.needsNextWord();
+    public int indexСapacity() {
+        return (srcMode.needsIndex() ? 1 : 0) + (dstMode.needsIndex() ? 1 : 0);
     }
 }

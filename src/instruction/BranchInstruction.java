@@ -7,17 +7,17 @@ public abstract class BranchInstruction extends Instruction {
     public final Addr offset;
 
     public BranchInstruction(Word code, Addr offset) {
-        super(code, 8, null);
+        super(code, 8);
         this.offset = offset;
     }
 
     @Override
     public Word getCode() {
-        return new Word(diapason.start.value + offset.value);
+        return new Word(diapason.start.value | offset.value);
     }
 
     @Override
-    public boolean needsNextWord() {
-        return false;
+    public int indexСapacity() {
+        return 0;
     }
 }

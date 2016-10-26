@@ -13,14 +13,15 @@ import memory.primitives.Word;
  */
 public class CMP extends DoubleOperandInstruction {
 
-    public CMP(RegMode srcMode, RegAddr srcAddr, RegMode dstMode, RegAddr dstAddr, @Nullable Word nextWord) {
-        super(new Word(0b0_010_000000_000000), srcMode, srcAddr, dstMode, dstAddr, nextWord);
+    public CMP(RegMode srcMode, RegAddr srcAddr, RegMode dstMode, RegAddr dstAddr,
+               @Nullable Word index1, @Nullable Word index2){
+        super(new Word(0b0_010_000000_000000), srcMode, srcAddr, dstMode, dstAddr, index1, index2);
     }
 
     @Override
     public void apply(MemoryModel memory) {
-        BusAddr src = srcMode.apply(memory, srcAddr, nextWord);
-        BusAddr dst = dstMode.apply(memory, dstAddr, nextWord);
+        BusAddr src = srcMode.apply(memory, srcAddr, srcIndex);
+        BusAddr dst = dstMode.apply(memory, dstAddr, dstIndex);
         int srcValue = src.fetch(memory).value;
         int dstValue = dst.fetch(memory).value;
 

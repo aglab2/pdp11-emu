@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by voddan on 26/10/16.
  */
-public class InstructionsTest {
+public class InstructionApplyTest {
     MemoryModel memory;
 
     @Before

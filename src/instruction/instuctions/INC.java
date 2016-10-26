@@ -11,13 +11,13 @@ import memory.primitives.Word;
  * Created by voddan on 23/10/16.
  */
 public class INC extends SingleOperandInstruction {
-    public INC(RegMode dstMode, RegAddr dstIndex, Word nextWord) {
-        super(new Word(0b0_000_101_010_000000), dstMode, dstIndex, nextWord);
+    public INC(RegMode dstMode, RegAddr dstIndex, Word index) {
+        super(new Word(0b0_000_101_010_000000), dstMode, dstIndex, index);
     }
 
     @Override
     public void apply(MemoryModel memory) {
-        BusAddr dst = dstMode.apply(memory, dstAddr, nextWord);
+        BusAddr dst = dstMode.apply(memory, dstAddr, index);
         Word res = dst.fetch(memory).inc();
         dst.load(memory, res);
         memory.flags.setZN(res);

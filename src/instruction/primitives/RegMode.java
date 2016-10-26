@@ -84,7 +84,7 @@ public enum RegMode {
 
     public abstract BusAddr apply(MemoryModel memory, RegAddr regAddr, @Nullable Word nextWord);
 
-    public final boolean needsNextWord() {
+    public final boolean needsIndex() {
         return this == Index || this == DIndex;
     }
 }

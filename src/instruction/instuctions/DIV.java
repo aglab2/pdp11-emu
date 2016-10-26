@@ -14,8 +14,8 @@ import memory.primitives.Word;
 /* TODO: test arithmetic */
 public class DIV extends RegisterMemoryInstruction {
 
-    public DIV(RegAddr reg, RegMode srcMode, RegAddr srcAddr, @Nullable Word nextWord) {
-        super(new Word(0b0_111001_000_0000000), reg, srcMode, srcAddr, nextWord);
+    public DIV(RegAddr reg, RegMode srcMode, RegAddr srcAddr, @Nullable Word index) {
+        super(new Word(0b0_111001_000_0000000), reg, srcMode, srcAddr, index);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class DIV extends RegisterMemoryInstruction {
             num2 = 0;
 
 
-        BusAddr src = sodMode.apply(memory, sodAddr, nextWord);
+        BusAddr src = sodMode.apply(memory, sodAddr, index);
         int srcValue = src.fetch(memory).value;
         int regValue = num1 | num2 << 16;
 
