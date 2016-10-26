@@ -19,6 +19,10 @@ public enum RegAddr {
         return this == R7;
     }
 
+    static RegAddr parse(int v) {
+        return RegAddr.values()[v & 0b111];
+    }
+
 //    public Word fetch(MemoryModel memory) {
 //        return memory.registers.fetch(this.address);
 //    }
