@@ -16,7 +16,7 @@ public class BMI extends BranchInstruction {
 
     @Override
     public void apply(MemoryModel memory) {
-        if(memory.flags.N)
+        if (memory.flags.N)
             memory.setProgramCounter(new Addr(memory.getProgramCounter().value + offset.toShort()));
     }
 }

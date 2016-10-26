@@ -21,11 +21,11 @@ public class FlagsStorage extends RWMemory {
     @Override
     public Word fetch(Addr address) {
         int value = 0b0000_0000_000_00000;
-        if(T) value |= 1 << 4;
-        if(N) value |= 1 << 3;
-        if(Z) value |= 1 << 2;
-        if(V) value |= 1 << 1;
-        if(C) value |= 1;
+        if (T) value |= 1 << 4;
+        if (N) value |= 1 << 3;
+        if (Z) value |= 1 << 2;
+        if (V) value |= 1 << 1;
+        if (C) value |= 1;
         return new Word(value);
     }
 
@@ -42,7 +42,9 @@ public class FlagsStorage extends RWMemory {
         N = Z = V = C = false;
     }
 
-    /** N, Z, V, C may me 0 or 1 */
+    /**
+     * N, Z, V, C may me 0 or 1
+     */
     public void setArithm(int N, int Z, int V, int C) {
         this.N = (N == 1);
         this.Z = (Z == 1);

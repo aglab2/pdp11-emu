@@ -1,7 +1,5 @@
 package bus;
 
-import memory.Memory;
-import memory.MemoryStorage;
 import memory.RWMemory;
 import memory.primitives.Addr;
 import memory.primitives.Word;

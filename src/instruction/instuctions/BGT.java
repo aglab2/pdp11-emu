@@ -16,7 +16,7 @@ public class BGT extends BranchInstruction {
 
     @Override
     public void apply(MemoryModel memory) {
-        if(memory.flags.Z == (memory.flags.N ^ memory.flags.V))
+        if (memory.flags.Z == (memory.flags.N ^ memory.flags.V))
             memory.setProgramCounter(new Addr(memory.getProgramCounter().value + offset.toShort()));
     }
 }

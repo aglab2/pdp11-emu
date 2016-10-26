@@ -26,7 +26,7 @@ public class MUL extends RegisterMemoryInstruction {
 
         memory.registers.load(reg.address, new Word(result & 0xFFFF));
 
-        if(reg.ordinal() != RegAddr.values().length - 1)  // not the last register
+        if (reg.ordinal() != RegAddr.values().length - 1)  // not the last register
             memory.registers.load(reg.address.inc(), new Word(result & 0xFFFF0000));
 
         memory.flags.setZN(result);

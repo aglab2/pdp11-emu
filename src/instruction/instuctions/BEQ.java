@@ -16,7 +16,7 @@ public class BEQ extends BranchInstruction {
 
     @Override
     public void apply(MemoryModel memory) {
-        if(memory.flags.Z)
+        if (memory.flags.Z)
             memory.setProgramCounter(new Addr(memory.getProgramCounter().value + offset.toShort()));
     }
 }
