@@ -21,13 +21,7 @@ public class DIV extends RegisterMemoryInstruction {
     @Override
     public void apply(MemoryModel memory) {
         int num1 = memory.registers.fetch(reg.address).value;
-
-        int num2;
-        if (!reg.isLast())
-            num2 = memory.registers.fetch(reg.address.inc()).value;
-        else
-            num2 = 0;
-
+        int num2 = !reg.isLast() ? memory.registers.fetch(reg.address.inc()).value : 0;
 
         BusAddr src = sodMode.apply(memory, sodAddr, index);
         int srcValue = src.fetch(memory).value;
