@@ -42,7 +42,7 @@ public class MainController extends Controller {
             DataInputStream is = new DataInputStream(new FileInputStream(path.toString()));
 
             //Show off loading from data bus
-            for (int i = 0; i < 1024 * 8; i++)
+            for (int i = 0; i < 1024 * 16; i+=2)
                 this.memoryModel.bus.load(memoryModel.vramOffset + i, new Word(is.readShort()));
         }catch (IOException e) {
             System.out.print(e);
@@ -61,8 +61,8 @@ public class MainController extends Controller {
             int offset = 0;
             while(is.available() > 0) {
                 int curCnt = new Word(is.readByte(), is.readByte()).value;
-                Word curWord = new Word(is.readByte(), is.readByte()); //Big endian :)
-                for (int i = 0; i < curCnt; i++, offset++) {
+                Word curWord = new Word(is.readByte(), is.readByte());
+                for (int i = 0; i < curCnt; i++, offset += 2) {
                     this.memoryModel.bus.load(memoryModel.vramOffset + offset, curWord);
                 }
             }
@@ -76,8 +76,31 @@ public class MainController extends Controller {
     }
 
     public void resetButtonHandler() {
+        //R0 - romOffset
+        //R1 - vramOffset
+        //R2 - curCnt(Word)
+        //R3 - curWord
+        //R4 -
+        //R5 -
+
+        int romOffset = memoryModel.romOffset + 0x1000; //Start of zram picture             //
+        int vramOffset = memoryModel.vramOffset;                                                                 //
+
+        Word curCntWord = memoryModel.bus.fetch(romOffset);                                 //
+        romOffset += 2;                                                                     //
+        while(curCntWord.value != 0) {                                                      //
+            int curCnt = curCntWord.value;                                                  //
+            Word curWord = memoryModel.bus.fetch(romOffset);                                //
+            romOffset += 2;                                                                 //
+            for (int i = 0; i < curCnt; i++, vramOffset += 2) {                             //
+                this.memoryModel.bus.load(vramOffset, curWord);    //
+            }                                                                               //
+            curCntWord = memoryModel.bus.fetch(romOffset);                                  //
+            romOffset += 2;                                                                 //
+        }                                                                                   //
     }
 
     public void stepButtonHandler() {
+        //Here should be rom, but ehh
     }
 }
