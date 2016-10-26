@@ -56,4 +56,8 @@ public class Word {
     public short toShort() {
         return (short) ((value < 128) ? value : value - 256);
     }
+
+    public String fmtBinary() {
+        return String.format("%16s", Integer.toBinaryString(value)).replace(' ', '0');
+    }
 }
