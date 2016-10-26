@@ -11,6 +11,8 @@ import memory.primitives.Word;
 /**
  * Created by voddan on 23/10/16.
  */
+
+/* TODO: test arithmetic */
 public class MUL extends RegisterMemoryInstruction {
 
     public MUL(RegAddr reg, RegMode srcMode, RegAddr srcAddr, @Nullable Word nextWord) {
@@ -26,5 +28,9 @@ public class MUL extends RegisterMemoryInstruction {
 
         if(reg.ordinal() != RegAddr.values().length - 1)  // not the last register
             memory.registers.load(reg.address.inc(), new Word(result & 0xFFFF0000));
+
+        memory.flags.setZN(result);
+        memory.flags.V = false;
+        memory.flags.C = !(-(1 << 13) <= result && result < (1 << 13));
     }
 }

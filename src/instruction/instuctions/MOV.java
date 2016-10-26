@@ -21,6 +21,9 @@ public class MOV extends DoubleOperandInstruction {
     public void apply(MemoryModel memory) {
         BusAddr src = srcMode.apply(memory, srcAddr, nextWord);
         BusAddr dst = dstMode.apply(memory, dstAddr, nextWord);
-        dst.load(memory, src.fetch(memory));
+        Word res = src.fetch(memory);
+        dst.load(memory, res);
+        memory.flags.setZN(res);
+        memory.flags.V = false;
     }
 }

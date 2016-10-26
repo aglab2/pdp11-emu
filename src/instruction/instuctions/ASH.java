@@ -11,6 +11,7 @@ import memory.primitives.Word;
 /**
  * Created by voddan on 23/10/16.
  */
+/* TODO: test arithmetic */
 public class ASH extends RegisterMemoryInstruction {
 
     public ASH(RegAddr reg, RegMode srcMode, RegAddr srcAddr, @Nullable Word nextWord) {
@@ -23,9 +24,11 @@ public class ASH extends RegisterMemoryInstruction {
         int num = src.fetch(memory).value;
         int data = memory.registers.fetch(reg.address).value;
 
-        if(num >= 0)
-            memory.registers.load(reg.address, new Word(data << num));
-        else
-            memory.registers.load(reg.address, new Word(data >> -num));
+        int res = (num >= 0) ? data << num : data >> -num;
+
+        memory.flags.setZN(res);
+        memory.flags.V = (res * memory.registers.fetch(reg.address).value < 0);
+
+        memory.registers.load(reg.address, new Word(res));
     }
 }

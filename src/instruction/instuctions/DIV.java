@@ -11,6 +11,7 @@ import memory.primitives.Word;
 /**
  * Created by voddan on 23/10/16.
  */
+/* TODO: test arithmetic */
 public class DIV extends RegisterMemoryInstruction {
 
     public DIV(RegAddr reg, RegMode srcMode, RegAddr srcAddr, @Nullable Word nextWord) {
@@ -29,11 +30,18 @@ public class DIV extends RegisterMemoryInstruction {
 
 
         BusAddr src = sodMode.apply(memory, sodAddr, nextWord);
-        int div = (num1 | num2 << 16) / src.fetch(memory).value;
-        int mod = (num1 | num2 << 16) % src.fetch(memory).value;
+        int srcValue = src.fetch(memory).value;
+        int regValue = num1 | num2 << 16;
+
+        int div = regValue / srcValue;
+        int mod = regValue % srcValue;
 
         memory.registers.load(reg.address, new Word(div));
         if(reg.ordinal() != RegAddr.values().length - 1) // not the last register
             memory.registers.load(reg.address.inc(), new Word(mod));
+
+        memory.flags.setZN(div);
+        memory.flags.V = (srcValue == 0 || regValue > Math.abs(srcValue));
+        memory.flags.C = (srcValue == 0);
     }
 }

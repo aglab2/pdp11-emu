@@ -21,6 +21,15 @@ public class ADD extends DoubleOperandInstruction {
     public void apply(MemoryModel memory) {
         BusAddr src = srcMode.apply(memory, srcAddr, nextWord);
         BusAddr dst = dstMode.apply(memory, dstAddr, nextWord);
-        dst.load(memory, new Word(src.fetch(memory).value + dst.fetch(memory).value));
+
+        int srcValue = src.fetch(memory).value;
+        int dstValue = dst.fetch(memory).value;
+
+        int res = srcValue + dstValue;
+        memory.flags.setZN(res);
+        memory.flags.V = srcValue * dstValue > 0 && dstValue * res < 0;
+        memory.flags.C = (res >> 16 != 0);
+
+        dst.load(memory, new Word(res));
     }
 }

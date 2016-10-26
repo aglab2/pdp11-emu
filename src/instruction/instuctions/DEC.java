@@ -18,6 +18,9 @@ public class DEC extends SingleOperandInstruction {
     @Override
     public void apply(MemoryModel memory) {
         BusAddr dst = dstMode.apply(memory, dstAddr, nextWord);
-        dst.load(memory, dst.fetch(memory).dec());
+        Word res = dst.fetch(memory).dec();
+        dst.load(memory, res);
+        memory.flags.setZN(res);
+        memory.flags.V = (dst.value == 0100000);
     }
 }

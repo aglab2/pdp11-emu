@@ -38,6 +38,18 @@ public class FlagsStorage extends RWMemory {
         N = (result < 0);
     }
 
+    public void clearArithm() {
+        N = Z = V = C = false;
+    }
+
+    /** N, Z, V, C may me 0 or 1 */
+    public void setArithm(int N, int Z, int V, int C) {
+        this.N = (N == 1);
+        this.Z = (Z == 1);
+        this.V = (V == 1);
+        this.C = (C == 1);
+    }
+
     @Override
     public void load(Addr address, Word value) {
         throw new UnsupportedOperationException();

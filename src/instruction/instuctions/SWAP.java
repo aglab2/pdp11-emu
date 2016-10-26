@@ -19,6 +19,9 @@ public class SWAP extends SingleOperandInstruction {
     public void apply(MemoryModel memory) {
         BusAddr dst = dstMode.apply(memory, dstAddr, nextWord);
         Word word = dst.fetch(memory);
-        dst.load(memory, new Word(word.highByte(), word.lowByte()));
+        Word res = new Word(word.highByte(), word.lowByte());
+        dst.load(memory, res);
+        memory.flags.clearArithm();
+        memory.flags.setZN(res);
     }
 }
