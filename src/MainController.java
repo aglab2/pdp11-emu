@@ -49,6 +49,26 @@ public class MainController extends Controller {
     }
 
     public void pauseButtonHandler() {
+        try {
+            URL vram = MainController.class.getClassLoader().getResource("dragon.zram");
+            Path path = new File(vram.toURI()).toPath();
+            DataInputStream is = new DataInputStream(new FileInputStream(path.toString()));
+
+            int offset = 0;
+            while(is.available() > 0) {
+                int curCnt = new Word(is.readByte(), is.readByte()).value;
+                Word curWord = new Word(is.readByte(), is.readByte()); //Big endian :)
+                for (int i = 0; i < curCnt; i++, offset++) {
+                    this.memoryModel.bus.load(memoryModel.vramOffset + offset, curWord);
+                }
+            }
+            System.out.print(offset);
+        }catch (IOException e) {
+            System.out.print(e);
+        }
+        catch (URISyntaxException e) {
+            System.out.print(e);
+        }
     }
 
     public void resetButtonHandler() {
