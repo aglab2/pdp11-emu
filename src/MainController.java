@@ -1,6 +1,3 @@
-import instruction.instuctions.INC;
-import instruction.primitives.RegAddr;
-import instruction.primitives.RegMode;
 import javafx.scene.image.WritableImage;
 import memory.MemoryModel;
 import memory.MemoryStorage;
@@ -9,6 +6,7 @@ import memory.primitives.Word;
 import tornadofx.Controller;
 import videomanager.VideoManager;
 
+import java.io.*;
 import javax.xml.bind.ValidationException;
 import java.io.File;
 import java.io.IOException;
@@ -38,16 +36,43 @@ public class MainController extends Controller {
     }
 
     public void startButtonHandler() {
-        //Show off loading from data bus
-        for (int i = 0; i < 1024 * 8; i++)
-            this.memoryModel.bus.load(memoryModel.vramOffset + i, new Word((int) (Math.random() * 65535)));
+        try {
+            URL vram = MainController.class.getClassLoader().getResource("dragon.vram");
+            Path path = new File(vram.toURI()).toPath();
+            DataInputStream is = new DataInputStream(new FileInputStream(path.toString()));
 
-        INC op = new INC(RegMode.Index, RegAddr.R0, Word.ZERO);
-        op.apply(memoryModel);
-        System.out.println("yeah");
+            //Show off loading from data bus
+            for (int i = 0; i < 1024 * 8; i++)
+                this.memoryModel.bus.load(memoryModel.vramOffset + i, new Word(is.readShort()));
+        }catch (IOException e) {
+            System.out.print(e);
+        }
+        catch (URISyntaxException e) {
+            System.out.print(e);
+        }
     }
 
     public void pauseButtonHandler() {
+        try {
+            URL vram = MainController.class.getClassLoader().getResource("dragon.zram");
+            Path path = new File(vram.toURI()).toPath();
+            DataInputStream is = new DataInputStream(new FileInputStream(path.toString()));
+
+            int offset = 0;
+            while(is.available() > 0) {
+                int curCnt = new Word(is.readByte(), is.readByte()).value;
+                Word curWord = new Word(is.readByte(), is.readByte()); //Big endian :)
+                for (int i = 0; i < curCnt; i++, offset++) {
+                    this.memoryModel.bus.load(memoryModel.vramOffset + offset, curWord);
+                }
+            }
+            System.out.print(offset);
+        }catch (IOException e) {
+            System.out.print(e);
+        }
+        catch (URISyntaxException e) {
+            System.out.print(e);
+        }
     }
 
     public void resetButtonHandler() {
