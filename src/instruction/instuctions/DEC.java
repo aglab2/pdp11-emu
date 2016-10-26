@@ -10,15 +10,17 @@ import memory.primitives.Word;
 /**
  * Created by voddan on 23/10/16.
  */
-public class CLR extends SingleOperandInstruction {
-    public CLR(RegMode dstMode, RegAddr dstIndex, Word nextWord) {
-        super(new Word(0b0_000_101_000_000000), dstMode, dstIndex, nextWord);
+public class DEC extends SingleOperandInstruction {
+    public DEC(RegMode dstMode, RegAddr dstIndex, Word nextWord) {
+        super(new Word(0b0_000_101_011_000000), dstMode, dstIndex, nextWord);
     }
 
     @Override
     public void apply(MemoryModel memory) {
         BusAddr dst = dstMode.apply(memory, dstAddr, nextWord);
-        dst.load(memory, Word.ZERO);
-        memory.flags.setArithm(0, 1, 0, 0);
+        Word res = dst.fetch(memory).dec();
+        dst.load(memory, res);
+        memory.flags.setZN(res);
+        memory.flags.V = (dst.value == 0100000);
     }
 }

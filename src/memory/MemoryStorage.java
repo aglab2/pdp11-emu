@@ -9,7 +9,7 @@ import memory.primitives.Word;
 import javax.xml.bind.ValidationException;
 import java.util.Arrays;
 
-public class MemoryStorage extends ReadWriteMemory {
+public class MemoryStorage extends RWMemory {
     public final ObservableList<Word> dataObservableList;
 
     public MemoryStorage(MemSize size) {

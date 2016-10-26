@@ -3,12 +3,19 @@ import instruction.primitives.RegAddr;
 import instruction.primitives.RegMode;
 import javafx.scene.image.WritableImage;
 import memory.MemoryModel;
+import memory.MemoryStorage;
 import memory.primitives.MemSize;
 import memory.primitives.Word;
 import tornadofx.Controller;
 import videomanager.VideoManager;
 
+<<<<<<< HEAD
 import java.io.*;
+=======
+import javax.xml.bind.ValidationException;
+import java.io.File;
+import java.io.IOException;
+>>>>>>> 5e75044458c6abafcc6c26badedc708d2f07a35c
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -24,10 +31,13 @@ public class MainController extends Controller {
     public final WritableImage screen = new WritableImage(/*width*/ 256, /*height*/ 256);
     public final VideoManager videoManager;
 
-    public MainController() throws IOException, URISyntaxException {
+    public MainController() throws IOException, URISyntaxException, ValidationException {
         URL defaultRom = MainController.class.getClassLoader().getResource("rom_default.hex");
         Path path = new File(defaultRom.toURI()).toPath();
-        this.memoryModel = new MemoryModel(new MemSize(1024 * 8), new MemSize(1024 * 8), path);
+        MemoryStorage rom = new MemoryStorage(Files.readAllBytes(path));
+
+
+        this.memoryModel = new MemoryModel(new MemSize(1024 * 8), new MemSize(1024 * 8), rom);
         this.videoManager = new VideoManager(screen, memoryModel.vram.dataObservableList);
     }
 

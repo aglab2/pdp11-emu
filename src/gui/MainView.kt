@@ -1,13 +1,11 @@
 package gui
 
 import MainController
-import javafx.geometry.Insets
-import javafx.geometry.Pos
-import javafx.scene.image.WritableImage
-import javafx.scene.paint.Color
-import memory.MemoryModel
-import memory.MemoryStorage
-import memory.primitives.Word
+import javafx.geometry.*
+import javafx.scene.image.*
+import javafx.scene.paint.*
+import memory.*
+import memory.primitives.*
 import tornadofx.*
 
 

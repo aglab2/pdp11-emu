@@ -4,11 +4,7 @@ package memory;
 import bus.MemoryBus;
 import memory.primitives.Addr;
 import memory.primitives.MemSize;
-
-import javax.xml.bind.ValidationException;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import memory.primitives.Word;
 
 public class MemoryModel {
     public static final MemSize NUMBER_OF_REGISTERS = new MemSize(8);
@@ -18,44 +14,63 @@ public class MemoryModel {
     public final int ramOffset;
     public final int vramOffset;
     public final int romOffset;
-    public final int regOffset;
+    public final int regOffset = 0x8000;
+    public final int flagsOffset = 0xFFFF;
 
     /* TODO: Should this be private as we can access to them from bus? */
-    public final ReadWriteMemory ram;
-    public final ReadOnlyMemory rom;
-    public final ReadWriteMemory registers = new MemoryStorage(NUMBER_OF_REGISTERS);
-
-    /* TODO: same addresation ar `ram` */
+    public final RWMemory ram;
+    public final Memory rom;
     public final MemoryStorage vram;
+    public final RWMemory registers = new MemoryStorage(NUMBER_OF_REGISTERS);
+    public final FlagsStorage flags = new FlagsStorage();
 
     public final MemoryBus bus;
 
-    public MemoryModel(MemSize ramSize, MemSize vramSize, Path romFile) throws IOException {
+    public MemoryModel(MemSize ramSize, MemSize vramSize, MemoryStorage rom) {
         this.ram = new MemoryStorage(ramSize);
         this.vram = new MemoryStorage(vramSize);
+        this.rom = rom;
         this.bus = new MemoryBus();
 
-        // must be in constructor because we need to know the rom size before initialising it
-        byte[] bytes = Files.readAllBytes(romFile);
-
-        try {
-            this.rom = new MemoryStorage(bytes);
-        } catch (ValidationException e) {
-            throw new IOException("A rom file must contain shorts (2n bytes)");
-        }
-
-
         this.ramOffset = 0;
-        this.bus.addRegion(ramOffset, (MemoryStorage) this.ram);
+        this.bus.addRegion(ramOffset, this.ram);
 
-        this.vramOffset = this.ramOffset + ((MemoryStorage) this.ram).size.value;
+        this.vramOffset = this.ramOffset + this.ram.size.value;
         this.bus.addRegion(vramOffset, this.vram);
 
         this.romOffset = this.vramOffset + this.vram.size.value;
-        this.bus.addRegion(romOffset, (MemoryStorage) this.rom);
+        this.bus.addRegion(romOffset, (MemoryStorage) this.rom);  /*TODO: security breach*/
 
-        this.regOffset = 0x8000;
-        this.bus.addRegion(regOffset, (MemoryStorage) this.registers);
+        this.bus.addRegion(regOffset, this.registers);
+        this.bus.addRegion(flagsOffset, this.flags);
     }
 
+    public Addr getStackPointer() {
+        return registers.fetch(MemoryModel.STACK_POINTER_INDEX).toAddr();
+    }
+
+    public void setStackPointer(Addr value) {
+        registers.load(MemoryModel.STACK_POINTER_INDEX, value);
+    }
+
+
+    public Addr getProgramCounter() {
+        return registers.fetch(MemoryModel.PROGRAM_COUNTER_INDEX).toAddr();
+    }
+
+    public void setProgramCounter(Addr value) {
+        registers.load(MemoryModel.PROGRAM_COUNTER_INDEX, value);
+    }
+
+
+    public void stackPut(Word value) {
+        ram.load(getStackPointer(), value);
+        setStackPointer(getStackPointer().inc());
+    }
+
+    public Word stackPop() {
+        Word value = ram.fetch(getStackPointer());
+        setStackPointer(getStackPointer().dec());
+        return value;
+    }
 }
