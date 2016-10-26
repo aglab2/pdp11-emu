@@ -61,7 +61,7 @@ public class MainController extends Controller {
             int offset = 0;
             while(is.available() > 0) {
                 int curCnt = new Word(is.readByte(), is.readByte()).value;
-                Word curWord = new Word(is.readByte(), is.readByte()); //Big endian :)
+                Word curWord = new Word(is.readByte(), is.readByte());
                 for (int i = 0; i < curCnt; i++, offset += 2) {
                     this.memoryModel.bus.load(memoryModel.vramOffset + offset, curWord);
                 }
@@ -79,15 +79,17 @@ public class MainController extends Controller {
         int romOffset = memoryModel.romOffset + 0x1000; //Start of zram picture
         int vramOffset = 0;
 
-        Word curWord = memoryModel.bus.fetch(romOffset);
-        while(curWord != Word.ZERO) {
-            System.out.print(curWord);
-            break;
-            /*int curCnt = new Word(is.readByte(), is.readByte()).value;
-            Word curWord = new Word(is.readByte(), is.readByte()); //Big endian :)
-            for (int i = 0; i < curCnt; i++, vramOffset++) {
+        Word curCntWord = memoryModel.bus.fetch(romOffset);
+        romOffset += 2;
+        while(curCntWord.value != 0) {
+            int curCnt = curCntWord.value;
+            Word curWord = memoryModel.bus.fetch(romOffset);
+            romOffset += 2;
+            for (int i = 0; i < curCnt; i++, vramOffset += 2) {
                 this.memoryModel.bus.load(memoryModel.vramOffset + vramOffset, curWord);
-            }*/
+            }
+            curCntWord = memoryModel.bus.fetch(romOffset);
+            romOffset += 2;
         }
         System.out.print(vramOffset);
     }
