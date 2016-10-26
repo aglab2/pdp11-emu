@@ -10,7 +10,14 @@ import memory.primitives.Addr;
 public enum RegAddr {
     R0, R1, R2, R3, R4, R5, R6, R7;
 
-    public final Addr address = new Addr(ordinal());
+    public final int value = ordinal();
+
+    public final Addr address = new Addr(value);
+
+    /** has no other register after itself */
+    public final boolean isLast() {
+        return value != RegAddr.values().length - 1;
+    }
 
 //    public Word fetch(MemoryModel memory) {
 //        return memory.registers.fetch(this.address);

@@ -23,7 +23,7 @@ public class DIV extends RegisterMemoryInstruction {
         int num1 = memory.registers.fetch(reg.address).value;
 
         int num2;
-        if (reg.ordinal() != RegAddr.values().length - 1)  // not the last register
+        if (!reg.isLast())
             num2 = memory.registers.fetch(reg.address.inc()).value;
         else
             num2 = 0;
@@ -37,7 +37,7 @@ public class DIV extends RegisterMemoryInstruction {
         int mod = regValue % srcValue;
 
         memory.registers.load(reg.address, new Word(div));
-        if (reg.ordinal() != RegAddr.values().length - 1) // not the last register
+        if (!reg.isLast())
             memory.registers.load(reg.address.inc(), new Word(mod));
 
         memory.flags.setZN(div);

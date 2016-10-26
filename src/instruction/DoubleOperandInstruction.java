@@ -25,8 +25,8 @@ public abstract class DoubleOperandInstruction extends Instruction {
     @Override
     public Word getCode() {
         return new Word(diapason.start.value +
-                dstMode.value << 9 + dstAddr.ordinal() << 6 +
-                dstMode.value << 3 + dstAddr.ordinal());
+                dstMode.value << 9 + dstAddr.value << 6 +
+                dstMode.value << 3 + dstAddr.value);
     }
 
     @Override
