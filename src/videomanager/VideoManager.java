@@ -24,7 +24,7 @@ import memory.primitives.Word;
 
 
 public class VideoManager {
-    static Color[] colors = {Color.BLACK, Color.LIGHTGRAY, Color.DARKGRAY, Color.BLACK};
+    static Color[] colors = {Color.BLACK, Color.GRAY, Color.RED, Color.WHITE};
 
     private int width;
     private int height;
@@ -33,15 +33,15 @@ public class VideoManager {
 
     void drawPixel(int pixelIndex, int colorCode) {
         int x = pixelIndex % width;
-        int y = pixelIndex / width;
+        int y = Math.floorDiv(pixelIndex, width);
         pixelWriter.setColor(x, y, colors[colorCode]);
     }
 
     void drawByte(int index, byte colorByte) { //TODO: Make this function not require 2BPP
-        drawPixel(index * 4 + 0, (colorByte & 0b1100_0000) >> 6);
-        drawPixel(index * 4 + 1, (colorByte & 0b0011_0000) >> 4);
-        drawPixel(index * 4 + 2, (colorByte & 0b0000_1100) >> 2);
-        drawPixel(index * 4 + 3, (colorByte & 0b0000_0011) >> 0);
+        drawPixel(index * 4 + 0, (colorByte & 0b11000000) >> 6);
+        drawPixel(index * 4 + 1, (colorByte & 0b00110000) >> 4);
+        drawPixel(index * 4 + 2, (colorByte & 0b00001100) >> 2);
+        drawPixel(index * 4 + 3, (colorByte & 0b00000011) >> 0);
     }
 
     private ListChangeListener<Word> listener = new ListChangeListener<Word>() {
@@ -53,8 +53,8 @@ public class VideoManager {
                     for (int addr = c.getFrom(); addr < c.getTo(); addr++) {
                         Word colorWord = list.get(addr);
 
-                        drawByte(2 * addr + 0, colorWord.highByte());
-                        drawByte(2 * addr + 1, colorWord.lowByte());
+                        drawByte(2 * addr + 0, colorWord.lowByte());
+                        drawByte(2 * addr + 1, colorWord.highByte());
                     }
                 }
             }

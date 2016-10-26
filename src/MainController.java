@@ -8,10 +8,10 @@ import memory.primitives.Word;
 import tornadofx.Controller;
 import videomanager.VideoManager;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
@@ -32,13 +32,20 @@ public class MainController extends Controller {
     }
 
     public void startButtonHandler() {
-        //Show off loading from data bus
-        for (int i = 0; i < 1024 * 8; i++)
-            this.memoryModel.bus.load(memoryModel.vramOffset + i, new Word((int) (Math.random() * 65535)));
+        try {
+            URL vram = MainController.class.getClassLoader().getResource("dragon.vram");
+            Path path = new File(vram.toURI()).toPath();
+            DataInputStream is = new DataInputStream(new FileInputStream(path.toString()));
 
-        INC op = new INC(RegMode.Index, RegAddr.R0, Word.ZERO);
-        op.apply(memoryModel);
-        System.out.println("yeah");
+            //Show off loading from data bus
+            for (int i = 0; i < 1024 * 8; i++)
+                this.memoryModel.bus.load(memoryModel.vramOffset + i, new Word(is.readShort()));
+        }catch (IOException e) {
+            System.out.print(e);
+        }
+        catch (URISyntaxException e) {
+            System.out.print(e);
+        }
     }
 
     public void pauseButtonHandler() {
