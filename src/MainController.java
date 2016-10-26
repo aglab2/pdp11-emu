@@ -42,7 +42,7 @@ public class MainController extends Controller {
             DataInputStream is = new DataInputStream(new FileInputStream(path.toString()));
 
             //Show off loading from data bus
-            for (int i = 0; i < 1024 * 8; i++)
+            for (int i = 0; i < 1024 * 16; i+=2)
                 this.memoryModel.bus.load(memoryModel.vramOffset + i, new Word(is.readShort()));
         }catch (IOException e) {
             System.out.print(e);
@@ -62,7 +62,7 @@ public class MainController extends Controller {
             while(is.available() > 0) {
                 int curCnt = new Word(is.readByte(), is.readByte()).value;
                 Word curWord = new Word(is.readByte(), is.readByte()); //Big endian :)
-                for (int i = 0; i < curCnt; i++, offset++) {
+                for (int i = 0; i < curCnt; i++, offset += 2) {
                     this.memoryModel.bus.load(memoryModel.vramOffset + offset, curWord);
                 }
             }
@@ -76,6 +76,20 @@ public class MainController extends Controller {
     }
 
     public void resetButtonHandler() {
+        int romOffset = memoryModel.romOffset + 0x1000; //Start of zram picture
+        int vramOffset = 0;
+
+        Word curWord = memoryModel.bus.fetch(romOffset);
+        while(curWord != Word.ZERO) {
+            System.out.print(curWord);
+            break;
+            /*int curCnt = new Word(is.readByte(), is.readByte()).value;
+            Word curWord = new Word(is.readByte(), is.readByte()); //Big endian :)
+            for (int i = 0; i < curCnt; i++, vramOffset++) {
+                this.memoryModel.bus.load(memoryModel.vramOffset + vramOffset, curWord);
+            }*/
+        }
+        System.out.print(vramOffset);
     }
 
     public void stepButtonHandler() {
