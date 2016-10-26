@@ -1,6 +1,7 @@
 package instruction;
 
 import com.sun.istack.internal.Nullable;
+import instruction.primitives.InstructionRange;
 import instruction.primitives.RegAddr;
 import instruction.primitives.RegMode;
 import memory.primitives.Word;
@@ -21,7 +22,7 @@ public abstract class SingleOperandInstruction extends Instruction {
 
     @Override
     public Word getCode() {
-        return new Word(diapason.start.value | dstMode.value << 3 | dstAddr.ordinal());
+        return new Word(range.start.value | dstMode.value << 3 | dstAddr.ordinal());
     }
 
     @Override

@@ -13,7 +13,7 @@ public abstract class BranchInstruction extends Instruction {
 
     @Override
     public Word getCode() {
-        return new Word(diapason.start.value | offset.value);
+        return new Word(range.start.value | offset.value);
     }
 
     @Override

@@ -34,7 +34,7 @@ public abstract class DoubleOperandInstruction extends Instruction {
 
     @Override
     public Word getCode() {
-        return new Word(diapason.start.value |
+        return new Word(range.start.value |
                 srcMode.value << 9 | srcAddr.value << 6 |
                 dstMode.value << 3 | dstAddr.value);
     }

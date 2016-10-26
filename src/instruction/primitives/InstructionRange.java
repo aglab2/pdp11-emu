@@ -26,7 +26,7 @@ public class InstructionRange {
 
     /**
      * @param code
-     * @param expSize - size of the diapason
+     * @param expSize - size of the range
      */
     public InstructionRange(Word code, int expSize) {
         assert 0 <= expSize && expSize <= 16;

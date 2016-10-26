@@ -27,7 +27,7 @@ public abstract class RegisterMemoryInstruction extends Instruction {
 
     @Override
     public Word getCode() {
-        return new Word(diapason.start.value | reg.value << 6 |
+        return new Word(range.start.value | reg.value << 6 |
                 sodMode.value << 3 | sodAddr.ordinal());
     }
 
