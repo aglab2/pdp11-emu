@@ -14,15 +14,15 @@ public class MemoryModel {
     public final int ramOffset;
     public final int vramOffset;
     public final int romOffset;
-    public final int regOffset;
+    public final int regOffset = 0x8000;
+    public final int flagsOffset = 0xFFFF;
 
     /* TODO: Should this be private as we can access to them from bus? */
-    public final ReadWriteMemory ram;
-    public final ReadOnlyMemory rom;
-    public final ReadWriteMemory registers = new MemoryStorage(NUMBER_OF_REGISTERS);
-
-    /* TODO: same addresation ar `ram` */
+    public final RWMemory ram;
+    public final Memory rom;
     public final MemoryStorage vram;
+    public final RWMemory registers = new MemoryStorage(NUMBER_OF_REGISTERS);
+    public final FlagsStorage flags = new FlagsStorage();
 
     public final MemoryBus bus;
 
@@ -33,16 +33,16 @@ public class MemoryModel {
         this.bus = new MemoryBus();
 
         this.ramOffset = 0;
-        this.bus.addRegion(ramOffset, (MemoryStorage) this.ram);
+        this.bus.addRegion(ramOffset, this.ram);
 
-        this.vramOffset = this.ramOffset + ((MemoryStorage) this.ram).size.value;
+        this.vramOffset = this.ramOffset + this.ram.size.value;
         this.bus.addRegion(vramOffset, this.vram);
 
         this.romOffset = this.vramOffset + this.vram.size.value;
-        this.bus.addRegion(romOffset, (MemoryStorage) this.rom);
+        this.bus.addRegion(romOffset, (MemoryStorage) this.rom);  /*TODO: security breach*/
 
-        this.regOffset = 0x8000;
-        this.bus.addRegion(regOffset, (MemoryStorage) this.registers);
+        this.bus.addRegion(regOffset, this.registers);
+        this.bus.addRegion(flagsOffset, this.flags);
     }
 
     public Addr getStackPointer() {

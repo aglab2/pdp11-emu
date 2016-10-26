@@ -4,8 +4,8 @@ import memory.primitives.Addr;
 import memory.primitives.MemSize;
 import memory.primitives.Word;
 
-public abstract class ReadWriteMemory extends ReadOnlyMemory {
-    public ReadWriteMemory(MemSize size) {
+public abstract class RWMemory extends Memory {
+    public RWMemory(MemSize size) {
         super(size);
     }
 

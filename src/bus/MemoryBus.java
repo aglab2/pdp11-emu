@@ -1,6 +1,8 @@
 package bus;
 
+import memory.Memory;
 import memory.MemoryStorage;
+import memory.RWMemory;
 import memory.primitives.Addr;
 import memory.primitives.Word;
 
@@ -15,9 +17,9 @@ import java.util.Map;
 
 class MemoryRegion {
     int start;
-    MemoryStorage storage;
+    RWMemory storage;
 
-    MemoryRegion(int start, MemoryStorage storage) {
+    MemoryRegion(int start, RWMemory storage) {
         this.start = start;
         this.storage = storage;
     }
@@ -30,7 +32,7 @@ public class MemoryBus {
         this.regions = new HashMap();
     }
 
-    public void addRegion(int start, MemoryStorage storage) {
+    public void addRegion(int start, RWMemory storage) {
         int size = storage.size.value;
         MemoryRegion region = new MemoryRegion(start, storage);
         for (int offset = start; offset < start + size; offset++) {

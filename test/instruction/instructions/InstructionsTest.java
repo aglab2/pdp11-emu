@@ -2,12 +2,11 @@ package instruction.instructions;
 
 import instruction.Instruction;
 import instruction.instuctions.INC;
-import instruction.instuctions.MOV;
 import instruction.primitives.RegAddr;
 import instruction.primitives.RegMode;
 import memory.MemoryModel;
 import memory.MemoryStorage;
-import memory.ReadOnlyMemory;
+import memory.Memory;
 import memory.primitives.MemSize;
 import memory.primitives.Word;
 import org.junit.Before;
@@ -63,7 +62,7 @@ public class InstructionsTest {
         assertMemory("RAM", memory.ram, new int[] {2, 2, 1, 0});
     }
 
-    private void assertMemory(String name, ReadOnlyMemory memory, int[] expected) {
+    private void assertMemory(String name, Memory memory, int[] expected) {
         List<Word> list = ((MemoryStorage) memory).dataObservableList;
         int len = Math.min(list.size(), expected.length);
 
