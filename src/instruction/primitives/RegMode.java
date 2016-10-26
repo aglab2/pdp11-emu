@@ -84,7 +84,7 @@ public enum RegMode {
         return this == Index || this == DIndex;
     }
 
-    static RegMode parse(int v) {
+    public static RegMode parse(int v) {
         return RegMode.values()[v & 0b111];
     }
 }

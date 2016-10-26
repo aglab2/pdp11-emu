@@ -19,7 +19,7 @@ public enum RegAddr {
         return this == R7;
     }
 
-    static RegAddr parse(int v) {
+    public static RegAddr parse(int v) {
         return RegAddr.values()[v & 0b111];
     }
 

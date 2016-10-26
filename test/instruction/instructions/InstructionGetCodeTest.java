@@ -36,7 +36,7 @@ public class InstructionGetCodeTest {
     }
 
     void assertInstruction(String asm, int code, Instruction instruction) {
-        int value = instruction.getCode().value;
+        int value = instruction.getBinary().value;
         assertEquals(asm + " [" + binary(code) + "] was expected, got " + binary(value), code, value);
     }
 
