@@ -1,6 +1,3 @@
-import instruction.instuctions.INC;
-import instruction.primitives.RegAddr;
-import instruction.primitives.RegMode;
 import javafx.scene.image.WritableImage;
 import memory.MemoryModel;
 import memory.MemoryStorage;
@@ -9,13 +6,10 @@ import memory.primitives.Word;
 import tornadofx.Controller;
 import videomanager.VideoManager;
 
-<<<<<<< HEAD
 import java.io.*;
-=======
 import javax.xml.bind.ValidationException;
 import java.io.File;
 import java.io.IOException;
->>>>>>> 5e75044458c6abafcc6c26badedc708d2f07a35c
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
