@@ -7,6 +7,7 @@ import instruction.primitives.RegMode;
 import memory.primitives.Addr;
 import memory.primitives.Word;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -65,10 +66,22 @@ public class ParserTest {
                 new BNE(new Addr(020)));
     }
 
-    @Test
+    @Test @Ignore
     public void parse_an_array() throws Exception {
+        int[] arr = {0xC0, 0x15, 0x00, 0x90, 0xC1, 0x15, 0x00, 0x40, 0x02, 0x14,
+                     0xC2, 0x0B, 0x07, 0x03, 0x03, 0x14, 0xC2, 0x0B, 0x03, 0x03,
+                     0xD1, 0x10, 0xC2, 0x0A, 0xFB, 0x01, 0xF6, 0x01};
 
+        Word[] words = new Word[arr.length / 2];
+        for (int i = 0; i < arr.length / 2; i ++) {
+            words[i] = new Word((byte) arr[2 * i], (byte) arr[2 * i + 1]);
+        }
 
+        System.out.println(words);
+
+//        Instruction[] instructions = parser.parse(words);
+//
+//        System.out.println(instructions);
     }
 
     void assertInstruction(String asm, int code, Word index1, Word index2, Instruction instruction) {
