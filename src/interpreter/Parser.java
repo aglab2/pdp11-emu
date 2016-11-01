@@ -12,7 +12,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.Map;
 
 /**
@@ -30,19 +29,20 @@ public class Parser {
             SUB.class, SWAP.class, TST.class};
 
     public final Map<InstructionRange, Instruction> instructionRanges = new HashMap<>(declaredInstructions.length);
+
     {
-        for(Class<?> cl: declaredInstructions) {
+        for (Class<?> cl : declaredInstructions) {
             Instruction i = tryGetDefaultInstance(cl);
             InstructionRange range = i.range;
             instructionRanges.put(range, i);
         }
     }
 
-    public Instruction parce(Word word) {
-        for(InstructionRange range : instructionRanges.keySet()) {
-            if(range.contains(word)) {
+    public Instruction parse(Word word, @Nullable Word index1, @Nullable Word index2) {
+        for (InstructionRange range : instructionRanges.keySet()) {
+            if (range.contains(word)) {
                 Instruction i = instructionRanges.get(range);
-                return null; /*TODO*/
+                return i.parse(word, index1, index2);
             }
         }
         throw new UnsupportedOperationException("Word " + word.fmtBinary() + " belongs to no known instruction");
@@ -50,22 +50,23 @@ public class Parser {
 
     /**
      * @param clazz a subclass of `Instruction`
-     * @return      a dummy instance of `clazz`. The only permitted operation is getting Instruction#range.
+     * @return a dummy instance of `clazz`. The only permitted operation is getting Instruction#range.
      */
-    public @Nullable
+    public
+    @Nullable
     Instruction tryGetDefaultInstance(Class<?> clazz) {
         Constructor<?> constructor = clazz.getConstructors()[0];
         Class<?>[] types = constructor.getParameterTypes();
 
         ArrayList<Object> parameters = new ArrayList<>();
-        for(Class<?> t : types) {
-            if(t == int.class)
+        for (Class<?> t : types) {
+            if (t == int.class)
                 parameters.add(0);
-            else if(t == Word.class)
+            else if (t == Word.class)
                 parameters.add(Word.ZERO);
-            else if(t == RegMode.class)
+            else if (t == RegMode.class)
                 parameters.add(RegMode.Register);
-            else if(t == RegAddr.class)
+            else if (t == RegAddr.class)
                 parameters.add(RegAddr.R0);
             else
                 parameters.add(null);

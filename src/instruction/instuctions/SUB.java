@@ -14,7 +14,7 @@ import memory.primitives.Word;
 public class SUB extends DoubleOperandInstruction {
 
     public SUB(RegMode srcMode, RegAddr srcAddr, RegMode dstMode, RegAddr dstAddr,
-               @Nullable Word index1, @Nullable Word index2){
+               @Nullable Word index1, @Nullable Word index2) {
         super(new Word(0b1_110_000000_000000), srcMode, srcAddr, dstMode, dstAddr, index1, index2);
     }
 

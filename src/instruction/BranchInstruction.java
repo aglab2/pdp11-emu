@@ -4,6 +4,8 @@ import com.sun.istack.internal.Nullable;
 import memory.primitives.Addr;
 import memory.primitives.Word;
 
+import java.lang.reflect.InvocationTargetException;
+
 public abstract class BranchInstruction extends Instruction {
     public final Addr offset;
 
@@ -19,20 +21,18 @@ public abstract class BranchInstruction extends Instruction {
 
     @Override
     public Instruction parse(Word word, @Nullable Word index1, @Nullable Word index2) {
-        return null;
-//        if(!range.contains(word))
-//            throw new UnsupportedOperationException("Word " + word + " is not in range");
-//
-//        int value = word.value;
-//
-//        Object[] params = {RegMode.parse(value >> 3), RegAddr.parse(value), index1};
-//
-//        try {
-//            return this.getClass().getConstructor(RegMode.class, RegAddr.class, Word.class).newInstance(params);
-//        } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
-//            throw new RuntimeException(e);
-//        }
+        if(!range.contains(word))
+            throw new UnsupportedOperationException("Word " + word + " is not in range");
 
+        int value = word.value;
+
+        Object[] params = {new Addr(value & 0xFF)};
+
+        try {
+            return this.getClass().getConstructor(Addr.class).newInstance(params);
+        } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

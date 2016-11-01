@@ -15,7 +15,7 @@ import memory.primitives.Word;
 public class DIV extends RegisterMemoryInstruction {
 
     public DIV(RegAddr reg, RegMode srcMode, RegAddr srcAddr, @Nullable Word index) {
-        super(new Word(0b0_111001_000_0000000), reg, srcMode, srcAddr, index);
+        super(new Word(0b0_111001_000_000000), reg, srcMode, srcAddr, index);
     }
 
     @Override

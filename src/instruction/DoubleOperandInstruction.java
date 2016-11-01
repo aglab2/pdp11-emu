@@ -4,6 +4,7 @@ import com.sun.istack.internal.Nullable;
 import instruction.primitives.RegAddr;
 import instruction.primitives.RegMode;
 import memory.primitives.Word;
+import java.lang.reflect.InvocationTargetException;
 
 public abstract class DoubleOperandInstruction extends Instruction {
     public final RegMode srcMode;
@@ -15,8 +16,8 @@ public abstract class DoubleOperandInstruction extends Instruction {
 
 
     /**
-     * @param index1    the first `Word` after the instruction
-     * @param index2    the second `Word` after the instruction
+     * @param index1 the first `Word` after the instruction
+     * @param index2 the second `Word` after the instruction
      */
     public DoubleOperandInstruction(Word code,
                                     RegMode srcMode, RegAddr srcAddr,
@@ -41,20 +42,24 @@ public abstract class DoubleOperandInstruction extends Instruction {
 
     @Override
     public Instruction parse(Word word, @Nullable Word index1, @Nullable Word index2) {
-        return null;
-//        if(!range.contains(word))
-//            throw new UnsupportedOperationException("Word " + word + " is not in range");
-//
-//        int value = word.value;
-//
-//        Object[] params = {RegMode.parse(value >> 3), RegAddr.parse(value), index1};
-//
-//        try {
-//            return this.getClass().getConstructor(RegMode.class, RegAddr.class, Word.class).newInstance(params);
-//        } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
-//            throw new RuntimeException(e);
-//        }
+        if (!range.contains(word))
+            throw new UnsupportedOperationException("Word " + word + " is not in range");
 
+        int value = word.value;
+
+        Object[] params = {
+                RegMode.parse(value >> 9), RegAddr.parse(value >> 6),
+                RegMode.parse(value >> 3), RegAddr.parse(value),
+                index1, index2};
+
+        try {
+            return this.getClass().getConstructor(
+                    RegMode.class, RegAddr.class,
+                    RegMode.class, RegAddr.class,
+                    Word.class, Word.class).newInstance(params);
+        } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

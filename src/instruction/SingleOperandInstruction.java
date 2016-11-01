@@ -28,7 +28,7 @@ public abstract class SingleOperandInstruction extends Instruction {
 
     @Override
     public Instruction parse(Word word, @Nullable Word index1, @Nullable Word index2) {
-        if(!range.contains(word))
+        if (!range.contains(word))
             throw new UnsupportedOperationException("Word " + word + " is not in range");
 
         int value = word.value;
