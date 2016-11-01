@@ -16,7 +16,7 @@ public enum RegMode {
     Register() {
         @Override
         public BusAddr apply(MemoryModel memory, RegAddr regAddr, @Nullable Word nextWord) {
-            return new BusAddr(regAddr.address.value + memory.regOffset); //Registers also live on Bus
+            return new BusAddr(regAddr.address.value * 2 + memory.regOffset); //Registers also live on Bus
         }
     },
     DRegister() {

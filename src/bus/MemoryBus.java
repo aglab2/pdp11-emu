@@ -30,7 +30,8 @@ public class MemoryBus {
         this.regions = new HashMap();
     }
 
-    public void addRegion(int start, RWMemory storage) {
+    public void addRegion(int dstart, RWMemory storage) {
+        int start = dstart / 2;
         int size = storage.size.value;
         MemoryRegion region = new MemoryRegion(start, storage);
         for (int offset = start; offset < start + size; offset++) {
@@ -38,13 +39,15 @@ public class MemoryBus {
         }
     }
 
-    public Word fetch(int addr) {
+    public Word fetch(int daddr) {
+        int addr = daddr / 2;
         MemoryRegion region = regions.get(addr);
         Addr realAddress = new Addr(addr - region.start);
         return region.storage.fetch(realAddress);
     }
 
-    public void load(int addr, Word value) {
+    public void load(int daddr, Word value) {
+        int addr = daddr / 2;
         MemoryRegion region = regions.get(addr);
         Addr realAddress = new Addr(addr - region.start);
         region.storage.load(realAddress, value);
