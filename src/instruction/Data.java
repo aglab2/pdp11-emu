@@ -22,7 +22,7 @@ public class Data extends Instruction {
 
     @Override
     public void apply(MemoryModel memory) {
-
+        throw new UnsupportedOperationException(String.format("%16s", Integer.toBinaryString(data.value)).replace(' ', '0'));
     }
 
     @Override
@@ -37,7 +37,6 @@ public class Data extends Instruction {
 
     @Override
     public boolean equals(Object obj) {
-
         return (obj instanceof Data) && super.equals(obj);
     }
 }

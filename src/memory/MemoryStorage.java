@@ -62,4 +62,11 @@ public class MemoryStorage extends RWMemory {
     public void add(Offset address, int x) {
         load(address, new Word(fetch(address).value + x));
     }
+
+    @Override
+    public void clean() {
+        for (int i = 0; i < size.value; i++) {
+            dataObservableList.set(i, Word.ZERO);
+        }
+    }
 }

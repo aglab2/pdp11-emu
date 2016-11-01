@@ -31,15 +31,15 @@ public class MemoryModel {
 
         //All addresses are multiplied by 2 in real asm
         this.ramOffset = 0;
-        this.bus.addRegion(ramOffset, this.ram);
+        this.bus.addRegion("ram", ramOffset, this.ram);
 
         this.vramOffset = this.ramOffset + this.ram.size.value * 2;
-        this.bus.addRegion(vramOffset, this.vram);
+        this.bus.addRegion("vram", vramOffset, this.vram);
 
         this.romOffset = this.vramOffset + this.vram.size.value * 2;
-        this.bus.addRegion(romOffset, (MemoryStorage) this.rom);  /*TODO: security breach*/
+        this.bus.addRegion("rom", romOffset, (MemoryStorage) this.rom);  /*TODO: security breach*/
 
-        this.bus.addRegion(regOffset, this.registers);
-        this.bus.addRegion(flagsOffset, this.flags);
+        this.bus.addRegion("reg", regOffset, this.registers);
+        this.bus.addRegion("flags", flagsOffset, this.flags);
     }
 }

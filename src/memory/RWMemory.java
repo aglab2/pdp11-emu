@@ -12,4 +12,6 @@ public abstract class RWMemory extends Memory {
     abstract public void load(Offset address, Word value);
 
     abstract public void add(Offset address, int x);
+
+    abstract public void clean();
 }

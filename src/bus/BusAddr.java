@@ -1,5 +1,6 @@
 package bus;
 
+import com.sun.istack.internal.Nullable;
 import memory.MemoryModel;
 import memory.primitives.Offset;
 import memory.primitives.Word;
@@ -20,7 +21,7 @@ public class BusAddr {
         this.value = regionOffset + offset.value * 2;
     }
 
-    public Word fetch(MemoryModel memory) {
+    public @Nullable Word fetch(MemoryModel memory) {
         return memory.bus.fetch(this.value);
     }
 

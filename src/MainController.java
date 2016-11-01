@@ -1,3 +1,5 @@
+import instruction.primitives.RegAddr;
+import interpreter.Executor;
 import javafx.scene.image.WritableImage;
 import memory.MemoryModel;
 import memory.MemoryStorage;
@@ -6,7 +8,6 @@ import memory.primitives.Word;
 import tornadofx.Controller;
 import videomanager.VideoManager;
 
-import java.io.*;
 import javax.xml.bind.ValidationException;
 import java.io.File;
 import java.io.IOException;
@@ -22,8 +23,10 @@ import java.nio.file.Path;
 
 public class MainController extends Controller {
     public final MemoryModel memoryModel;
+
     public final WritableImage screen = new WritableImage(/*width*/ 256, /*height*/ 256);
     public final VideoManager videoManager;
+    public final Executor executor;
 
     public MainController() throws IOException, URISyntaxException, ValidationException {
         URL defaultRom = MainController.class.getClassLoader().getResource("rom_default.hex");
@@ -33,74 +36,29 @@ public class MainController extends Controller {
 
         this.memoryModel = new MemoryModel(new MemSize(1024 * 8), new MemSize(1024 * 8), rom);
         this.videoManager = new VideoManager(screen, memoryModel.vram.dataObservableList);
+
+        this.executor = new Executor(memoryModel);
+//        executor.sleepMillisDelay = 100;
+        memoryModel.registers.load(RegAddr.PC.offset, new Word(memoryModel.romOffset));
     }
 
     public void startButtonHandler() {
-        try {
-            URL vram = MainController.class.getClassLoader().getResource("dragon.vram");
-            Path path = new File(vram.toURI()).toPath();
-            DataInputStream is = new DataInputStream(new FileInputStream(path.toString()));
-
-            //Show off loading from data bus
-            for (int i = 0; i < 1024 * 16; i+=2)
-                this.memoryModel.bus.load(memoryModel.vramOffset + i, new Word(is.readShort()));
-        }catch (IOException e) {
-            System.out.print(e);
-        }
-        catch (URISyntaxException e) {
-            System.out.print(e);
-        }
+        executor.startExecution();
     }
 
     public void pauseButtonHandler() {
-        try {
-            URL vram = MainController.class.getClassLoader().getResource("dragon.zram");
-            Path path = new File(vram.toURI()).toPath();
-            DataInputStream is = new DataInputStream(new FileInputStream(path.toString()));
-
-            int offset = 0;
-            while(is.available() > 0) {
-                int curCnt = new Word(is.readByte(), is.readByte()).value;
-                Word curWord = new Word(is.readByte(), is.readByte());
-                for (int i = 0; i < curCnt; i++, offset += 2) {
-                    this.memoryModel.bus.load(memoryModel.vramOffset + offset, curWord);
-                }
-            }
-            System.out.print(offset);
-        }catch (IOException e) {
-            System.out.print(e);
-        }
-        catch (URISyntaxException e) {
-            System.out.print(e);
-        }
+        executor.stopExecution();
     }
 
     public void resetButtonHandler() {
-        //R0 - romOffset
-        //R1 - vramOffset
-        //R2 - curCnt(Word)
-        //R3 - curWord
-        //R4 -
-        //R5 -
-
-        int romOffset = memoryModel.romOffset + 0x1000; //Start of zram picture             //
-        int vramOffset = memoryModel.vramOffset;                                                                 //
-
-        Word curCntWord = memoryModel.bus.fetch(romOffset);                                 //
-        romOffset += 2;                                                                     //
-        while(curCntWord.value != 0) {                                                      //
-            int curCnt = curCntWord.value;                                                  //
-            Word curWord = memoryModel.bus.fetch(romOffset);                                //
-            romOffset += 2;                                                                 //
-            for (int i = 0; i < curCnt; i++, vramOffset += 2) {                             //
-                this.memoryModel.bus.load(vramOffset, curWord);    //
-            }                                                                               //
-            curCntWord = memoryModel.bus.fetch(romOffset);                                  //
-            romOffset += 2;                                                                 //
-        }                                                                                   //
+        memoryModel.flags.clean();
+        memoryModel.registers.clean();
+        memoryModel.ram.clean();
+        memoryModel.vram.clean();
+        memoryModel.registers.load(RegAddr.PC.offset, new Word(memoryModel.romOffset));
     }
 
     public void stepButtonHandler() {
-        //Here should be rom, but ehh
+        executor.executeStep();
     }
 }

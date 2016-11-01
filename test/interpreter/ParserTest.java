@@ -97,7 +97,8 @@ public class ParserTest {
 
         int[] arr = {0xC0, 0x15, 0x00, 0x90, 0xC1, 0x15, 0x00, 0x40,
                      0x02, 0x14, 0xC2, 0x0B, 0x06, 0x03, 0x03, 0x14,
-                     0xD1, 0x10, 0xC2, 0x0A, 0xC2, 0x0B, 0xFC, 0x02, 0xF7, 0x01};
+                     0xD1, 0x10, 0xC2, 0x0A, 0xC2, 0x0B, 0xFC, 0x02,
+                     0xF7, 0x01, 0x00, 0x00};
 
         Word[] words = new Word[arr.length / 2];
         for (int i = 0; i < words.length; i ++) {
@@ -125,8 +126,9 @@ public class ParserTest {
             new TST(RegMode.Register, RegAddr.R2, null),
             new BNE(new Offset(8 - 11 - 1)),  // 11 FOR
 
-            new BR(new Offset(4 - 12 - 1))  // 12 WHILE
+            new BR(new Offset(4 - 12 - 1)),  // 12 WHILE
                 /*WEND 13*/
+            new HALT()
         };
 
         assertArrayEquals(expected, instructions);

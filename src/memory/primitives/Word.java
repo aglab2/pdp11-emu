@@ -2,8 +2,6 @@ package memory.primitives;
 
 
 public class Word {
-    public static final Word ZERO = new Word(0);
-
     public final int value;
 
     public Word(int value) {
@@ -67,4 +65,67 @@ public class Word {
     public String fmtBinary() {
         return String.format("%16s", Integer.toBinaryString(value)).replace(' ', '0');
     }
+
+    public static final Word ZERO = new Word(0);
+    public static final Word NaN = new Word(-1) {
+        @Override
+        public Word inc() {
+            return this;
+        }
+
+        @Override
+        public Word dec() {
+            return this;
+        }
+
+        @Override
+        public Word inc2() {
+            return this;
+        }
+
+        @Override
+        public Word dec2() {
+            return this;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return o == this;
+        }
+
+        @Override
+        public int hashCode() {
+            return -1;
+        }
+
+        @Override
+        public String toString() {
+            return "NaN";
+        }
+
+        @Override
+        public byte highByte() {
+            throw new UnsupportedOperationException("NaN");
+        }
+
+        @Override
+        public byte lowByte() {
+            throw new UnsupportedOperationException("NaN");
+        }
+
+        @Override
+        public short toSigned() {
+            throw new UnsupportedOperationException("NaN");
+        }
+
+        @Override
+        public byte toSignedByte() {
+            throw new UnsupportedOperationException("NaN");
+        }
+
+        @Override
+        public String fmtBinary() {
+            throw new UnsupportedOperationException("NaN");
+        }
+    };
 }

@@ -62,4 +62,8 @@ public class FlagsStorage extends RWMemory {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public void clean() {
+        T = N = Z = V = C = false;
+    }
 }

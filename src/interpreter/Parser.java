@@ -29,14 +29,13 @@ public class Parser {
             BR.class, CLR.class, CMP.class, DEC.class,
             DIV.class, INC.class, MOV.class, MUL.class,
             SUB.class, SWAP.class, TST.class,
+            HALT.class,
             Data.class};  // TODO: hack
-
-//    public final Map<InstructionRange, Instruction> instructionRanges = new HashMap<>(declaredInstructions.length);
 
     private final Instruction[] defaultInstances = new Instruction[declaredInstructions.length];
     private final InstructionRange[] instructionRanges = new InstructionRange[declaredInstructions.length];
 
-    {
+    public Parser() {
         for (int i = 0; i < declaredInstructions.length; i++) {
             defaultInstances[i] = tryGetDefaultInstance(declaredInstructions[i]);
             if(defaultInstances[i] == null) throw new UnsupportedOperationException("the instruction class does not follow the pattern");
