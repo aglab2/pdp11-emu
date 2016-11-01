@@ -67,8 +67,9 @@ public class ParserTest {
                 new BNE(new Offset(020)));
     }
 
-    @Test @Ignore
+    @Test
     public void parse_an_array() throws Exception {
+        //<editor-fold desc="ASM source code">
         /*
         HALT                        ;don't remove me!
 
@@ -92,6 +93,7 @@ public class ParserTest {
 
         WEND:	HALT
         */
+        //</editor-fold>
 
         int[] arr = {0xC0, 0x15, 0x00, 0x90, 0xC1, 0x15, 0x00, 0x40,
                      0x02, 0x14, 0xC2, 0x0B, 0x06, 0x03, 0x03, 0x14,
@@ -104,7 +106,30 @@ public class ParserTest {
 
         Instruction[] instructions = parser.parse(words);
 
-        //assertArrayEquals({new MOV(), new Data(new Word(0110000))}, instructions);
+        Instruction[] expected = {
+                /*HALT 0*/
+            new MOV(RegMode.AutoInc, RegAddr.PC, RegMode.Register, RegAddr.R0, null, null), new Data(new Word(0110000)),
+            new MOV(RegMode.AutoInc, RegAddr.PC, RegMode.Register, RegAddr.R1, null, null), new Data(new Word(040000)),
+
+                /*WHILE 4*/
+            new MOV(RegMode.AutoInc, RegAddr.R0, RegMode.Register, RegAddr.R2, null, null),
+
+            new TST(RegMode.Register, RegAddr.R2, null),
+            new BEQ(new Offset(13 - 6 - 1)),  // 6 WEND
+
+            new MOV(RegMode.AutoInc, RegAddr.R0, RegMode.Register, RegAddr.R3, null, null),
+
+                /*FOR 8*/
+            new MOV(RegMode.Register, RegAddr.R3, RegMode.AutoInc, RegAddr.R1, null, null),
+            new DEC(RegMode.Register, RegAddr.R2, null),
+            new TST(RegMode.Register, RegAddr.R2, null),
+            new BNE(new Offset(8 - 11 - 1)),  // 11 FOR
+
+            new BR(new Offset(4 - 12 - 1))  // 12 WHILE
+                /*WEND 13*/
+        };
+
+        assertArrayEquals(expected, instructions);
     }
 
     void assertInstruction(String asm, int code, Word index1, Word index2, Instruction instruction) {

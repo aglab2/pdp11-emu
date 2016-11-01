@@ -34,4 +34,10 @@ public class Data extends Instruction {
     public int indexСapacity() {
         return 0;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        return (obj instanceof Data) && super.equals(obj);
+    }
 }

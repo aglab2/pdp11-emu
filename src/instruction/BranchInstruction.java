@@ -16,7 +16,7 @@ public abstract class BranchInstruction extends Instruction {
 
     @Override
     public Word getBinary() {
-        return new Word(range.start.value | offset.value);
+        return new Word(range.start.value | offset.toSignedByte());
     }
 
     @Override

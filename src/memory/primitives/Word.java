@@ -36,7 +36,6 @@ public class Word {
         if (!(o instanceof Word)) return false;
 
         return value == ((Word) o).value;
-
     }
 
     @Override
@@ -58,7 +57,11 @@ public class Word {
     }
 
     public short toSigned() {
-        return (short) ((value < 128) ? value : value - 256);
+        return (short) ((value <= Short.MAX_VALUE) ? value : value - (1 << 16));
+    }
+
+    public byte toSignedByte() {
+        return (byte) ((value <= Byte.MAX_VALUE) ? value : value - (1 << 8));
     }
 
     public String fmtBinary() {

@@ -31,24 +31,27 @@ public class Parser {
             SUB.class, SWAP.class, TST.class,
             Data.class};  // TODO: hack
 
-    public final Map<InstructionRange, Instruction> instructionRanges = new HashMap<>(declaredInstructions.length);
+//    public final Map<InstructionRange, Instruction> instructionRanges = new HashMap<>(declaredInstructions.length);
+
+    private final Instruction[] defaultInstances = new Instruction[declaredInstructions.length];
+    private final InstructionRange[] instructionRanges = new InstructionRange[declaredInstructions.length];
 
     {
-        for (Class<?> cl : declaredInstructions) {
-            Instruction i = tryGetDefaultInstance(cl);
-            InstructionRange range = i.range;
-            instructionRanges.put(range, i);
+        for (int i = 0; i < declaredInstructions.length; i++) {
+            defaultInstances[i] = tryGetDefaultInstance(declaredInstructions[i]);
+            if(defaultInstances[i] == null) throw new UnsupportedOperationException("the instruction class does not follow the pattern");
+            instructionRanges[i] = defaultInstances[i].range;
         }
     }
 
     public Instruction parseInstruction(Word word, @Nullable Word index1, @Nullable Word index2) {
-        for (InstructionRange range : instructionRanges.keySet()) {
+        for (int i = 0; i < instructionRanges.length; i++) {
+            InstructionRange range = instructionRanges[i];
             if (range.contains(word)) {
-                Instruction i = instructionRanges.get(range);
-                return i.parse(word, index1, index2);
+                Instruction instruction = defaultInstances[i];
+                return instruction.parse(word, index1, index2);
             }
         }
-//        return null;
         throw new UnsupportedOperationException("Word " + word.fmtBinary() + " belongs to no known instruction");
     }
 
@@ -69,7 +72,7 @@ public class Parser {
             index += 1 + instr.indexСapacity();
         }
 
-        if(index == len - 2) {
+        if(index == len - 1) {
             Instruction instr = parseInstruction(words[index], null, null);
             instructions.add(instr);
         }

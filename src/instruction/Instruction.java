@@ -23,5 +23,13 @@ public abstract class Instruction {
 
     /** returns the number {0, 1, 2} of words it needs as indexes */
     public abstract int indexСapacity();
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof Instruction)) return false;
+        if(!obj.getClass().equals(this.getClass())) return false;
+
+        return ((Instruction) obj).getBinary().value == getBinary().value;
+    }
 }
 
