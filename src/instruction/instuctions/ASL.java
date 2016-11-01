@@ -22,8 +22,8 @@ public class ASL extends SingleOperandInstruction {
 
         memory.flags.clearArithm();
         memory.flags.setZN(res);
-        memory.flags.C = (dst.fetch(memory).value % 2 == 1);
-        memory.flags.V = (memory.flags.N ^ memory.flags.C);
+        memory.flags.C.set(dst.fetch(memory).value % 2 == 1);
+        memory.flags.V.set(memory.flags.N.get() ^ memory.flags.C.get());
 
         dst.load(memory, new Word(res));
     }

@@ -1,5 +1,7 @@
 package memory;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import memory.primitives.Offset;
 import memory.primitives.MemSize;
 import memory.primitives.Word;
@@ -8,11 +10,11 @@ import memory.primitives.Word;
  * Created by voddan on 26/10/16.
  */
 public class FlagsStorage extends RWMemory {
-    public boolean T = false;
-    public boolean N = false;
-    public boolean Z = false;
-    public boolean V = false;
-    public boolean C = false;
+    public final BooleanProperty T = new SimpleBooleanProperty(false);
+    public final BooleanProperty N = new SimpleBooleanProperty(false);
+    public final BooleanProperty Z = new SimpleBooleanProperty(false);
+    public final BooleanProperty V = new SimpleBooleanProperty(false);
+    public final BooleanProperty C = new SimpleBooleanProperty(false);
 
     public FlagsStorage() {
         super(MemSize.ONE);
@@ -21,35 +23,38 @@ public class FlagsStorage extends RWMemory {
     @Override
     public Word fetch(Offset address) {
         int value = 0b0000_0000_000_00000;
-        if (T) value |= 1 << 4;
-        if (N) value |= 1 << 3;
-        if (Z) value |= 1 << 2;
-        if (V) value |= 1 << 1;
-        if (C) value |= 1;
+        if (T.get()) value |= 1 << 4;
+        if (N.get()) value |= 1 << 3;
+        if (Z.get()) value |= 1 << 2;
+        if (V.get()) value |= 1 << 1;
+        if (C.get()) value |= 1;
         return new Word(value);
     }
 
     public void setZN(Word result) {
-        setZN(result.value);
+        setZN(result.toSigned());
     }
 
     public void setZN(int result) {
-        Z = (result == 0);
-        N = (result < 0);
+        Z.set(result == 0);
+        N.set(result < 0);
     }
 
     public void clearArithm() {
-        N = Z = V = C = false;
+        N.set(false);
+        Z.set(false);
+        V.set(false);
+        C.set(false);
     }
 
     /**
      * N, Z, V, C may me 0 or 1
      */
     public void setArithm(int N, int Z, int V, int C) {
-        this.N = (N == 1);
-        this.Z = (Z == 1);
-        this.V = (V == 1);
-        this.C = (C == 1);
+        this.N.set(N == 1);
+        this.Z.set(Z == 1);
+        this.V.set(V == 1);
+        this.C.set(C == 1);
     }
 
     @Override
@@ -64,6 +69,10 @@ public class FlagsStorage extends RWMemory {
 
     @Override
     public void clean() {
-        T = N = Z = V = C = false;
+        T.set(false);
+        N.set(false);
+        Z.set(false);
+        V.set(false);
+        C.set(false);
     }
 }

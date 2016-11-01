@@ -17,7 +17,7 @@ public class BPL extends BranchInstruction {
 
     @Override
     public void apply(MemoryModel memory) {
-        if (!memory.flags.N)
+        if (!memory.flags.N.get())
             memory.registers.add(RegAddr.PC.offset, 2 * offset.toSignedByte());
     }
 }

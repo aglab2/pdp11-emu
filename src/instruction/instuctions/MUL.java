@@ -22,7 +22,7 @@ public class MUL extends RegisterMemoryInstruction {
     @Override
     public void apply(MemoryModel memory) {
         BusAddr src = sodMode.apply(memory, sodAddr, index);
-        int result = memory.registers.fetch(reg.offset).value * src.fetch(memory).value;
+        int result = memory.registers.fetch(reg.offset).toSigned() * src.fetch(memory).toSigned();
 
         memory.registers.load(reg.offset, new Word(result & 0xFFFF));
 
@@ -30,7 +30,7 @@ public class MUL extends RegisterMemoryInstruction {
             memory.registers.load(reg.offset.inc(), new Word(result & 0xFFFF0000));
 
         memory.flags.setZN(result);
-        memory.flags.V = false;
-        memory.flags.C = !(-(1 << 13) <= result && result < (1 << 13));
+        memory.flags.V.set(false);
+        memory.flags.C.set(!(-(1 << 13) <= result && result < (1 << 13)));
     }
 }

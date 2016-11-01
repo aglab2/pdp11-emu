@@ -2,6 +2,7 @@ package gui
 
 import MainController
 import javafx.beans.binding.*
+import javafx.beans.value.*
 import javafx.collections.*
 import javafx.event.*
 import javafx.geometry.*
@@ -43,11 +44,14 @@ class MainView : View() {
             vbox(1.0) {
                 registersLayout(registerList)
 
-                listview(romList) {
-                    prefHeight = 150.0
-                    cellFormat {
-                        graphic = label(("000" + Integer.toHexString(it.value)).take(4))
-                    }
+                flagsLayout(memoryModel.flags)
+
+            }
+
+            listview(romList) {
+                prefHeight = 150.0
+                cellFormat {
+                    graphic = label(("000" + Integer.toHexString(it.value)).take(4))
                 }
             }
         }
@@ -96,5 +100,23 @@ fun EventTarget.registersLayout(registerList: ObservableList<Word>) {
             }
         }
     }
+}
 
+fun EventTarget.flagsLayout(flags: FlagsStorage) {
+    for(f in listOf(flags.T, flags.N, flags.Z, flags.V, flags.C)) {
+        hbox(5.0) {
+            label(f.name) {
+                prefWidth = 45.0
+                alignment = Pos.CENTER_RIGHT
+            }
+
+            textfield {
+                alignment = Pos.BASELINE_CENTER
+                prefWidth = 60.0
+
+                val text = Bindings.createStringBinding(Callable {f.get().toString()}, f)
+                textProperty().bind(text)
+            }
+        }
+    }
 }

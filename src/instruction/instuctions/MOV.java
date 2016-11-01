@@ -25,6 +25,6 @@ public class MOV extends DoubleOperandInstruction {
         Word res = src.fetch(memory);
         dst.load(memory, res);
         memory.flags.setZN(res);
-        memory.flags.V = false;
+        memory.flags.V.set(false);
     }
 }

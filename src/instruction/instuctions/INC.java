@@ -21,6 +21,6 @@ public class INC extends SingleOperandInstruction {
         Word res = dst.fetch(memory).inc();
         dst.load(memory, res);
         memory.flags.setZN(res);
-        memory.flags.V = (dst.value == 077777);
+        memory.flags.V.set(dst.value == 077777);
     }
 }

@@ -24,7 +24,7 @@ public class DIV extends RegisterMemoryInstruction {
         int num2 = !reg.isLast() ? memory.registers.fetch(reg.offset.inc()).value : 0;
 
         BusAddr src = sodMode.apply(memory, sodAddr, index);
-        int srcValue = src.fetch(memory).value;
+        int srcValue = src.fetch(memory).toSigned();
         int regValue = num1 | num2 << 16;
 
         int div = regValue / srcValue;
@@ -35,7 +35,7 @@ public class DIV extends RegisterMemoryInstruction {
             memory.registers.load(reg.offset.inc(), new Word(mod));
 
         memory.flags.setZN(div);
-        memory.flags.V = (srcValue == 0 || regValue > Math.abs(srcValue));
-        memory.flags.C = (srcValue == 0);
+        memory.flags.V.set(srcValue == 0 || regValue > Math.abs(srcValue));
+        memory.flags.C.set(srcValue == 0);
     }
 }

@@ -21,6 +21,6 @@ public class DEC extends SingleOperandInstruction {
         Word res = dst.fetch(memory).dec();
         dst.load(memory, res);
         memory.flags.setZN(res);
-        memory.flags.V = (dst.value == 0100000);
+        memory.flags.V.set(dst.value == 0100000);
     }
 }
