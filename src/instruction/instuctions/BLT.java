@@ -18,6 +18,6 @@ public class BLT extends BranchInstruction {
     @Override
     public void apply(MemoryModel memory) {
         if (memory.flags.N != memory.flags.V)
-            memory.registers.add(RegAddr.PC.offset, 2 * offset.toSigned());
+            memory.registers.add(RegAddr.PC.offset, 2 * offset.toSignedByte());
     }
 }
