@@ -65,8 +65,14 @@ public class ParserTest {
                 new BNE(new Addr(020)));
     }
 
+    @Test
+    public void parse_an_array() throws Exception {
+
+
+    }
+
     void assertInstruction(String asm, int code, Word index1, Word index2, Instruction instruction) {
-        Instruction instr = parser.parse(new Word(code), index1, index2);
+        Instruction instr = parser.parseInstruction(new Word(code), index1, index2);
         assertEquals(asm + " [" + binary(code) + "] was expected", instruction.getBinary(), instr.getBinary());
     }
 

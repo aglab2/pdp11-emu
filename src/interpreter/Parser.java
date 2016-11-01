@@ -12,6 +12,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,7 +39,7 @@ public class Parser {
         }
     }
 
-    public Instruction parse(Word word, @Nullable Word index1, @Nullable Word index2) {
+    public Instruction parseInstruction(Word word, @Nullable Word index1, @Nullable Word index2) {
         for (InstructionRange range : instructionRanges.keySet()) {
             if (range.contains(word)) {
                 Instruction i = instructionRanges.get(range);
@@ -48,13 +49,36 @@ public class Parser {
         throw new UnsupportedOperationException("Word " + word.fmtBinary() + " belongs to no known instruction");
     }
 
+    public Instruction[] parse(Word[] words) {
+        int len = words.length;
+        List<Instruction> instructions = new ArrayList<>(len);
+
+        int index = 0;
+        while(index < len - 2) {
+            Instruction instr = parseInstruction(words[index], words[index + 1], words[index + 2]);
+            instructions.add(instr);
+            index += instr.indexСapacity();
+        }
+
+        if(index == len - 2) {
+            Instruction instr = parseInstruction(words[index], words[index + 1], null);
+            instructions.add(instr);
+            index += instr.indexСapacity();
+        }
+
+        if(index == len - 2) {
+            Instruction instr = parseInstruction(words[index], null, null);
+            instructions.add(instr);
+        }
+
+        return (Instruction[]) instructions.toArray();
+    }
+
     /**
      * @param clazz a subclass of `Instruction`
      * @return a dummy instance of `clazz`. The only permitted operation is getting Instruction#range.
      */
-    public
-    @Nullable
-    Instruction tryGetDefaultInstance(Class<?> clazz) {
+    private @Nullable Instruction tryGetDefaultInstance(Class<?> clazz) {
         Constructor<?> constructor = clazz.getConstructors()[0];
         Class<?>[] types = constructor.getParameterTypes();
 
