@@ -1,0 +1,20 @@
+HALT ;dont remove me!
+
+	MOV #110000, R0		;R0=romOffset
+	MOV #40000, R1		;R1=vramOffset
+
+WHILE:	MOV (R0)+, R2		;R2=curCnt
+
+	TST R2			;while (curCnt != 0)
+	BEQ WEND
+
+	MOV (R0)+, R3		;R3=curWord
+				;for(i=0; i<curCnt; i++)
+FOR:	MOV R3, (R1)+ 		;set vram addr
+	DEC R2			
+	TST R2
+	BNE FOR			
+	
+	BR WHILE
+
+WEND:	HALT
