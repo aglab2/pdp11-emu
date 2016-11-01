@@ -1,5 +1,6 @@
 package interpreter;
 
+import instruction.Data;
 import instruction.Instruction;
 import instruction.instuctions.*;
 import instruction.primitives.RegAddr;
@@ -68,20 +69,42 @@ public class ParserTest {
 
     @Test @Ignore
     public void parse_an_array() throws Exception {
-        int[] arr = {0xC0, 0x15, 0x00, 0x90, 0xC1, 0x15, 0x00, 0x40, 0x02, 0x14,
-                     0xC2, 0x0B, 0x07, 0x03, 0x03, 0x14, 0xC2, 0x0B, 0x03, 0x03,
-                     0xD1, 0x10, 0xC2, 0x0A, 0xFB, 0x01, 0xF6, 0x01};
+        /*
+        HALT                        ;don't remove me!
+
+                MOV #110000, R0		;R0=romOffset
+                MOV #40000, R1		;R1=vramOffset
+
+        WHILE:	MOV (R0)+, R2	    ;R2=curCnt
+
+                TST R2			    ;while (curCnt != 0)
+                BEQ WEND
+
+                MOV (R0)+, R3		;R3=curWord
+                                    ;for(i=0; i<curCnt; i++)
+
+        FOR:	MOV R3, (R1)+ 		;set vram addr
+                DEC R2
+                TST R2
+                BNE FOR
+
+                BR WHILE
+
+        WEND:	HALT
+        */
+
+        int[] arr = {0xC0, 0x15, 0x00, 0x90, 0xC1, 0x15, 0x00, 0x40,
+                     0x02, 0x14, 0xC2, 0x0B, 0x06, 0x03, 0x03, 0x14,
+                     0xD1, 0x10, 0xC2, 0x0A, 0xC2, 0x0B, 0xFC, 0x02, 0xF7, 0x01};
 
         Word[] words = new Word[arr.length / 2];
-        for (int i = 0; i < arr.length / 2; i ++) {
+        for (int i = 0; i < words.length; i ++) {
             words[i] = new Word((byte) arr[2 * i], (byte) arr[2 * i + 1]);
         }
 
-        System.out.println(words);
+        Instruction[] instructions = parser.parse(words);
 
-//        Instruction[] instructions = parser.parse(words);
-//
-//        System.out.println(instructions);
+        //assertArrayEquals({new MOV(), new Data(new Word(0110000))}, instructions);
     }
 
     void assertInstruction(String asm, int code, Word index1, Word index2, Instruction instruction) {

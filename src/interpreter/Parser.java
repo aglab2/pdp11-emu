@@ -1,6 +1,7 @@
 package interpreter;
 
 import com.sun.istack.internal.Nullable;
+import instruction.Data;
 import instruction.Instruction;
 import instruction.instuctions.*;
 import instruction.primitives.InstructionRange;
@@ -27,7 +28,8 @@ public class Parser {
             BLT.class, BMI.class, BNE.class, BPL.class,
             BR.class, CLR.class, CMP.class, DEC.class,
             DIV.class, INC.class, MOV.class, MUL.class,
-            SUB.class, SWAP.class, TST.class};
+            SUB.class, SWAP.class, TST.class,
+            Data.class};  // TODO: hack
 
     public final Map<InstructionRange, Instruction> instructionRanges = new HashMap<>(declaredInstructions.length);
 
@@ -46,6 +48,7 @@ public class Parser {
                 return i.parse(word, index1, index2);
             }
         }
+//        return null;
         throw new UnsupportedOperationException("Word " + word.fmtBinary() + " belongs to no known instruction");
     }
 
@@ -57,13 +60,13 @@ public class Parser {
         while(index < len - 2) {
             Instruction instr = parseInstruction(words[index], words[index + 1], words[index + 2]);
             instructions.add(instr);
-            index += instr.indexСapacity();
+            index += 1 + instr.indexСapacity();
         }
 
         if(index == len - 2) {
             Instruction instr = parseInstruction(words[index], words[index + 1], null);
             instructions.add(instr);
-            index += instr.indexСapacity();
+            index += 1 + instr.indexСapacity();
         }
 
         if(index == len - 2) {
@@ -71,7 +74,7 @@ public class Parser {
             instructions.add(instr);
         }
 
-        return (Instruction[]) instructions.toArray();
+        return instructions.toArray(new Instruction[instructions.size()]);
     }
 
     /**
