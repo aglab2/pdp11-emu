@@ -10,14 +10,11 @@ import javax.xml.bind.ValidationException;
 import java.util.Arrays;
 
 public class MemoryStorage extends RWMemory {
-    public final ObservableList<Word> dataObservableList;
-
     public MemoryStorage(MemSize size) {
         super(size);
         Word[] __data__ = new Word[size.value];
         Arrays.fill(__data__, Word.ZERO);
 
-        this.dataObservableList = FXCollections.observableArrayList();
         this.dataObservableList.addAll(__data__);
     }
 
@@ -28,7 +25,6 @@ public class MemoryStorage extends RWMemory {
         for (int i = 0; i < size.value; i++)
             __data__[i] = new Word(arr[i]);
 
-        this.dataObservableList = FXCollections.observableArrayList();
         this.dataObservableList.addAll(__data__);
     }
 
@@ -42,7 +38,6 @@ public class MemoryStorage extends RWMemory {
         for (int i = 0; i < length; i++)
             __data__[i] = new Word(arr[2 * i], arr[2 * i + 1]);
 
-        this.dataObservableList = FXCollections.observableArrayList();
         this.dataObservableList.addAll(__data__);
     }
 

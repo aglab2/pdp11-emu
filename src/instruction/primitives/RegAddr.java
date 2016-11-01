@@ -24,11 +24,11 @@ public enum RegAddr {
     }
 
 //    public Word fetch(MemoryModel memory) {
-//        return memory.registers.fetch(this.offset);
+//        return memory.registerList.fetch(this.offset);
 //    }
 //
 //    public void load(MemoryModel memory, Word value) {
-//        memory.registers.load(this.offset, value);
+//        memory.registerList.load(this.offset, value);
 //    }
 
     public static final RegAddr SP = R6;

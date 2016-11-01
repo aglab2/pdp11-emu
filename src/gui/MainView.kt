@@ -1,19 +1,26 @@
 package gui
 
 import MainController
+import javafx.beans.binding.*
+import javafx.collections.*
+import javafx.event.*
 import javafx.geometry.*
+import javafx.scene.*
 import javafx.scene.image.*
 import javafx.scene.paint.*
 import memory.*
 import memory.primitives.*
 import tornadofx.*
+import java.util.concurrent.*
 
 
 class MainView : View() {
     val controller: MainController by inject()
     val memoryModel: MemoryModel = controller.memoryModel
     val screen: WritableImage = controller.screen
-    val rom = (memoryModel.rom as MemoryStorage).dataObservableList
+
+    val romList = memoryModel.rom.dataObservableList
+    val registerList = memoryModel.registers.dataObservableList
 
 
     override val root = vbox(1.0) {
@@ -34,10 +41,9 @@ class MainView : View() {
             }
 
             vbox(1.0) {
-                for ((index, reg) in (memoryModel.registers as MemoryStorage).dataObservableList.withIndex())
-                    this.add(RegisterFragment(index, reg).root)
+                registersLayout(registerList)
 
-                listview(rom) {
+                listview(romList) {
                     prefHeight = 150.0
                     cellFormat {
                         graphic = label(("000" + Integer.toHexString(it.value)).take(4))
@@ -49,15 +55,19 @@ class MainView : View() {
         buttonbar {
             button("Start") {
                 setOnMouseClicked { controller.startButtonHandler() }
+                this.disableProperty().bind(controller.executorPlays.or(controller.executorIsHalted))
             }
             button("Pause") {
                 setOnMouseClicked { controller.pauseButtonHandler() }
+                this.disableProperty().bind(controller.executorPlays.not())
             }
             button("Reset") {
                 setOnMouseClicked { controller.resetButtonHandler() }
+                this.defaultButtonProperty().bind(controller.executorIsHalted)
             }
             button("Step") {
                 setOnMouseClicked { controller.stepButtonHandler() }
+                this.disableProperty().bind(controller.executorPlays.or(controller.executorIsHalted))
             }
 
             style {
@@ -68,17 +78,23 @@ class MainView : View() {
 }
 
 
-class RegisterFragment(index: Int, reg: Word) : Fragment() {
-    override val root = hbox(5.0) {
-        label("reg$index") {
-            prefWidth = 45.0
-            alignment = Pos.CENTER_RIGHT
-        }
+fun EventTarget.registersLayout(registerList: ObservableList<Word>) {
+    for(index in registerList.indices) {
+        hbox(5.0) {
+            label("reg$index") {
+                prefWidth = 45.0
+                alignment = Pos.CENTER_RIGHT
+            }
 
-        // TODO: bind
-        textfield("%04x".format(reg.value)) {
-            alignment = Pos.BASELINE_CENTER
-            prefWidth = 60.0
+            textfield {
+                alignment = Pos.BASELINE_CENTER
+                prefWidth = 60.0
+
+                val word = Bindings.valueAt(registerList, index)
+                val text = Bindings.createStringBinding(Callable {Integer.toHexString(word.get().value)}, word)
+                textProperty().bind(text)
+            }
         }
     }
+
 }
