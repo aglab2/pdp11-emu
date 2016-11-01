@@ -1,6 +1,6 @@
 package memory;
 
-import memory.primitives.Addr;
+import memory.primitives.Offset;
 import memory.primitives.MemSize;
 import memory.primitives.Word;
 
@@ -19,7 +19,7 @@ public class FlagsStorage extends RWMemory {
     }
 
     @Override
-    public Word fetch(Addr address) {
+    public Word fetch(Offset address) {
         int value = 0b0000_0000_000_00000;
         if (T) value |= 1 << 4;
         if (N) value |= 1 << 3;
@@ -53,7 +53,13 @@ public class FlagsStorage extends RWMemory {
     }
 
     @Override
-    public void load(Addr address, Word value) {
+    public void load(Offset address, Word value) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public void add(Offset address, int x) {
+        throw new UnsupportedOperationException();
+    }
+
 }

@@ -2,7 +2,7 @@ package memory;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import memory.primitives.Addr;
+import memory.primitives.Offset;
 import memory.primitives.MemSize;
 import memory.primitives.Word;
 
@@ -47,15 +47,19 @@ public class MemoryStorage extends RWMemory {
     }
 
     @Override
-    public Word fetch(Addr address) {
+    public Word fetch(Offset address) {
         assert containsAddr(address);
         return dataObservableList.get(address.value);
     }
 
     @Override
-    public void load(Addr address, Word value) {
+    public void load(Offset address, Word value) {
         assert containsAddr(address);
-        //__data__[address.value] = value;
         dataObservableList.set(address.value, value);
+    }
+
+    @Override
+    public void add(Offset address, int x) {
+        load(address, new Word(fetch(address).value + x));
     }
 }

@@ -1,6 +1,6 @@
 package memory;
 
-import memory.primitives.Addr;
+import memory.primitives.Offset;
 import memory.primitives.MemSize;
 import memory.primitives.Word;
 
@@ -9,5 +9,7 @@ public abstract class RWMemory extends Memory {
         super(size);
     }
 
-    abstract public void load(Addr address, Word value);
+    abstract public void load(Offset address, Word value);
+
+    abstract public void add(Offset address, int x);
 }

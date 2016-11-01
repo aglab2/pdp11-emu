@@ -1,6 +1,6 @@
 package memory;
 
-import memory.primitives.Addr;
+import memory.primitives.Offset;
 import memory.primitives.MemSize;
 import memory.primitives.Word;
 
@@ -11,9 +11,9 @@ public abstract class Memory {
         this.size = size;
     }
 
-    abstract public Word fetch(Addr address);
+    abstract public Word fetch(Offset address);
 
-    public final boolean containsAddr(Addr address) {
+    public final boolean containsAddr(Offset address) {
         return address.value < size.value;
     }
 }

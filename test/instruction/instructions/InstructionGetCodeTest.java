@@ -4,7 +4,7 @@ import instruction.Instruction;
 import instruction.instuctions.*;
 import instruction.primitives.RegAddr;
 import instruction.primitives.RegMode;
-import memory.primitives.Addr;
+import memory.primitives.Offset;
 import memory.primitives.Word;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
@@ -42,7 +42,7 @@ public class InstructionGetCodeTest {
         assertInstruction("DIV R0,R1", 0b0111001_101_101001, new DIV(RegAddr.R5, RegMode.DAutoDec, RegAddr.R1, null));
         assertInstruction("ASH R0,R1", 0b0111010_000_110011, new ASH(RegAddr.R0, RegMode.Index, RegAddr.R3, null));
 
-        assertInstruction("BNE 20", 0b00000010_00010000, new BNE(new Addr(020)));
+        assertInstruction("BNE 20", 0b00000010_00010000, new BNE(new Offset(020)));
 
     }
 

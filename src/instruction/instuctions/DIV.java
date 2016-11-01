@@ -20,8 +20,8 @@ public class DIV extends RegisterMemoryInstruction {
 
     @Override
     public void apply(MemoryModel memory) {
-        int num1 = memory.registers.fetch(reg.address).value;
-        int num2 = !reg.isLast() ? memory.registers.fetch(reg.address.inc()).value : 0;
+        int num1 = memory.registers.fetch(reg.offset).value;
+        int num2 = !reg.isLast() ? memory.registers.fetch(reg.offset.inc()).value : 0;
 
         BusAddr src = sodMode.apply(memory, sodAddr, index);
         int srcValue = src.fetch(memory).value;
@@ -30,9 +30,9 @@ public class DIV extends RegisterMemoryInstruction {
         int div = regValue / srcValue;
         int mod = regValue % srcValue;
 
-        memory.registers.load(reg.address, new Word(div));
+        memory.registers.load(reg.offset, new Word(div));
         if (!reg.isLast())
-            memory.registers.load(reg.address.inc(), new Word(mod));
+            memory.registers.load(reg.offset.inc(), new Word(mod));
 
         memory.flags.setZN(div);
         memory.flags.V = (srcValue == 0 || regValue > Math.abs(srcValue));

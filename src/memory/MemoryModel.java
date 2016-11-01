@@ -2,15 +2,12 @@ package memory;
 
 
 import bus.MemoryBus;
-import memory.primitives.Addr;
+import instruction.primitives.RegAddr;
+import memory.primitives.Offset;
 import memory.primitives.MemSize;
 import memory.primitives.Word;
 
 public class MemoryModel {
-    public static final MemSize NUMBER_OF_REGISTERS = new MemSize(8);
-    public static final Addr STACK_POINTER_INDEX = new Addr(6);
-    public static final Addr PROGRAM_COUNTER_INDEX = new Addr(7);
-
     public final int ramOffset;
     public final int vramOffset;
     public final int romOffset;
@@ -21,7 +18,7 @@ public class MemoryModel {
     public final RWMemory ram;
     public final Memory rom;
     public final MemoryStorage vram;
-    public final RWMemory registers = new MemoryStorage(NUMBER_OF_REGISTERS);
+    public final RWMemory registers = new MemoryStorage(new MemSize(8));
     public final FlagsStorage flags = new FlagsStorage();
 
     public final MemoryBus bus;
@@ -44,34 +41,5 @@ public class MemoryModel {
 
         this.bus.addRegion(regOffset, this.registers);
         this.bus.addRegion(flagsOffset, this.flags);
-    }
-
-    public Addr getStackPointer() {
-        return registers.fetch(MemoryModel.STACK_POINTER_INDEX).toAddr();
-    }
-
-    public void setStackPointer(Addr value) {
-        registers.load(MemoryModel.STACK_POINTER_INDEX, value);
-    }
-
-
-    public Addr getProgramCounter() {
-        return registers.fetch(MemoryModel.PROGRAM_COUNTER_INDEX).toAddr();
-    }
-
-    public void setProgramCounter(Addr value) {
-        registers.load(MemoryModel.PROGRAM_COUNTER_INDEX, value);
-    }
-
-
-    public void stackPut(Word value) {
-        ram.load(getStackPointer(), value);
-        setStackPointer(getStackPointer().inc());
-    }
-
-    public Word stackPop() {
-        Word value = ram.fetch(getStackPointer());
-        setStackPointer(getStackPointer().dec());
-        return value;
     }
 }

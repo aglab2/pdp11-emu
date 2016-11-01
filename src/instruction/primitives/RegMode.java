@@ -3,7 +3,7 @@ package instruction.primitives;
 import bus.BusAddr;
 import com.sun.istack.internal.Nullable;
 import memory.MemoryModel;
-import memory.primitives.Addr;
+import memory.primitives.Offset;
 import memory.primitives.Word;
 
 /**
@@ -16,63 +16,61 @@ public enum RegMode {
     Register() {
         @Override
         public BusAddr apply(MemoryModel memory, RegAddr regAddr, @Nullable Word nextWord) {
-            return new BusAddr(regAddr.address.value * 2 + memory.regOffset); //Registers also live on Bus
+            return new BusAddr(memory.regOffset, regAddr.offset);
         }
     },
     DRegister() {
         @Override
         public BusAddr apply(MemoryModel memory, RegAddr regAddr, @Nullable Word nextWord) {
-            Addr addr = memory.registers.fetch(regAddr.address).toAddr();
+            Word addr = memory.registers.fetch(regAddr.offset);
             return new BusAddr(addr.value);
         }
     },
     AutoInc() {
         @Override
         public BusAddr apply(MemoryModel memory, RegAddr regAddr, @Nullable Word nextWord) {
-            Addr addr = memory.registers.fetch(regAddr.address).toAddr();
-            memory.registers.load(regAddr.address, addr.inc());
+            Word addr = memory.registers.fetch(regAddr.offset);
+            memory.registers.load(regAddr.offset, addr.inc2());
             return new BusAddr(addr.value);
         }
     },
     DAutoInc() {
         @Override
         public BusAddr apply(MemoryModel memory, RegAddr regAddr, @Nullable Word nextWord) {
-            Addr addr = memory.registers.fetch(regAddr.address).toAddr();
-            memory.registers.load(regAddr.address, addr.inc());
-            return new BusAddr(memory.ram.fetch(addr).toAddr().value);
+            Word addr = memory.registers.fetch(regAddr.offset);
+            memory.registers.load(regAddr.offset, addr.inc2());
+            return new BusAddr(memory.bus.fetch(addr.value).value);
         }
     },
     AutoDec() {
         @Override
         public BusAddr apply(MemoryModel memory, RegAddr regAddr, @Nullable Word nextWord) {
-            Addr newAddr = memory.registers.fetch(regAddr.address).toAddr().dec();
-            memory.registers.load(regAddr.address, newAddr);
+            Word newAddr = memory.registers.fetch(regAddr.offset).dec2();
+            memory.registers.load(regAddr.offset, newAddr);
             return new BusAddr(newAddr.value);
         }
     },
     DAutoDec() {
         @Override
         public BusAddr apply(MemoryModel memory, RegAddr regAddr, @Nullable Word nextWord) {
-            Addr newAddr = memory.registers.fetch(regAddr.address).dec().toAddr();
-            memory.registers.load(regAddr.address, newAddr);
-            return new BusAddr(memory.ram.fetch(newAddr).toAddr().value);
+            Word newAddr = memory.registers.fetch(regAddr.offset).dec2();
+            memory.registers.load(regAddr.offset, newAddr);
+            return new BusAddr(memory.bus.fetch(newAddr.value).value);
         }
     },
     Index() {
         @Override
         public BusAddr apply(MemoryModel memory, RegAddr regAddr, @Nullable Word nextWord) {
             assert nextWord != null;
-            Addr addr = new Addr(memory.registers.fetch(regAddr.address).value + nextWord.value);
-            return new BusAddr(addr.value);
+            return new BusAddr(memory.registers.fetch(regAddr.offset).value + nextWord.value);
         }
     },
     DIndex() {
         @Override
         public BusAddr apply(MemoryModel memory, RegAddr regAddr, @Nullable Word nextWord) {
             assert nextWord != null;
-            Word reg = memory.registers.fetch(regAddr.address);
-            Addr addr = new Addr(reg.value + nextWord.value);
-            return new BusAddr(memory.ram.fetch(addr).toAddr().value);
+            Word reg = memory.registers.fetch(regAddr.offset);
+            return new BusAddr(memory.bus.fetch(reg.value + nextWord.value).value);
         }
     };
 

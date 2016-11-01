@@ -1,15 +1,15 @@
 package instruction;
 
 import com.sun.istack.internal.Nullable;
-import memory.primitives.Addr;
+import memory.primitives.Offset;
 import memory.primitives.Word;
 
 import java.lang.reflect.InvocationTargetException;
 
 public abstract class BranchInstruction extends Instruction {
-    public final Addr offset;
+    public final Offset offset;
 
-    public BranchInstruction(Word code, Addr offset) {
+    public BranchInstruction(Word code, Offset offset) {
         super(code, 8);
         this.offset = offset;
     }
@@ -26,10 +26,10 @@ public abstract class BranchInstruction extends Instruction {
 
         int value = word.value;
 
-        Object[] params = {new Addr(value & 0xFF)};
+        Object[] params = {new Offset(value & 0xFF)};
 
         try {
-            return this.getClass().getConstructor(Addr.class).newInstance(params);
+            return this.getClass().getConstructor(Offset.class).newInstance(params);
         } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }

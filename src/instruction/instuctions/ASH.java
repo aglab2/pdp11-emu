@@ -22,13 +22,13 @@ public class ASH extends RegisterMemoryInstruction {
     public void apply(MemoryModel memory) {
         BusAddr src = sodMode.apply(memory, sodAddr, index);
         int num = src.fetch(memory).value;
-        int data = memory.registers.fetch(reg.address).value;
+        int data = memory.registers.fetch(reg.offset).value;
 
         int res = (num >= 0) ? data << num : data >> -num;
 
         memory.flags.setZN(res);
-        memory.flags.V = (res * memory.registers.fetch(reg.address).value < 0);
+        memory.flags.V = (res * memory.registers.fetch(reg.offset).value < 0);
 
-        memory.registers.load(reg.address, new Word(res));
+        memory.registers.load(reg.offset, new Word(res));
     }
 }

@@ -4,7 +4,7 @@ import instruction.Instruction;
 import instruction.instuctions.*;
 import instruction.primitives.RegAddr;
 import instruction.primitives.RegMode;
-import memory.primitives.Addr;
+import memory.primitives.Offset;
 import memory.primitives.Word;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -63,7 +63,7 @@ public class ParserTest {
                 new ASH(RegAddr.R0, RegMode.Index, RegAddr.R3, null));
 
         assertInstruction("BNE 20", 0b00000010_00010000, null, null,
-                new BNE(new Addr(020)));
+                new BNE(new Offset(020)));
     }
 
     @Test @Ignore

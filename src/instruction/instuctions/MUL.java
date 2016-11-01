@@ -22,12 +22,12 @@ public class MUL extends RegisterMemoryInstruction {
     @Override
     public void apply(MemoryModel memory) {
         BusAddr src = sodMode.apply(memory, sodAddr, index);
-        int result = memory.registers.fetch(reg.address).value * src.fetch(memory).value;
+        int result = memory.registers.fetch(reg.offset).value * src.fetch(memory).value;
 
-        memory.registers.load(reg.address, new Word(result & 0xFFFF));
+        memory.registers.load(reg.offset, new Word(result & 0xFFFF));
 
         if (!reg.isLast())
-            memory.registers.load(reg.address.inc(), new Word(result & 0xFFFF0000));
+            memory.registers.load(reg.offset.inc(), new Word(result & 0xFFFF0000));
 
         memory.flags.setZN(result);
         memory.flags.V = false;

@@ -1,6 +1,6 @@
 package instruction.primitives;
 
-import memory.primitives.Addr;
+import memory.primitives.Offset;
 
 /**
  * Created by voddan on 12/10/16.
@@ -12,7 +12,7 @@ public enum RegAddr {
 
     public final int value = ordinal();
 
-    public final Addr address = new Addr(value);
+    public final Offset offset = new Offset(value);
 
     /** has no other register after itself */
     public final boolean isLast() {
@@ -24,10 +24,13 @@ public enum RegAddr {
     }
 
 //    public Word fetch(MemoryModel memory) {
-//        return memory.registers.fetch(this.address);
+//        return memory.registers.fetch(this.offset);
 //    }
 //
 //    public void load(MemoryModel memory, Word value) {
-//        memory.registers.load(this.address, value);
+//        memory.registers.load(this.offset, value);
 //    }
+
+    public static final RegAddr SP = R6;
+    public static final RegAddr PC = R7;
 }

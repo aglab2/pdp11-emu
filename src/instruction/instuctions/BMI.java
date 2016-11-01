@@ -1,8 +1,9 @@
 package instruction.instuctions;
 
 import instruction.BranchInstruction;
+import instruction.primitives.RegAddr;
 import memory.MemoryModel;
-import memory.primitives.Addr;
+import memory.primitives.Offset;
 import memory.primitives.Word;
 
 /**
@@ -10,13 +11,13 @@ import memory.primitives.Word;
  */
 public class BMI extends BranchInstruction {
 
-    public BMI(Addr offset) {
+    public BMI(Offset offset) {
         super(new Word(0b1000_0001_00000000), offset);
     }
 
     @Override
     public void apply(MemoryModel memory) {
         if (memory.flags.N)
-            memory.setProgramCounter(new Addr(memory.getProgramCounter().value + offset.toShort()));
+            memory.registers.add(RegAddr.PC.offset, 2 * offset.toSigned());
     }
 }

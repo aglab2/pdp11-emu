@@ -31,6 +31,7 @@ public class InstructionApplyTest {
     public void incTest() throws Exception {
         Instruction[] code = {
                 new INC(RegMode.Register, RegAddr.R0, null),
+                new INC(RegMode.Register, RegAddr.R0, null),
                 new INC(RegMode.DRegister, RegAddr.R0, null),
                 new INC(RegMode.AutoInc, RegAddr.R1, null),
                 new INC(RegMode.AutoInc, RegAddr.R1, null),
@@ -40,13 +41,14 @@ public class InstructionApplyTest {
         for(Instruction i : code)
             i.apply(memory);
 
-        assertMemory("REGs", memory.registers, new int[] {1, 3});
+        assertMemory("REGs", memory.registers, new int[] {2, 6});
         assertMemory("RAM", memory.ram, new int[] {1, 2, 1});
     }
 
     @Test
     public void incTest2() throws Exception {
         Instruction[] code = {
+                new INC(RegMode.Register, RegAddr.R0, null),
                 new INC(RegMode.Register, RegAddr.R0, null),
                 new INC(RegMode.DRegister, RegAddr.R0, null),
                 new INC(RegMode.AutoInc, RegAddr.R1, null),
@@ -58,7 +60,7 @@ public class InstructionApplyTest {
         for(Instruction i : code)
             i.apply(memory);
 
-        assertMemory("REGs", memory.registers, new int[] {1, 4});
+        assertMemory("REGs", memory.registers, new int[] {2, 8});
         assertMemory("RAM", memory.ram, new int[] {2, 2, 1, 0});
     }
 

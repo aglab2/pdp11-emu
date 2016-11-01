@@ -14,16 +14,20 @@ public class Word {
         this((lowByte & 0xFF) | ((int) highByte) << 8);   // Little Endian
     }
 
-    public Addr toAddr() {
-        return new Addr(value);
-    }
-
     public Word inc() {
         return new Word(value + 1);
     }
 
     public Word dec() {
         return new Word(value - 1);
+    }
+
+    public Word inc2() {
+        return new Word(value + 2);
+    }
+
+    public Word dec2() {
+        return new Word(value - 2);
     }
 
     @Override
@@ -53,7 +57,7 @@ public class Word {
         return (byte) ((value & 0xFF00) >> 8);
     }
 
-    public short toShort() {
+    public short toSigned() {
         return (short) ((value < 128) ? value : value - 256);
     }
 
