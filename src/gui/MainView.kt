@@ -1,9 +1,7 @@
 package gui
 
 import MainController
-import com.apple.concurrent.*
 import javafx.beans.binding.*
-import javafx.beans.value.*
 import javafx.collections.*
 import javafx.event.*
 import javafx.geometry.*
@@ -27,7 +25,7 @@ class MainView : View() {
     init { title = "PDP-11-40" }
 
 
-    override val root = vbox(1.0) root@{
+    override val root = vbox(1.0) {
         padding = Insets(3.0)
 
         hbox(11.0) {
@@ -59,7 +57,14 @@ class MainView : View() {
                 listview(memoryModel.rom.dataObservableList) {
                     vgrow(Priority.ALWAYS)
                     cellFormat {
-                        graphic = label(("000" + Integer.toHexString(it.value)).take(4))
+                        val busAddr = memoryModel.bus.getBusAddr(memoryModel.rom as RWMemory?, Offset(index))
+
+                        graphic = hbox {
+                            label(Word(busAddr).fmtOctal())
+                            label(it.fmtOctal())
+
+                            spacing = 4.0
+                        }
                     }
                 }
             }
@@ -70,47 +75,50 @@ class MainView : View() {
                 listview(memoryModel.ram.dataObservableList) {
                     vgrow(Priority.ALWAYS)
                     cellFormat {
-                        graphic = label(("000" + Integer.toHexString(it.value)).take(4))
+                        graphic = label(it.fmtHex())
                     }
                 }
 
             }
         }
 
+
         buttonbar {
             button("Start") {
-                setOnMouseClicked { controller.startButtonHandler() }
+                setOnAction { controller.startButtonHandler() }
                 this.disableProperty().bind(controller.executorPlays.or(controller.executorIsHalted))
             }
             button("Pause") {
-                setOnMouseClicked { controller.pauseButtonHandler() }
+                setOnAction { controller.pauseButtonHandler() }
                 this.disableProperty().bind(controller.executorPlays.not())
             }
             button("Reset") {
-                setOnMouseClicked { controller.resetButtonHandler() }
+                setOnAction { controller.resetButtonHandler() }
                 this.defaultButtonProperty().bind(controller.executorIsHalted)
             }
             button("Step") {
-                setOnMouseClicked { controller.stepButtonHandler() }
+                setOnAction { controller.stepButtonHandler() }
                 this.disableProperty().bind(controller.executorPlays.or(controller.executorIsHalted))
+
+                tooltip("F7")
 
                 sceneProperty().onChange { scene ->
                     if(scene != null) {
-
                         val F7 = KeyCodeCombination(KeyCode.F7)
                         if(F7 !in scene.accelerators) {
-                            scene.accelerators.put(F7, Runnable { this@button.fire(); println("fire") })
-                            scene.accelerators.forEach { println("${it.key}; ${it.value}") }
-                            println("set F7!")
+                            scene.accelerators.put(F7, Runnable { this@button.fire() })
                         }
                     }
                 }
+
             }
 
             style {
                 padding = box(1.px)
             }
         }
+
+
 
         centeredLabel("Developed by Daniil Vodopian (@voddan) and Denis Kopyrin (@aglab2)").apply {
             alignment = Pos.BASELINE_CENTER

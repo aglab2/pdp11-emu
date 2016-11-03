@@ -66,6 +66,14 @@ public class Word {
         return String.format("%16s", Integer.toBinaryString(value)).replace(' ', '0');
     }
 
+    public String fmtOctal() {
+        return String.format("%6s", Integer.toOctalString(value)).replace(' ', '0');
+    }
+
+    public String fmtHex() {
+        return String.format("%4s", Integer.toHexString(value)).replace(' ', '0');
+    }
+
     public static final Word ZERO = new Word(0);
     public static final Word NaN = new Word(-1) {
         @Override
