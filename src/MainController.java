@@ -47,7 +47,7 @@ public class MainController extends Controller {
 
     public void startButtonHandler() {
         executorPlays.set(true);
-        executor.startExecution();
+        executor.execute();
         executorPlays.set(false);
     }
 

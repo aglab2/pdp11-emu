@@ -44,6 +44,11 @@ public class VideoManager {
         drawPixel(index * 4 + 3, (colorByte & 0b00000011) >> 0);
     }
 
+    void drawWord(int addr, Word colorWord) {
+        drawByte(2 * addr + 0, colorWord.lowByte());
+        drawByte(2 * addr + 1, colorWord.highByte());
+    }
+
     private ListChangeListener<Word> listener = new ListChangeListener<Word>() {
         @Override
         public void onChanged(Change<? extends Word> c) {
@@ -53,8 +58,10 @@ public class VideoManager {
                     for (int addr = c.getFrom(); addr < c.getTo(); addr++) {
                         Word colorWord = list.get(addr);
 
-                        drawByte(2 * addr + 0, colorWord.lowByte());
-                        drawByte(2 * addr + 1, colorWord.highByte());
+//                        drawByte(2 * addr + 0, colorWord.lowByte());
+//                        drawByte(2 * addr + 1, colorWord.highByte());
+
+                        drawWord(addr, colorWord);
                     }
                 }
             }
@@ -69,5 +76,9 @@ public class VideoManager {
         this.pixelWriter = screen.getPixelWriter();
         this.vramObservableList = vramObservableList;
         this.vramObservableList.addListener(this.listener);
+
+        for (int i = 0; i < vramObservableList.size(); i++) {
+            drawWord(i, vramObservableList.get(i));
+        }
     }
 }

@@ -41,7 +41,7 @@ public class Executor {
         return true;
     }
 
-    public void startExecution() {
+    public void execute() {
         play = true;
         while (executeStep())
             try {

@@ -1,6 +1,7 @@
 package gui
 
 import MainController
+import com.apple.concurrent.*
 import javafx.beans.binding.*
 import javafx.beans.value.*
 import javafx.collections.*
@@ -8,7 +9,10 @@ import javafx.event.*
 import javafx.geometry.*
 import javafx.scene.*
 import javafx.scene.image.*
+import javafx.scene.input.*
+import javafx.scene.layout.*
 import javafx.scene.paint.*
+import javafx.scene.text.*
 import memory.*
 import memory.primitives.*
 import tornadofx.*
@@ -20,39 +24,56 @@ class MainView : View() {
     val memoryModel: MemoryModel = controller.memoryModel
     val screen: WritableImage = controller.screen
 
-    val romList = memoryModel.rom.dataObservableList
-    val registerList = memoryModel.registers.dataObservableList
+    init { title = "PDP-11-40" }
 
 
-    override val root = vbox(1.0) {
-
+    override val root = vbox(1.0) root@{
         padding = Insets(3.0)
 
-        label("Hello world")
+        hbox(11.0) {
+            vgrow(Priority.ALWAYS)
 
-        hbox(10.0) {
             stackpane {
-                imageview { image = screen }
-
-                style {
-                    borderColor += box(Color.BLACK)
-                    borderWidth += box(2.px)
-                    backgroundColor += Color.WHITE
+                imageview {
+                    image = screen
+                    isPreserveRatio = true
                 }
+
+                hgrow(Priority.ALWAYS)
+                vgrow(Priority.ALWAYS)
             }
 
             vbox(1.0) {
-                registersLayout(registerList)
+                centeredLabel("REGs").apply { alignment = Pos.BASELINE_RIGHT }
 
+                registersLayout(memoryModel.registers.dataObservableList)
+                spacer() {maxHeight = 11.0}
                 flagsLayout(memoryModel.flags)
 
+                hgrow(Priority.NEVER)
             }
 
-            listview(romList) {
-                prefHeight = 150.0
-                cellFormat {
-                    graphic = label(("000" + Integer.toHexString(it.value)).take(4))
+            vbox {
+                centeredLabel("ROM")
+
+                listview(memoryModel.rom.dataObservableList) {
+                    vgrow(Priority.ALWAYS)
+                    cellFormat {
+                        graphic = label(("000" + Integer.toHexString(it.value)).take(4))
+                    }
                 }
+            }
+
+            vbox {
+                centeredLabel("RAM")
+
+                listview(memoryModel.ram.dataObservableList) {
+                    vgrow(Priority.ALWAYS)
+                    cellFormat {
+                        graphic = label(("000" + Integer.toHexString(it.value)).take(4))
+                    }
+                }
+
             }
         }
 
@@ -72,20 +93,47 @@ class MainView : View() {
             button("Step") {
                 setOnMouseClicked { controller.stepButtonHandler() }
                 this.disableProperty().bind(controller.executorPlays.or(controller.executorIsHalted))
+
+                sceneProperty().onChange { scene ->
+                    if(scene != null) {
+
+                        val F7 = KeyCodeCombination(KeyCode.F7)
+                        if(F7 !in scene.accelerators) {
+                            scene.accelerators.put(F7, Runnable { this@button.fire(); println("fire") })
+                            scene.accelerators.forEach { println("${it.key}; ${it.value}") }
+                            println("set F7!")
+                        }
+                    }
+                }
             }
 
             style {
                 padding = box(1.px)
             }
         }
+
+        centeredLabel("Developed by Daniil Vodopian (@voddan) and Denis Kopyrin (@aglab2)").apply {
+            alignment = Pos.BASELINE_CENTER
+            font = Font.font(10.0)
+            background = Background(BackgroundFill(Paint.valueOf("#e6e6e6"), null, null))
+        }
     }
+
+
 }
 
+fun Node.hgrow(priority: Priority) = HBox.setHgrow(this, priority)
+fun Node.vgrow(priority: Priority) = VBox.setVgrow(this, priority)
+
+fun EventTarget.centeredLabel(str: String) = label(str) {
+    alignment = Pos.BASELINE_CENTER
+    maxWidth = Double.MAX_VALUE
+}
 
 fun EventTarget.registersLayout(registerList: ObservableList<Word>) {
     for(index in registerList.indices) {
         hbox(5.0) {
-            label("reg$index") {
+            label("R$index") {
                 prefWidth = 45.0
                 alignment = Pos.CENTER_RIGHT
             }

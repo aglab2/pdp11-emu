@@ -10,11 +10,11 @@ import memory.primitives.Word;
  * Created by voddan on 26/10/16.
  */
 public class FlagsStorage extends RWMemory {
-    public final BooleanProperty T = new SimpleBooleanProperty(false);
-    public final BooleanProperty N = new SimpleBooleanProperty(false);
-    public final BooleanProperty Z = new SimpleBooleanProperty(false);
-    public final BooleanProperty V = new SimpleBooleanProperty(false);
-    public final BooleanProperty C = new SimpleBooleanProperty(false);
+    public final BooleanProperty T = new SimpleBooleanProperty(null, "T", false);
+    public final BooleanProperty N = new SimpleBooleanProperty(null, "N", false);
+    public final BooleanProperty Z = new SimpleBooleanProperty(null, "Z", false);
+    public final BooleanProperty V = new SimpleBooleanProperty(null, "V", false);
+    public final BooleanProperty C = new SimpleBooleanProperty(null, "C", false);
 
     public FlagsStorage() {
         super(MemSize.ONE);
