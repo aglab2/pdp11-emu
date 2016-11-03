@@ -6,6 +6,7 @@ import javafx.collections.*
 import javafx.event.*
 import javafx.geometry.*
 import javafx.scene.*
+import javafx.scene.control.*
 import javafx.scene.image.*
 import javafx.scene.input.*
 import javafx.scene.layout.*
@@ -35,6 +36,14 @@ class MainView : View() {
                 imageview {
                     image = screen
                     isPreserveRatio = true
+
+                    val h = this@stackpane.heightProperty().divide(screen.height)
+                    val w = this@stackpane.widthProperty().divide(screen.width)
+
+                    val scale = Bindings.min(h, w)
+
+                    scaleXProperty().bind(scale)
+                    scaleYProperty().bind(scale)
                 }
 
                 hgrow(Priority.ALWAYS)
@@ -42,7 +51,7 @@ class MainView : View() {
             }
 
             vbox(1.0) {
-                centeredLabel("REGs").apply { alignment = Pos.BASELINE_RIGHT }
+                centeredLabel("REGs") { alignment = Pos.BASELINE_RIGHT }
 
                 registersLayout(memoryModel.registers.dataObservableList)
                 spacer() {maxHeight = 11.0}
@@ -60,10 +69,11 @@ class MainView : View() {
                         val busAddr = memoryModel.bus.getBusAddr(memoryModel.rom as RWMemory?, Offset(index))
 
                         graphic = hbox {
-                            label(Word(busAddr).fmtOctal())
-                            label(it.fmtOctal())
+                            centeredLabel(Word(busAddr).fmtOctal()) { prefWidth = 60.0 }
+                            radiobutton()
+                            centeredLabel(it.fmtOctal()) { prefWidth = 60.0}
 
-                            spacing = 4.0
+                            spacing = 6.0
                         }
                     }
                 }
@@ -119,8 +129,7 @@ class MainView : View() {
         }
 
 
-
-        centeredLabel("Developed by Daniil Vodopian (@voddan) and Denis Kopyrin (@aglab2)").apply {
+        centeredLabel("Developed by Daniil Vodopian (@voddan) and Denis Kopyrin (@aglab2)") {
             alignment = Pos.BASELINE_CENTER
             font = Font.font(10.0)
             background = Background(BackgroundFill(Paint.valueOf("#e6e6e6"), null, null))
@@ -133,25 +142,26 @@ class MainView : View() {
 fun Node.hgrow(priority: Priority) = HBox.setHgrow(this, priority)
 fun Node.vgrow(priority: Priority) = VBox.setVgrow(this, priority)
 
-fun EventTarget.centeredLabel(str: String) = label(str) {
+fun EventTarget.centeredLabel(str: String, op: (Label.() -> Unit)? = null) = label(str) {
     alignment = Pos.BASELINE_CENTER
     maxWidth = Double.MAX_VALUE
+    op?.invoke(this)
 }
 
 fun EventTarget.registersLayout(registerList: ObservableList<Word>) {
     for(index in registerList.indices) {
         hbox(5.0) {
             label("R$index") {
-                prefWidth = 45.0
+                minWidth = 20.0
                 alignment = Pos.CENTER_RIGHT
             }
 
             textfield {
                 alignment = Pos.BASELINE_CENTER
-                prefWidth = 60.0
+                prefWidth = 70.0
 
                 val word = Bindings.valueAt(registerList, index)
-                val text = Bindings.createStringBinding(Callable {Integer.toHexString(word.get().value)}, word)
+                val text = Bindings.createStringBinding(Callable {word.get().fmtOctal()}, word)
                 textProperty().bind(text)
             }
         }
@@ -162,13 +172,13 @@ fun EventTarget.flagsLayout(flags: FlagsStorage) {
     for(f in listOf(flags.T, flags.N, flags.Z, flags.V, flags.C)) {
         hbox(5.0) {
             label(f.name) {
-                prefWidth = 45.0
+                minWidth = 20.0
                 alignment = Pos.CENTER_RIGHT
             }
 
             textfield {
                 alignment = Pos.BASELINE_CENTER
-                prefWidth = 60.0
+                prefWidth = 70.0
 
                 val text = Bindings.createStringBinding(Callable {f.get().toString()}, f)
                 textProperty().bind(text)
