@@ -1,8 +1,6 @@
 package instruction;
 
 import com.sun.istack.internal.Nullable;
-import instruction.primitives.RegAddr;
-import instruction.primitives.RegMode;
 import memory.primitives.Word;
 
 import java.lang.reflect.InvocationTargetException;
@@ -15,6 +13,11 @@ public abstract class ZeroOperandInstruction extends Instruction {
     @Override
     public Word getBinary() {
         return range.start;
+    }
+
+    @Override
+    public String getAssembler() {
+        return name;
     }
 
     @Override

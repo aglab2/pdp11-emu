@@ -27,6 +27,11 @@ public abstract class SingleOperandInstruction extends Instruction {
     }
 
     @Override
+    public String getAssembler() {
+        return name + " " + dstMode.getAssembler(dstAddr, index);
+    }
+
+    @Override
     public Instruction parse(Word word, @Nullable Word index1, @Nullable Word index2) {
         if (!range.contains(word))
             throw new UnsupportedOperationException("Word " + word + " is not in range");

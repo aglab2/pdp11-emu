@@ -16,7 +16,14 @@ public abstract class BranchInstruction extends Instruction {
 
     @Override
     public Word getBinary() {
-        return new Word(range.start.value | offset.toSignedByte());
+        return new Word(range.start.value | (offset.toSignedByte() & 0xFF));
+    }
+
+    @Override
+    public String getAssembler() {
+        byte signed = offset.toSignedByte();
+        int abs = Math.abs(signed);
+        return name + " " + (signed < 0 ? "-" : "") + Integer.toOctalString(abs);
     }
 
     @Override

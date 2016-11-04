@@ -17,7 +17,7 @@ public class HALT extends ZeroOperandInstruction {
     }
 
     @Override
-    public void apply(MemoryModel memory) {
+    public void execute(MemoryModel memory) {
         memory.registers.load(RegAddr.PC.offset, Word.NaN);
     }
 }

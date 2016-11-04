@@ -41,6 +41,11 @@ public abstract class DoubleOperandInstruction extends Instruction {
     }
 
     @Override
+    public String getAssembler() {
+        return name + " " + srcMode.getAssembler(srcAddr, srcIndex) + "," + dstMode.getAssembler(dstAddr, dstIndex);
+    }
+
+    @Override
     public Instruction parse(Word word, @Nullable Word index1, @Nullable Word index2) {
         if (!range.contains(word))
             throw new UnsupportedOperationException("Word " + word + " is not in range");

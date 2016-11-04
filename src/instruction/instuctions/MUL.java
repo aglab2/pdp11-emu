@@ -20,7 +20,7 @@ public class MUL extends RegisterMemoryInstruction {
     }
 
     @Override
-    public void apply(MemoryModel memory) {
+    public void execute(MemoryModel memory) {
         BusAddr src = sodMode.apply(memory, sodAddr, index);
         int result = memory.registers.fetch(reg.offset).toSigned() * src.fetch(memory).toSigned();
 

@@ -16,7 +16,7 @@ public class CLR extends SingleOperandInstruction {
     }
 
     @Override
-    public void apply(MemoryModel memory) {
+    public void execute(MemoryModel memory) {
         BusAddr dst = dstMode.apply(memory, dstAddr, index);
         dst.load(memory, Word.ZERO);
         memory.flags.setArithm(0, 1, 0, 0);

@@ -17,7 +17,7 @@ public class BR extends BranchInstruction {
     }
 
     @Override
-    public void apply(MemoryModel memory) {
+    public void execute(MemoryModel memory) {
         memory.registers.add(RegAddr.PC.offset, 2 * offset.toSignedByte());
     }
 }

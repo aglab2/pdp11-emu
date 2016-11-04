@@ -19,7 +19,7 @@ public class CMP extends DoubleOperandInstruction {
     }
 
     @Override
-    public void apply(MemoryModel memory) {
+    public void execute(MemoryModel memory) {
         BusAddr src = srcMode.apply(memory, srcAddr, srcIndex);
         BusAddr dst = dstMode.apply(memory, dstAddr, dstIndex);
         int srcValue = src.fetch(memory).toSigned();

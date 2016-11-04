@@ -59,7 +59,8 @@ public class Word {
     }
 
     public byte toSignedByte() {
-        return (byte) ((value <= Byte.MAX_VALUE) ? value : value - (1 << 8));
+        int v = (value & 0xFF);
+        return (byte) ((v <= Byte.MAX_VALUE) ? v : v - (1 << 8));
     }
 
     public String fmtBinary() {

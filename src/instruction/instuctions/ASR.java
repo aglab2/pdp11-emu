@@ -16,7 +16,7 @@ public class ASR extends SingleOperandInstruction {
     }
 
     @Override
-    public void apply(MemoryModel memory) {
+    public void execute(MemoryModel memory) {
         BusAddr dst = dstMode.apply(memory, dstAddr, index);
         int res = dst.fetch(memory).value >> 1;
 

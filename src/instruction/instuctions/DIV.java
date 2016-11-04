@@ -19,7 +19,7 @@ public class DIV extends RegisterMemoryInstruction {
     }
 
     @Override
-    public void apply(MemoryModel memory) {
+    public void execute(MemoryModel memory) {
         int num1 = memory.registers.fetch(reg.offset).value;
         int num2 = !reg.isLast() ? memory.registers.fetch(reg.offset.inc()).value : 0;
 

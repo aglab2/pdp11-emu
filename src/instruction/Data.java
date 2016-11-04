@@ -21,7 +21,12 @@ public class Data extends Instruction {
     }
 
     @Override
-    public void apply(MemoryModel memory) {
+    public String getAssembler() {
+        return data.fmtOctal();
+    }
+
+    @Override
+    public void execute(MemoryModel memory) {
         throw new UnsupportedOperationException(String.format("%16s", Integer.toBinaryString(data.value)).replace(' ', '0'));
     }
 

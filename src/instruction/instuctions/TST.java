@@ -16,7 +16,7 @@ public class TST extends SingleOperandInstruction {
     }
 
     @Override
-    public void apply(MemoryModel memory) {
+    public void execute(MemoryModel memory) {
         BusAddr dst = dstMode.apply(memory, dstAddr, index);
         Word res = dst.fetch(memory);
         memory.flags.clearArithm();

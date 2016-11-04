@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by voddan on 26/10/16.
  */
-public class InstructionApplyTest {
+public class InstructionExecuteTest {
     MemoryModel memory;
 
     @Before
@@ -39,7 +39,7 @@ public class InstructionApplyTest {
         };
 
         for(Instruction i : code)
-            i.apply(memory);
+            i.execute(memory);
 
         assertMemory("REGs", memory.registers, new int[] {2, 6});
         assertMemory("RAM", memory.ram, new int[] {1, 2, 1});
@@ -58,7 +58,7 @@ public class InstructionApplyTest {
         };
 
         for(Instruction i : code)
-            i.apply(memory);
+            i.execute(memory);
 
         assertMemory("REGs", memory.registers, new int[] {2, 8});
         assertMemory("RAM", memory.ram, new int[] {2, 2, 1, 0});

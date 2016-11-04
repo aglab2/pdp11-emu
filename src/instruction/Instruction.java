@@ -10,14 +10,20 @@ import memory.primitives.Word;
  */
 public abstract class Instruction {
     public final InstructionRange range;
+    public final String name;
 
     public Instruction(Word code, int bitSize) {
         this.range = new InstructionRange(code, 16 - bitSize);
+        this.name = this.getClass().getSimpleName();
     }
+
 
     public abstract Word getBinary();
 
-    public abstract void apply(MemoryModel memory);
+    public abstract String getAssembler();
+
+
+    public abstract void execute(MemoryModel memory);
 
     public abstract Instruction parse(Word word, @Nullable Word index1, @Nullable Word index2);
 

@@ -16,7 +16,7 @@ public class SWAP extends SingleOperandInstruction {
     }
 
     @Override
-    public void apply(MemoryModel memory) {
+    public void execute(MemoryModel memory) {
         BusAddr dst = dstMode.apply(memory, dstAddr, index);
         Word word = dst.fetch(memory);
         Word res = new Word(word.highByte(), word.lowByte());

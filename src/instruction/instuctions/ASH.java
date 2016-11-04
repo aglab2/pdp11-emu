@@ -19,7 +19,7 @@ public class ASH extends RegisterMemoryInstruction {
     }
 
     @Override
-    public void apply(MemoryModel memory) {
+    public void execute(MemoryModel memory) {
         BusAddr src = sodMode.apply(memory, sodAddr, index);
         int num = src.fetch(memory).value;
         int data = memory.registers.fetch(reg.offset).value;

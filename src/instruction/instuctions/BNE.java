@@ -16,7 +16,7 @@ public class BNE extends BranchInstruction {
     }
 
     @Override
-    public void apply(MemoryModel memory) {
+    public void execute(MemoryModel memory) {
         if (!memory.flags.Z.get())
             memory.registers.add(RegAddr.PC.offset, 2 * offset.toSignedByte());
     }

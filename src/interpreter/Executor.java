@@ -5,10 +5,6 @@ import instruction.primitives.RegAddr;
 import memory.MemoryModel;
 import memory.primitives.Word;
 
-import java.util.Objects;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 /**
  * Created by voddan on 01/11/16.
  */
@@ -37,7 +33,7 @@ public class Executor {
 
         memory.registers.add(RegAddr.PC.offset, 2 * (1 + instruction.indexСapacity()));
 
-        instruction.apply(memory);
+        instruction.execute(memory);
         return true;
     }
 
