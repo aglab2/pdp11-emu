@@ -18,9 +18,9 @@ Mfor:	MOV R3, (R1)+ 		;set vram addr
 	BR Mwhile		
 
 Mwend:	MOV #60, R2
-	MOV #17, R3
-	MOV #07, R4		
-	JSR R5, Sstart
+	MOV #0, R3
+	MOV #0, R4		
+	JSR PC, Sstart
 	HALT
 	
 
@@ -29,7 +29,7 @@ Mwend:	MOV #60, R2
 	HALT; Protector before subroutines
 
 ;subroutine	: Print Symbol to vram
-;call		: JSR R5, Sstart
+;call		: JSR PC, Sstart
 ;arguments	: R3: x in 0..31(037) (word align), R4: y in 0..15(017) (letter height align), R2: letter code in ASCII
 ;destroyed	: R0, R1, R2
 ;changed	: R3 and R4 are changed to next symbol to print, so you can chain routines
@@ -63,5 +63,5 @@ Sfor:	MOV (R2)+, (R0)		;write word to vram = 1 line of symbol
 	CMP R4, #20		;Check for overflow in y
 	BNE Send		;If we got overflow, move to the beginning
 	CLR R4
-Send:	RTS R5
+Send:	HALT;RTS PC
 
