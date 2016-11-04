@@ -1,3 +1,4 @@
+import instruction.Instruction;
 import instruction.primitives.RegAddr;
 import interpreter.Executor;
 import interpreter.Parser;
@@ -6,12 +7,16 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.scene.image.WritableImage;
 import memory.MemoryModel;
 import memory.MemoryStorage;
 import memory.primitives.MemSize;
 import memory.primitives.Word;
+import org.fxmisc.easybind.EasyBind;
 import tornadofx.Controller;
+import util.IndexedValue;
+import util.Util;
 import videomanager.VideoManager;
 
 import javax.xml.bind.ValidationException;
@@ -37,14 +42,26 @@ public class MainController extends Controller {
     public final Parser parser = new Parser();
     public final Executor executor = new Executor(memoryModel, parser);
 
+    public final ObservableList<IndexedValue<Instruction>> instructions;
 
     public final BooleanProperty executorPlays = new SimpleBooleanProperty(false);
     public final BooleanBinding executorIsHalted = Bindings.equal(
             Bindings.valueAt(memoryModel.registers.dataObservableList, RegAddr.PC.offset.value), Word.NaN);
 
+
     public MainController() throws IOException, URISyntaxException, ValidationException {
         ObservableList<Word> data = memoryModel.rom.dataObservableList;
-        data.filtered((w) -> w.value != 0);
+
+        FilteredList<IndexedValue<Word>> valuables = Util.withIndices(data)
+                .filtered((iv) -> {
+                    Word prev = Util.getOrNull(data, iv.index - 1);
+                    return iv.value.value != 0 || (prev != null && prev.value != 0);
+                });
+
+        instructions = EasyBind.map(valuables, iv ->
+                new IndexedValue<>(iv.index,
+                        parser.parseInstruction(
+                                iv.value, Util.getOrNull(data, iv.index + 1), Util.getOrNull(data, iv.index + 2))));
 
 //        executor.sleepMillisDelay = 1000;
         memoryModel.registers.load(RegAddr.PC.offset, new Word(memoryModel.romOffset));

@@ -1,6 +1,7 @@
 package gui
 
 import MainController
+import instruction.*
 import javafx.beans.binding.*
 import javafx.collections.*
 import javafx.event.*
@@ -65,13 +66,21 @@ class MainView : View() {
 
                 listview(memoryModel.rom.dataObservableList) {
                     vgrow(Priority.ALWAYS)
+                    prefWidth = 60.0 + 20 + 60 + 130 + 70
+
                     cellFormat {
-                        val busAddr = memoryModel.bus.getBusAddr(memoryModel.rom as RWMemory?, Offset(index))
+                        val busAddr = memoryModel.bus.getBusAddr(memoryModel.rom as RWMemory, Offset(index))
 
                         graphic = hbox {
-                            centeredLabel(Word(busAddr).fmtOctal()) { prefWidth = 60.0 }
+                            centeredLabel(Word(busAddr).fmtOctal()) { minWidth = 60.0 }
                             radiobutton()
-                            centeredLabel(it.fmtOctal()) { prefWidth = 60.0}
+                            centeredLabel(it.fmtOctal()) { minWidth = 60.0 }
+
+                            for (instr in controller.instructions) {
+                                if (index == instr.index) {
+                                    centeredLabel(instr.value.assembler) { minWidth = 130.0 }
+                                }
+                            }
 
                             spacing = 6.0
                         }
@@ -87,6 +96,7 @@ class MainView : View() {
                     cellFormat {
                         graphic = label(it.fmtHex())
                     }
+                    prefWidth = 110.0
                 }
 
             }
