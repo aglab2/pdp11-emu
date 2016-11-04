@@ -63,5 +63,5 @@ Sfor:	MOV (R2)+, (R0)		;write word to vram = 1 line of symbol
 	CMP R4, #20		;Check for overflow in y
 	BNE Send		;If we got overflow, move to the beginning
 	CLR R4
-Send:	HALT;RTS PC
+Send:	RTS PC
 
