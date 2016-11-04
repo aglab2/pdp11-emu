@@ -1,0 +1,67 @@
+HALT ;dont remove me!
+
+Mstart:	MOV #110000, R0		;R0=romOffset
+	MOV #40000, R1		;R1=vramOffset
+
+Mwhile:	MOV (R0)+, R2		;R2=curCnt
+
+	TST R2			;while (curCnt != 0)
+	BEQ Mwend
+
+	MOV (R0)+, R3		;R3=curWord
+				;for(i=0; i<curCnt; i++)
+Mfor:	MOV R3, (R1)+ 		;set vram addr
+	DEC R2			
+	TST R2			
+	BNE Mfor		
+	
+	BR Mwhile		
+
+Mwend:	MOV #60, R2
+	MOV #17, R3
+	MOV #07, R4		
+	JSR R5, Sstart
+	HALT
+	
+
+
+
+	HALT; Protector before subroutines
+
+;subroutine	: Print Symbol to vram
+;call		: JSR R5, Sstart
+;arguments	: R3: x in 0..31(037) (word align), R4: y in 0..15(017) (letter height align), R2: letter code in ASCII
+;destroyed	: R0, R1, R2
+;changed	: R3 and R4 are changed to next symbol to print, so you can chain routines
+Sstart:	SUB #41, R2		;first 33(041) ASCII symbols are skipped
+	ASH #5, R2		;R2=R2*32 -- skip R2 symbols, one symbol is 32 bytes
+	ADD #140000, R2		;fonts start
+
+	MOV R4, R0
+	ASH #12, R0		;TODO: why does this work????? (256*16)*y
+	ADD R3, R0		
+	ADD R3, R0		;4096*y+2*x is start of vram where letter is
+	ADD #40000, R0		;vram start
+
+;Next step is loading symbol onto the right place
+;Symbol length width is 8 pixel = 16 bits = 1 word
+;That is why after writing one word, we should move to another line that
+;is placed in 256/4=64 bytes. Symbol takes 16 words
+	MOV #20, R1		;We should load 16(020) words in vram
+Sfor:	MOV (R2)+, (R0)		;write word to vram = 1 line of symbol
+	ADD #100, R0		;move to next line (skip 64(040) bytes)
+	DEC R1
+	TST R1
+	BNE Sfor
+	
+	;Change to next symbol
+	INC R3			;Add to x
+	CMP R3, #40		;Check for overflow in x
+	BNE Send		;If we got overflow, move to next line
+	INC R4			;Move to the next line
+	CLR R3			;And move carry to the beginning of line
+	CMP R4, #20		;Check for overflow in y
+	BNE Send		;If we got overflow, move to the beginning
+	CLR R4
+Send:	RTS R5
+
