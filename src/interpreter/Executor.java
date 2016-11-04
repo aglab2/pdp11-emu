@@ -27,8 +27,8 @@ public class Executor {
         Word word0 = memory.bus.fetch(pc.value);
         if(word0 == null) return false;
 
-        Word word1 = memory.bus.fetch(pc.value + 1);
-        Word word2 = memory.bus.fetch(pc.value + 2);
+        Word word1 = memory.bus.fetch(pc.value + 2);
+        Word word2 = memory.bus.fetch(pc.value + 4);
 
         Instruction instruction = parser.parseInstruction(word0, word1, word2);
 

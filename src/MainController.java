@@ -66,7 +66,7 @@ public class MainController extends Controller {
 //        executor.sleepMillisDelay = 1000;
         memoryModel.registers.load(RegAddr.PC.offset, new Word(memoryModel.romOffset));
         memoryModel.registers.load(RegAddr.SP.offset,
-                new Word(memoryModel.ramOffset + memoryModel.ram.size.value * 2 - 1));
+                new Word(memoryModel.ramOffset + (memoryModel.ram.size.value - 1) * 2));
     }
 
     public void startButtonHandler() {
