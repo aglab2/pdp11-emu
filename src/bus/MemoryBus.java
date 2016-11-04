@@ -36,7 +36,7 @@ public class MemoryBus {
     public int getBusAddr(RWMemory storage, Offset offset) {  //TODO: return BusAddr
         for(MemoryRegion mr: regionList) {
             if(mr.storage == storage)
-                return mr.start + offset.value;
+                return (mr.start + offset.value) * 2;
         }
         throw new RuntimeException(); //TODO: return `null`
     }
