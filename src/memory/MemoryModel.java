@@ -41,5 +41,8 @@ public class MemoryModel {
 
         this.bus.addRegion("reg", regOffset, this.registers);
         this.bus.addRegion("flags", flagsOffset, this.flags);
+
+        registers.load(RegAddr.PC.offset, new Word(romOffset));
+        registers.load(RegAddr.SP.offset, new Word(ramOffset + ram.size.value * 2));
     }
 }

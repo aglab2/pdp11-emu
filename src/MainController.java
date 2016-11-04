@@ -64,9 +64,6 @@ public class MainController extends Controller {
                                 iv.value, Util.getOrNull(data, iv.index + 1), Util.getOrNull(data, iv.index + 2))));
 
 //        executor.sleepMillisDelay = 1000;
-        memoryModel.registers.load(RegAddr.PC.offset, new Word(memoryModel.romOffset));
-        memoryModel.registers.load(RegAddr.SP.offset,
-                new Word(memoryModel.ramOffset + (memoryModel.ram.size.value - 1) * 2));
     }
 
     public void startButtonHandler() {

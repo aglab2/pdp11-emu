@@ -24,7 +24,7 @@ public class InstructionExecuteTest {
 
     @Before
     public void initMemory() {
-        memory = new MemoryModel(new MemSize(16), new MemSize(0), new MemoryStorage(new MemSize(0)));
+        memory = new MemoryModel(new MemSize(16), new MemSize(0), new MemoryStorage(MemSize.ZERO));
     }
 
     @Test
@@ -38,10 +38,13 @@ public class InstructionExecuteTest {
                 new INC(RegMode.AutoInc, RegAddr.R1, null),
         };
 
+        assertMemory("REGs", memory.registers, new int[] {0, 0, 0, 0, 0, 0, 32, 32});
+        assertMemory("RAM", memory.ram, new int[] {0, 0, 0});
+
         for(Instruction i : code)
             i.execute(memory);
 
-        assertMemory("REGs", memory.registers, new int[] {2, 6});
+        assertMemory("REGs", memory.registers, new int[] {2, 6, 0, 0, 0, 0, 32, 32});
         assertMemory("RAM", memory.ram, new int[] {1, 2, 1});
     }
 
@@ -57,10 +60,13 @@ public class InstructionExecuteTest {
                 new INC(RegMode.DAutoInc, RegAddr.R1, null),
         };
 
+        assertMemory("REGs", memory.registers, new int[] {0, 0, 0, 0, 0, 0, 32, 32});
+        assertMemory("RAM", memory.ram, new int[] {0, 0, 0});
+
         for(Instruction i : code)
             i.execute(memory);
 
-        assertMemory("REGs", memory.registers, new int[] {2, 8});
+        assertMemory("REGs", memory.registers, new int[] {2, 8, 0, 0, 0, 0, 32, 32});
         assertMemory("RAM", memory.ram, new int[] {2, 2, 1, 0});
     }
 
