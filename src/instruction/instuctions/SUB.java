@@ -26,7 +26,7 @@ public class SUB extends DoubleOperandInstruction {
         int srcValue = src.fetch(memory).toSigned();
         int dstValue = dst.fetch(memory).toSigned();
 
-        int res = dstValue - srcValue;
+        int res = srcValue - dstValue;
         memory.flags.setZN(res);
         memory.flags.V.set(srcValue * dstValue < 0 && dstValue * res > 0);
         memory.flags.C.set(res >> 16 != 0);
