@@ -1,9 +1,11 @@
 import instruction.primitives.RegAddr;
 import interpreter.Executor;
+import interpreter.Parser;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.ObservableList;
 import javafx.scene.image.WritableImage;
 import memory.MemoryModel;
 import memory.MemoryStorage;
@@ -32,17 +34,20 @@ public class MainController extends Controller {
 
     public final WritableImage screen = new WritableImage(/*width*/ 256, /*height*/ 256);
     public final VideoManager videoManager = new VideoManager(screen, memoryModel.vram.dataObservableList);
-    public final Executor executor = new Executor(memoryModel);
+    public final Parser parser = new Parser();
+    public final Executor executor = new Executor(memoryModel, parser);
+
 
     public final BooleanProperty executorPlays = new SimpleBooleanProperty(false);
     public final BooleanBinding executorIsHalted = Bindings.equal(
             Bindings.valueAt(memoryModel.registers.dataObservableList, RegAddr.PC.offset.value), Word.NaN);
 
     public MainController() throws IOException, URISyntaxException, ValidationException {
+        ObservableList<Word> data = memoryModel.rom.dataObservableList;
+        data.filtered((w) -> w.value != 0);
 
 //        executor.sleepMillisDelay = 1000;
         memoryModel.registers.load(RegAddr.PC.offset, new Word(memoryModel.romOffset));
-
     }
 
     public void startButtonHandler() {

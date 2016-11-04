@@ -10,13 +10,14 @@ import memory.primitives.Word;
  */
 public class Executor {
     public final MemoryModel memory;
-    private final Parser parser = new Parser();
+    private final Parser parser;
 
     public long sleepMillisDelay = 0;
     private volatile boolean play = false;
 
-    public Executor(MemoryModel memory) {
+    public Executor(MemoryModel memory, Parser parser) {
         this.memory = memory;
+        this.parser = parser;
     }
 
     public boolean executeStep() {
