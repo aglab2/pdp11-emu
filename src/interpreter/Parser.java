@@ -30,6 +30,7 @@ public class Parser {
             DIV.class, INC.class, MOV.class, MUL.class,
             SUB.class, SWAP.class, TST.class,
             HALT.class,
+            JMP.class, JSR.class, RTS.class,
             Data.class};  // TODO: hack
 
     private final Instruction[] defaultInstances = new Instruction[declaredInstructions.length];

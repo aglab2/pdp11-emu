@@ -27,7 +27,8 @@ public class Data extends Instruction {
 
     @Override
     public void execute(MemoryModel memory) {
-        throw new UnsupportedOperationException(String.format("%16s", Integer.toBinaryString(data.value)).replace(' ', '0'));
+        throw new UnsupportedOperationException("operation code " + data.fmtOctal() +
+                " is not recognised: " + data.fmtBinary());
     }
 
     @Override
