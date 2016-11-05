@@ -3,7 +3,6 @@ package memory;
 
 import bus.MemoryBus;
 import instruction.primitives.RegAddr;
-import memory.primitives.Offset;
 import memory.primitives.MemSize;
 import memory.primitives.Word;
 
@@ -42,6 +41,18 @@ public class MemoryModel {
         this.bus.addRegion("reg", regOffset, this.registers);
         this.bus.addRegion("flags", flagsOffset, this.flags);
 
+        resetRegisters();
+    }
+
+    public void reset() {
+        ram.clean();
+        vram.clean();
+        registers.clean();
+        flags.clean();
+        resetRegisters();
+    }
+
+    private void resetRegisters() {
         registers.load(RegAddr.PC.offset, new Word(romOffset));
         registers.load(RegAddr.SP.offset, new Word(ramOffset + ram.size.value * 2));
     }

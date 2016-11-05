@@ -1,8 +1,9 @@
 package gui
 
 import MainController
-import instruction.*
+import instruction.primitives.*
 import javafx.beans.binding.*
+import javafx.beans.property.*
 import javafx.collections.*
 import javafx.event.*
 import javafx.geometry.*
@@ -15,7 +16,9 @@ import javafx.scene.paint.*
 import javafx.scene.text.*
 import memory.*
 import memory.primitives.*
+import org.fxmisc.easybind.*
 import tornadofx.*
+import java.nio.file.*
 import java.util.concurrent.*
 
 
@@ -103,38 +106,64 @@ class MainView : View() {
         }
 
 
-        buttonbar {
-            button("Start") {
-                setOnAction { controller.startButtonHandler() }
-                this.disableProperty().bind(controller.executorPlays.or(controller.executorIsHalted))
-            }
-            button("Pause") {
-                setOnAction { controller.pauseButtonHandler() }
-                this.disableProperty().bind(controller.executorPlays.not())
-            }
-            button("Reset") {
-                setOnAction { controller.resetButtonHandler() }
-                this.defaultButtonProperty().bind(controller.executorIsHalted)
-            }
-            button("Step") {
-                setOnAction { controller.stepButtonHandler() }
-                this.disableProperty().bind(controller.executorPlays.or(controller.executorIsHalted))
+        hbox(10.0) {
+            val isExecutorPlaying: BooleanProperty = SimpleBooleanProperty(false)
+            val isExecutorHalted = Bindings.equal(
+                    Bindings.valueAt(memoryModel.registers.dataObservableList, RegAddr.PC.offset.value), Word.NaN)
 
-                tooltip("F7")
+            val isRomLoading = SimpleBooleanProperty(false)
 
-                sceneProperty().onChange { scene ->
-                    if(scene != null) {
-                        val F7 = KeyCodeCombination(KeyCode.F7)
-                        if(F7 !in scene.accelerators) {
-                            scene.accelerators.put(F7, Runnable { this@button.fire() })
-                        }
+            combobox<String> {
+                items = EasyBind.map(controller.romFiles) { path -> path.fileName.toString()}
+                selectionModel.select(controller.romFiles.indexOf(controller.romFile.value))
+
+                val selectedItem = EasyBind.map(selectionModel.selectedIndexProperty()) {index -> controller.romFiles.get(index as Int)}
+                controller.romFile.bind(selectedItem)
+            }
+
+            button("Reload") {
+                setOnAction {
+                    isRomLoading.set(true)
+                    controller.resetButtonHandler()
+                    controller.memoryModel.rom.reload(Files.readAllBytes(controller.romFile.value))
+                    isRomLoading.set(false)
+                    disableProperty().bind(isRomLoading)
+                }
+            }
+
+            buttonbar {
+                button("Start") {
+                    setOnAction {
+                        isExecutorPlaying.set(true)
+                        controller.startButtonHandler()
+                        isExecutorPlaying.set(false)
                     }
+                    disableProperty().bind(isExecutorPlaying.or(isExecutorHalted).or(isRomLoading))
+                }
+                button("Pause") {
+                    setOnAction {
+                        controller.pauseButtonHandler()
+                        isExecutorPlaying.set(false)
+                    }
+                    disableProperty().bind(isExecutorPlaying.not().or(isRomLoading))
+                }
+                button("Reset") {
+                    setOnAction { controller.resetButtonHandler() }
+                    defaultButtonProperty().bind(isExecutorHalted)
+                }
+                button("Step") {
+                    setOnAction { controller.stepButtonHandler() }
+                    disableProperty().bind(isExecutorPlaying.or(isExecutorHalted).or(isRomLoading))
+
+                    tooltip("F7")
+                    keyCombination(KeyCodeCombination(KeyCode.F7))
                 }
 
-            }
-
-            style {
-                padding = box(1.px)
+                hgrow(Priority.ALWAYS)
+                style {
+                    padding = box(1.px)
+                }
+//                disableProperty().bind(isRomLoading)
             }
         }
 
@@ -151,6 +180,16 @@ class MainView : View() {
 
 fun Node.hgrow(priority: Priority) = HBox.setHgrow(this, priority)
 fun Node.vgrow(priority: Priority) = VBox.setVgrow(this, priority)
+
+fun Button.keyCombination(key: KeyCodeCombination) {
+    sceneProperty().onChange { scene ->
+        if(scene != null) {
+            if(key !in scene.accelerators) {
+                scene.accelerators.put(key, Runnable { fire() })
+            }
+        }
+    }
+}
 
 fun EventTarget.centeredLabel(str: String, op: (Label.() -> Unit)? = null) = label(str) {
     alignment = Pos.BASELINE_CENTER

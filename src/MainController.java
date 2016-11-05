@@ -1,11 +1,9 @@
 import instruction.Instruction;
-import instruction.primitives.RegAddr;
 import interpreter.Executor;
 import interpreter.Parser;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.image.WritableImage;
@@ -20,12 +18,18 @@ import util.Util;
 import videomanager.VideoManager;
 
 import javax.xml.bind.ValidationException;
-import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
  * Here is the start-up code and all the __data__.
@@ -33,9 +37,26 @@ import java.nio.file.Path;
  */
 
 public class MainController extends Controller {
+    public final ObservableList<Path> romFiles;
+    {
+        List<Path> resources = findResources(Pattern.compile(".*\\.rom"));
+        if(resources.isEmpty())
+            resources.add(Paths.get(MainController.class.getResource("default.rom").toURI()));
+
+        for(Path p : resources)
+            if(p.endsWith("/default.rom")) {
+                resources.remove(p);
+                resources.add(0, p);
+            }
+
+        romFiles =  FXCollections.observableList(resources);
+    }
+
+    public final ObjectProperty<Path> romFile = new SimpleObjectProperty<>(romFiles.get(0));
+
     public final MemoryModel memoryModel
             = new MemoryModel(new MemSize(1024 * 8), new MemSize(1024 * 8),
-                    new MemoryStorage(loadResource("rom_default.hex")));
+                    new MemoryStorage(loadResource(romFile.get())));
 
     public final WritableImage screen = new WritableImage(/*width*/ 256, /*height*/ 256);
     public final VideoManager videoManager = new VideoManager(screen, memoryModel.vram.dataObservableList);
@@ -44,12 +65,10 @@ public class MainController extends Controller {
 
     public final ObservableList<IndexedValue<Instruction>> instructions;
 
-    public final BooleanProperty executorPlays = new SimpleBooleanProperty(false);
-    public final BooleanBinding executorIsHalted = Bindings.equal(
-            Bindings.valueAt(memoryModel.registers.dataObservableList, RegAddr.PC.offset.value), Word.NaN);
-
 
     public MainController() throws IOException, URISyntaxException, ValidationException {
+
+
         ObservableList<Word> data = memoryModel.rom.dataObservableList;
 
         FilteredList<IndexedValue<Word>> valuables = Util.withIndices(data)
@@ -67,23 +86,16 @@ public class MainController extends Controller {
     }
 
     public void startButtonHandler() {
-        executorPlays.set(true);
         executor.execute();
-        executorPlays.set(false);
     }
 
     public void pauseButtonHandler() {
         executor.stopExecution();
-        executorPlays.set(false);
     }
 
     public void resetButtonHandler() {
         pauseButtonHandler();
-        memoryModel.flags.clean();
-        memoryModel.registers.clean();
-        memoryModel.ram.clean();
-        memoryModel.vram.clean();
-        memoryModel.registers.load(RegAddr.PC.offset, new Word(memoryModel.romOffset));
+        memoryModel.reset();
     }
 
     public void stepButtonHandler() {
@@ -91,9 +103,27 @@ public class MainController extends Controller {
         executor.executeStep();
     }
 
-    static byte[] loadResource(String name) throws URISyntaxException, IOException {
-        URL defaultRom = MainController.class.getClassLoader().getResource(name);
-        Path path = new File(defaultRom.toURI()).toPath();
-        return Files.readAllBytes(path);
+
+    static byte[] loadResource(Path resource) throws IOException {
+        return Files.readAllBytes(resource);
+    }
+
+    static List<Path> findResources(Pattern regex) {
+        Predicate<String> predicate = regex.asPredicate();
+        ArrayList<Path> paths = new ArrayList<>();
+        try {
+            URI uri = MainController.class.getResource("/").toURI();
+            Stream<Path> walk = Files.walk(Paths.get(uri), 1);
+
+            for (Iterator<Path> it = walk.iterator(); it.hasNext();) {
+                Path path = it.next();
+                if(predicate.test(path.toString()))
+                    paths.add(path);
+            }
+        } catch (URISyntaxException | IOException e) {
+            return paths;
+        }
+
+        return paths;
     }
 }

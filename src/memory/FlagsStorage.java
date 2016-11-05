@@ -2,9 +2,11 @@ package memory;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import memory.primitives.Offset;
 import memory.primitives.MemSize;
+import memory.primitives.Offset;
 import memory.primitives.Word;
+
+import javax.xml.bind.ValidationException;
 
 /**
  * Created by voddan on 26/10/16.
@@ -74,5 +76,10 @@ public class FlagsStorage extends RWMemory {
         Z.set(false);
         V.set(false);
         C.set(false);
+    }
+
+    @Override
+    public void reload(byte[] arr) throws ValidationException {
+        throw new UnsupportedOperationException();
     }
 }
