@@ -17,10 +17,15 @@ Mfor:	MOV R3, (R1)+ 		;set vram addr
 	
 	BR Mwhile		
 
-Mwend:	MOV #60, R2
-	MOV #0, R3
-	MOV #0, R4		
-	JSR PC, Sstart
+;Start showing all symbols
+Mwend:	MOV #0, R3
+	MOV #0, R4
+	
+	MOV #41, R5
+Msprnt:	JSR PC, Sstart
+	INC R5
+	CMP R5, #200 		;Print out all symbols from 33 to 127
+	BNE Msprnt
 	HALT
 	
 
@@ -30,10 +35,11 @@ Mwend:	MOV #60, R2
 
 ;subroutine	: Print Symbol to vram
 ;call		: JSR PC, Sstart
-;arguments	: R3: x in 0..31(037) (word align), R4: y in 0..15(017) (letter height align), R2: letter code in ASCII
+;arguments	: R3: x in 0..31(037) (word align), R4: y in 0..15(017) (letter height align), R5: letter code in ASCII
 ;destroyed	: R0, R1, R2
 ;changed	: R3 and R4 are changed to next symbol to print, so you can chain routines
-Sstart:	SUB #41, R2		;first 33(041) ASCII symbols are skipped
+Sstart:	MOV R5, R2
+	SUB #41, R2		;first 33(041) ASCII symbols are skipped
 	ASH #5, R2		;R2=R2*32 -- skip R2 symbols, one symbol is 32 bytes
 	ADD #140000, R2		;fonts start
 
