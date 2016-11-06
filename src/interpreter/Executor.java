@@ -1,7 +1,10 @@
 package interpreter;
 
+import com.sun.javafx.application.PlatformImpl;
 import instruction.Instruction;
 import instruction.primitives.RegAddr;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import memory.MemoryModel;
 import memory.primitives.Word;
 
@@ -11,9 +14,6 @@ import memory.primitives.Word;
 public class Executor {
     public final MemoryModel memory;
     private final Parser parser;
-
-    public long sleepMillisDelay = 0;
-    private volatile boolean play = false;
 
     public Executor(MemoryModel memory, Parser parser) {
         this.memory = memory;
@@ -33,22 +33,48 @@ public class Executor {
         Instruction instruction = parser.parseInstruction(word0, word1, word2);
 
         memory.registers.add(RegAddr.PC.offset, 2 * (1 + instruction.indexСapacity()));
-
         instruction.execute(memory);
+
         return true;
     }
 
-    public void execute() {
-        play = true;
-        while (executeStep())
-            try {
-                if(!play) break;
-                Thread.sleep(sleepMillisDelay);
-                if(!play) break;
-            } catch (InterruptedException e) { }
-    }
+    public final Service<Boolean> stepService = new Service<Boolean>() {
+        @Override
+        protected Task<Boolean> createTask() {
+            return new Task<Boolean>() {
+                @Override
+                protected Boolean call() {
+                    final boolean[] result = new boolean[1];
+                    PlatformImpl.runAndWait(() -> result[0] = executeStep());
+                    return result[0];
+                }
+            };
+        }
+    };
 
-    public void stopExecution() {
-        play = false;
+
+    public final Service<Void> executeService = new Service<Void>() {
+        @Override
+        protected Task<Void> createTask() {
+            return new Task<Void>() {
+                @Override
+                protected Void call() {
+                    while (true) {
+                        final boolean[] result = new boolean[1];
+                        PlatformImpl.runAndWait(() -> result[0] = executeStep());
+
+                        if(!result[0] || isCancelled())
+                            break;
+                    }
+
+                    return null;
+                }
+            };
+        }
+    };
+
+    public final void cancelAll() {
+        stepService.cancel();
+        executeService.cancel();
     }
 }

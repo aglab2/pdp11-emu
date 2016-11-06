@@ -81,27 +81,8 @@ public class MainController extends Controller {
                 new IndexedValue<>(iv.index,
                         parser.parseInstruction(
                                 iv.value, Util.getOrNull(data, iv.index + 1), Util.getOrNull(data, iv.index + 2))));
-
-//        executor.sleepMillisDelay = 1000;
     }
 
-    public void startButtonHandler() {
-        executor.execute();
-    }
-
-    public void pauseButtonHandler() {
-        executor.stopExecution();
-    }
-
-    public void resetButtonHandler() {
-        pauseButtonHandler();
-        memoryModel.reset();
-    }
-
-    public void stepButtonHandler() {
-        pauseButtonHandler();
-        executor.executeStep();
-    }
 
 
     static byte[] loadResource(Path resource) throws IOException {

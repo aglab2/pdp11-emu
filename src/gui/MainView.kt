@@ -2,6 +2,7 @@ package gui
 
 import MainController
 import instruction.primitives.*
+import interpreter.Executor
 import javafx.beans.binding.*
 import javafx.beans.property.*
 import javafx.collections.*
@@ -26,6 +27,7 @@ class MainView : View() {
     val controller: MainController by inject()
     val memoryModel: MemoryModel = controller.memoryModel
     val screen: WritableImage = controller.screen
+    val executor: Executor = controller.executor
 
     init { title = "PDP-11-40" }
 
@@ -107,53 +109,73 @@ class MainView : View() {
 
 
         hbox(10.0) {
-            val isExecutorPlaying: BooleanProperty = SimpleBooleanProperty(false)
-            val isExecutorHalted = Bindings.equal(
+            val isPlaying: BooleanProperty = SimpleBooleanProperty(false)
+            val isRomLoading = SimpleBooleanProperty(false)
+
+            val isHalted = Bindings.equal(
                     Bindings.valueAt(memoryModel.registers.dataObservableList, RegAddr.PC.offset.value), Word.NaN)
 
-            val isRomLoading = SimpleBooleanProperty(false)
+            isHalted.addListener {pr, old, new ->
+                if(new == true) {
+                    isPlaying.set(false)
+                }
+            }
+
 
             combobox<String> {
                 items = EasyBind.map(controller.romFiles) { path -> path.fileName.toString()}
                 selectionModel.select(controller.romFiles.indexOf(controller.romFile.value))
 
-                val selectedItem = EasyBind.map(selectionModel.selectedIndexProperty()) {index -> controller.romFiles.get(index as Int)}
-                controller.romFile.bind(selectedItem)
+                val selectedPath = EasyBind.map(selectionModel.selectedIndexProperty()) {
+                    index -> controller.romFiles.get(index as Int)
+                }
+
+                controller.romFile.bind(selectedPath)
             }
 
             button("Reload") {
                 setOnAction {
                     isRomLoading.set(true)
-                    controller.resetButtonHandler()
+                    executor.cancelAll()
+                    isPlaying.set(false)
+
+                    memoryModel.reset()
                     controller.memoryModel.rom.reload(Files.readAllBytes(controller.romFile.value))
+
                     isRomLoading.set(false)
-                    disableProperty().bind(isRomLoading)
                 }
+                disableProperty().bind(isRomLoading)
             }
 
             buttonbar {
                 button("Start") {
                     setOnAction {
-                        isExecutorPlaying.set(true)
-                        controller.startButtonHandler()
-                        isExecutorPlaying.set(false)
+                        isPlaying.set(true)
+                        executor.executeService.restart()
                     }
-                    disableProperty().bind(isExecutorPlaying.or(isExecutorHalted).or(isRomLoading))
+                    disableProperty().bind(isPlaying.or(isHalted).or(isRomLoading))
                 }
                 button("Pause") {
                     setOnAction {
-                        controller.pauseButtonHandler()
-                        isExecutorPlaying.set(false)
+                        executor.cancelAll()
+                        isPlaying.set(false)
                     }
-                    disableProperty().bind(isExecutorPlaying.not().or(isRomLoading))
+                    disableProperty().bind(isPlaying.not().or(isRomLoading))
                 }
                 button("Reset") {
-                    setOnAction { controller.resetButtonHandler() }
-                    defaultButtonProperty().bind(isExecutorHalted)
+                    setOnAction {
+                        executor.cancelAll()
+                        memoryModel.reset()
+                        isPlaying.set(false)
+                    }
+                    defaultButtonProperty().bind(isHalted)
                 }
                 button("Step") {
-                    setOnAction { controller.stepButtonHandler() }
-                    disableProperty().bind(isExecutorPlaying.or(isExecutorHalted).or(isRomLoading))
+                    setOnAction {
+                        executor.executeService.cancel()
+                        executor.stepService.restart()
+                    }
+                    disableProperty().bind(isPlaying.or(isHalted).or(isRomLoading))
 
                     tooltip("F7")
                     keyCombination(KeyCodeCombination(KeyCode.F7))
