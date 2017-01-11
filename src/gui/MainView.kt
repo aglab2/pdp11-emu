@@ -109,7 +109,7 @@ class MainView : View() {
                 listview(memoryModel.ram.dataObservableList) {
                     vgrow(Priority.ALWAYS)
                     cellFormat {
-                        graphic = label(it.fmtHex())
+                        graphic = label(it.fmtOctal())
                     }
                     prefWidth = 110.0
                 }

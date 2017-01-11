@@ -12,7 +12,7 @@ public class MemoryModel {
     public final int romOffset          = 0x8000;
     public final int regOffset          = 0x10000;
     public final int flagsOffset        = 0xFFFF;
-    public final int interruptOffset    = 0xF400;
+    public final int interruptOffset    = 0xF800;
 
     /* TODO: Should this be private as we can access to them from bus? */
     public final RWMemory ram;

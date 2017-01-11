@@ -11,6 +11,8 @@ import javafx.concurrent.Task;
 import memory.MemoryModel;
 import memory.primitives.Word;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Created by voddan on 01/11/16.
  */
@@ -18,9 +20,12 @@ public class Executor {
     public final MemoryModel memory;
     private final Parser parser;
 
+    AtomicInteger isInterrupted;
+
     public Executor(MemoryModel memory, Parser parser) {
         this.memory = memory;
         this.parser = parser;
+        this.isInterrupted = new AtomicInteger(0);
     }
 
     public boolean executeStep() {
@@ -59,6 +64,8 @@ public class Executor {
     public final Service<Void> executeService = new Service<Void>() {
         @Override
         protected Task<Void> createTask() {
+            boolean graceEnd = false;
+
             return new Task<Void>() {
                 @Override
                 protected Void call() {
@@ -82,26 +89,33 @@ public class Executor {
     }
 
     public final void interrupt(int interruptCode, Word errorCode) {
+        //if (!isInterrupted.compareAndSet(0, 1))
+        //    return;
+
         if (!stepService.isRunning() && !executeService.isRunning())
             return;
+
+        try {
+            stepService.wait();
+        }catch(Exception e){ }
         this.cancelAll();
 
         System.out.println("Interrupt " + interruptCode + ": " + errorCode);
 
         Word pc = memory.registers.fetch(RegAddr.PC.offset);
         Word sp = memory.registers.fetch(RegAddr.SP.offset);
-        sp.dec2();
+
+        sp = sp.dec2();
         memory.bus.load(sp.value, pc);
-        sp.dec2();
+        sp = sp.dec2();
         memory.bus.load(sp.value, errorCode);
 
+
+
         Word interruptHandlerPtr = memory.bus.fetch(memory.interruptOffset + interruptCode * 2);
-        memory.registers.load(RegAddr.PC.offset, interruptHandlerPtr);
         memory.registers.load(RegAddr.SP.offset, sp);
+        memory.registers.load(RegAddr.PC.offset, interruptHandlerPtr);
 
         executeService.restart(); //TODO: This does not work in step service!
-
-        Word word1 = memory.bus.fetch(pc.value + 2);
-        Word word2 = memory.bus.fetch(pc.value + 4);
     }
 }

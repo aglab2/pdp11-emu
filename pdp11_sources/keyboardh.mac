@@ -1,40 +1,23 @@
 HALT ;dont remove me!
 
-Mstart:	MOV #174000, R0	;Set interrupt handler for keyboard
-	MOV #170000, (R0) 
+;pusha
+MOV (SP)+, R5
+MOV R0, -(SP)
+MOV R1, -(SP)
+MOV R2, -(SP)
+MOV R3, -(SP)
 
-	MOV #110000, R0		;R0=romOffset
-	MOV #40000, R1		;R1=vramOffset
-	
-Mwhile:	MOV (R0)+, R2		;R2=curCnt
+MOV #0, R3
+MOV #0, R4
+JSR PC, Sstart
 
-	TST R2			;while (curCnt != 0)
-	BEQ Mwend
+;popa
+MOV (SP)+, R3
+MOV (SP)+, R2
+MOV (SP)+, R1
+MOV (SP)+, R0
 
-	MOV (R0)+, R3		;R3=curWord
-				;for(i=0; i<curCnt; i++)
-Mfor:	MOV R3, (R1)+ 		;set vram addr
-	DEC R2			
-	TST R2			
-	BNE Mfor		
-	
-	BR Mwhile		
-
-;Start showing all symbols
-Mwend:	MOV #0, R3
-;	MOV #0, R4
-	
-;	MOV #41, R5
-;Msprnt:	JSR PC, Sstart
-;	INC R5
-;	CMP R5, #200 		;Print out all symbols from 33 to 127
-;	BNE Msprnt
-	HALT
-	
-
-
-
-	HALT; Protector before subroutines
+RTS PC
 
 ;subroutine	: Print Symbol to vram
 ;call		: JSR PC, Sstart
@@ -73,4 +56,3 @@ Sfor:	MOV (R2)+, (R0)		;write word to vram = 1 line of symbol
 	BNE Send		;If we got overflow, move to the beginning
 	CLR R4
 Send:	RTS PC
-
