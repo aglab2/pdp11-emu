@@ -20,12 +20,9 @@ public class Executor {
     public final MemoryModel memory;
     private final Parser parser;
 
-    AtomicInteger isInterrupted;
-
     public Executor(MemoryModel memory, Parser parser) {
         this.memory = memory;
         this.parser = parser;
-        this.isInterrupted = new AtomicInteger(0);
     }
 
     public boolean executeStep() {
@@ -89,9 +86,6 @@ public class Executor {
     }
 
     public final void interrupt(int interruptCode, Word errorCode) {
-        //if (!isInterrupted.compareAndSet(0, 1))
-        //    return;
-
         if (!stepService.isRunning() && !executeService.isRunning())
             return;
 
@@ -103,17 +97,13 @@ public class Executor {
         System.out.println("Interrupt " + interruptCode + ": " + errorCode);
 
         Word pc = memory.registers.fetch(RegAddr.PC.offset);
-        Word sp = memory.registers.fetch(RegAddr.SP.offset);
+        Word ps = memory.bus.fetch(0xFFFE);
 
-        sp = sp.dec2();
-        memory.bus.load(sp.value, pc);
-        sp = sp.dec2();
-        memory.bus.load(sp.value, errorCode);
-
-
+        RegMode.AutoDec.apply(memory, RegAddr.SP, null).load(memory, ps);
+        RegMode.AutoDec.apply(memory, RegAddr.SP, null).load(memory, pc);
+        RegMode.AutoDec.apply(memory, RegAddr.SP, null).load(memory, errorCode);
 
         Word interruptHandlerPtr = memory.bus.fetch(memory.interruptOffset + interruptCode * 2);
-        memory.registers.load(RegAddr.SP.offset, sp);
         memory.registers.load(RegAddr.PC.offset, interruptHandlerPtr);
 
         executeService.restart(); //TODO: This does not work in step service!
