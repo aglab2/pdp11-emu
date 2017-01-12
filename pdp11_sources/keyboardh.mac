@@ -15,15 +15,26 @@ ASH #10, R1 ;Shift left 8
 SUB R1, R0
 ASH #70, R1 ;Shift right 8
 
-
+;Start of switch for ASCII choice
 Mcspace:	CMP R0, #13
-BNE Msdef
+BNE Msnumber
 MOV #40, R5
+BR Mswitch
+
+Msnumber:	CMP R0, #30
+BLT Msdef
+CMP R0, #41
+BGT Msdef
+MOV R0, R5
+ADD #30, R5
 BR Mswitch
 
 Msdef:
 MOV R0, R5
 ADD #76, R5
+TST R1
+BEQ Mswitch
+SUB #40, R5
 
 
 Mswitch:	MOV @#0, R3
