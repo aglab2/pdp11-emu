@@ -6,16 +6,36 @@ MOV R1, -(SP)
 MOV R2, -(SP)
 MOV R3, -(SP)
 MOV R4, -(SP)
-MOV R5, -(SP)
+;MOV R5, -(SP)
 
-MOV 14(SP), R5
+MOV 12(SP), R1
+MOV R1, R0
+ASH #70, R1 ;Shift right 8
+ASH #10, R1 ;Shift left 8
+SUB R1, R0
+ASH #70, R1 ;Shift right 8
+
+
+Mcspace:	CMP R0, #13
+BNE Msdef
+MOV #40, R5
+BR Mswitch
+
+Msdef:
+MOV R0, R5
 ADD #76, R5
-MOV #0, R3
-MOV #0, R4
+
+
+Mswitch:	MOV @#0, R3
+MOV @#2, R4
+
 JSR PC, Sstart
 
+MOV R3, @#0
+MOV R4, @#2
+
 ;popa
-MOV (SP)+, R5
+;MOV (SP)+, R5
 MOV (SP)+, R4
 MOV (SP)+, R3
 MOV (SP)+, R2

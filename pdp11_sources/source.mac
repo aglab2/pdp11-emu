@@ -29,7 +29,7 @@ Mwend:	MOV #0, R3
 ;	INC R5
 ;	CMP R5, #200 		;Print out all symbols from 33 to 127
 ;	BNE Msprnt
-	HALT
+End:	BR End
 	
 
 

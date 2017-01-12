@@ -22,6 +22,7 @@ public class ASH extends RegisterMemoryInstruction {
     public void execute(MemoryModel memory) {
         BusAddr src = sodMode.apply(memory, sodAddr, index);
         int num = src.fetch(memory).value;
+        if (num >= 32) num = num - 64; //6 bit signed num
         int data = memory.registers.fetch(reg.offset).value;
 
         int res = (num >= 0) ? data << num : data >> -num;
