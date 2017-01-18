@@ -7,6 +7,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.image.WritableImage;
+import keyboard.VirtualKeyboard;
 import memory.MemoryModel;
 import memory.MemoryStorage;
 import memory.primitives.MemSize;
@@ -62,6 +63,7 @@ public class MainController extends Controller {
     public final VideoManager videoManager = new VideoManager(screen, memoryModel.vram.dataObservableList);
     public final Parser parser = new Parser();
     public final Executor executor = new Executor(memoryModel, parser);
+    public final VirtualKeyboard keyboard = new VirtualKeyboard(executor);
 
     public final ObservableList<IndexedValue<Instruction>> instructions;
 

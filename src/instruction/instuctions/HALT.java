@@ -18,6 +18,7 @@ public class HALT extends ZeroOperandInstruction {
 
     @Override
     public void execute(MemoryModel memory) {
+        System.out.println("Halt at " + memory.registers.fetch(RegAddr.PC.offset).fmtOctal());
         memory.registers.load(RegAddr.PC.offset, Word.NaN);
     }
 }

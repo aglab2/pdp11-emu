@@ -1,40 +1,60 @@
 HALT ;dont remove me!
 
-Mstart:	MOV #174000, R0	;Set interrupt handler for keyboard
-	MOV #170000, (R0) 
+;pusha
+MOV R0, -(SP)
+MOV R1, -(SP)
+MOV R2, -(SP)
+MOV R3, -(SP)
+MOV R4, -(SP)
+;MOV R5, -(SP)
 
-	MOV #110000, R0		;R0=romOffset
-	MOV #40000, R1		;R1=vramOffset
-	
-Mwhile:	MOV (R0)+, R2		;R2=curCnt
+MOV 12(SP), R1
+MOV R1, R0
+ASH #70, R1 ;Shift right 8
+ASH #10, R1 ;Shift left 8
+SUB R1, R0
+ASH #70, R1 ;Shift right 8
 
-	TST R2			;while (curCnt != 0)
-	BEQ Mwend
+;Start of switch for ASCII choice
+Mcspace:	CMP R0, #13
+BNE Msnumber
+MOV #40, R5
+BR Mswitch
 
-	MOV (R0)+, R3		;R3=curWord
-				;for(i=0; i<curCnt; i++)
-Mfor:	MOV R3, (R1)+ 		;set vram addr
-	DEC R2			
-	TST R2			
-	BNE Mfor		
-	
-	BR Mwhile		
+Msnumber:	CMP R0, #30
+BLT Msdef
+CMP R0, #41
+BGT Msdef
+MOV R0, R5
+ADD #30, R5
+BR Mswitch
 
-;Start showing all symbols
-Mwend:	MOV #0, R3
-;	MOV #0, R4
-	
-;	MOV #41, R5
-;Msprnt:	JSR PC, Sstart
-;	INC R5
-;	CMP R5, #200 		;Print out all symbols from 33 to 127
-;	BNE Msprnt
-End:	BR End
-	
-
+Msdef:
+MOV R0, R5
+ADD #76, R5
+TST R1
+BEQ Mswitch
+SUB #40, R5
 
 
-	HALT; Protector before subroutines
+Mswitch:	MOV @#0, R3
+MOV @#2, R4
+
+JSR PC, Sstart
+
+MOV R3, @#0
+MOV R4, @#2
+
+;popa
+;MOV (SP)+, R5
+MOV (SP)+, R4
+MOV (SP)+, R3
+MOV (SP)+, R2
+MOV (SP)+, R1
+MOV (SP)+, R0
+ADD #2, SP
+
+RTI
 
 ;subroutine	: Print Symbol to vram
 ;call		: JSR PC, Sstart
@@ -73,4 +93,3 @@ Sfor:	MOV (R2)+, (R0)		;write word to vram = 1 line of symbol
 	BNE Send		;If we got overflow, move to the beginning
 	CLR R4
 Send:	RTS PC
-

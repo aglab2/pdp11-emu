@@ -21,6 +21,10 @@ import org.fxmisc.easybind.*
 import tornadofx.*
 import java.nio.file.*
 import java.util.concurrent.*
+import javafx.scene.input.KeyCode
+import org.apache.http.util.EntityUtils.consume
+
+
 
 
 class MainView : View() {
@@ -28,6 +32,7 @@ class MainView : View() {
     val memoryModel: MemoryModel = controller.memoryModel
     val screen: WritableImage = controller.screen
     val executor: Executor = controller.executor
+    val keyboard = controller.keyboard
 
     init { title = "PDP-11-40" }
 
@@ -54,6 +59,11 @@ class MainView : View() {
 
                 hgrow(Priority.ALWAYS)
                 vgrow(Priority.ALWAYS)
+                setOnMouseClicked { keyEvent -> this.requestFocus() }
+                isFocusTraversable = true
+                setOnKeyPressed { keyEvent ->
+                    keyboard.processKey(keyEvent)
+                }
             }
 
             vbox(1.0) {
@@ -99,7 +109,7 @@ class MainView : View() {
                 listview(memoryModel.ram.dataObservableList) {
                     vgrow(Priority.ALWAYS)
                     cellFormat {
-                        graphic = label(it.fmtHex())
+                        graphic = label(it.fmtOctal())
                     }
                     prefWidth = 110.0
                 }

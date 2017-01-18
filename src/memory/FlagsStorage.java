@@ -33,6 +33,16 @@ public class FlagsStorage extends RWMemory {
         return new Word(value);
     }
 
+    @Override
+    public void load(Offset address, Word word) {
+        int value = word.value;
+        T.set((value & 1 << 4) != 0);
+        N.set((value & 1 << 3) != 0);
+        Z.set((value & 1 << 2) != 0);
+        V.set((value & 1 << 1) != 0);
+        C.set((value & 1) != 0);
+    }
+
     public void setZN(Word result) {
         setZN(result.toSigned());
     }
@@ -57,11 +67,6 @@ public class FlagsStorage extends RWMemory {
         this.Z.set(Z == 1);
         this.V.set(V == 1);
         this.C.set(C == 1);
-    }
-
-    @Override
-    public void load(Offset address, Word value) {
-        throw new UnsupportedOperationException();
     }
 
     @Override
