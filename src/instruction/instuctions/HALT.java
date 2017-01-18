@@ -13,7 +13,7 @@ import memory.primitives.Word;
  */
 public class HALT extends ZeroOperandInstruction {
     public HALT() {
-        super(Word.ZERO);
+        super(Word.ZERO, 1);
     }
 
     @Override

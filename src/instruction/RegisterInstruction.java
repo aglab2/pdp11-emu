@@ -1,17 +1,26 @@
 package instruction;
 
+import bus.BusAddr;
 import com.sun.istack.internal.Nullable;
 import instruction.primitives.RegAddr;
 import instruction.primitives.RegMode;
+import memory.MemoryModel;
 import memory.primitives.Word;
+import pipeline.microcode.MicroCode;
+import pipeline.microcode.instruction.MicroDecode;
+import pipeline.microcode.instruction.MicroExecute;
+import pipeline.microcode.instruction.MicroFetch;
+import pipeline.microcode.instruction.MicroMemory;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class RegisterInstruction extends Instruction {
     public final RegAddr reg;
 
-    public RegisterInstruction(Word code, RegAddr reg) {
-        super(code, 13);
+    public RegisterInstruction(Word code, RegAddr reg, int cost) {
+        super(code, 13, cost);
         this.reg = reg;
     }
 
@@ -23,6 +32,20 @@ public abstract class RegisterInstruction extends Instruction {
     @Override
     public String getAssembler() {
         return name + " " + reg.name();
+    }
+
+    //TODO: This is used for only one function: RTS that uses more SP -_-
+    @Override
+    public MicroCode getMicrocode(BusAddr pc, MemoryModel memory) {
+        MicroFetch      fetch = new MicroFetch(pc);
+        List<BusAddr> indexes = new ArrayList<>();
+
+        MicroDecode decode = new MicroDecode(indexes);
+        MicroMemory load = new MicroMemory(RegMode.Register.getAddresses(memory, reg, null));
+        MicroExecute execute = new MicroExecute(cost);
+        MicroMemory store = new MicroMemory(RegMode.Register.getAddresses(memory, RegAddr.SP, null));
+
+        return new MicroCode(fetch, decode, load, execute, store);
     }
 
     @Override

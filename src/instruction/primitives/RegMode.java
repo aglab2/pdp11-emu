@@ -5,6 +5,10 @@ import com.sun.istack.internal.Nullable;
 import memory.MemoryModel;
 import memory.primitives.Word;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Created by voddan on 12/10/16.
  */
@@ -19,6 +23,11 @@ public enum RegMode {
         }
 
         @Override
+        public List<BusAddr> getAddresses(MemoryModel memory, RegAddr regAddr, @Nullable Word nextWord) {
+            return Arrays.asList(new BusAddr(memory.regOffset, regAddr.offset));
+        }
+
+        @Override
         public String getAssembler(RegAddr regAddr, @Nullable Word nextWord) {
             return regAddr.name();
         }
@@ -28,6 +37,12 @@ public enum RegMode {
         public BusAddr apply(MemoryModel memory, RegAddr regAddr, @Nullable Word nextWord) {
             Word addr = memory.registers.fetch(regAddr.offset);
             return new BusAddr(addr.value);
+        }
+
+        @Override
+        public List<BusAddr> getAddresses(MemoryModel memory, RegAddr regAddr, @Nullable Word nextWord) {
+            Word addr = memory.registers.fetch(regAddr.offset);
+            return Arrays.asList(new BusAddr(memory.regOffset, regAddr.offset), new BusAddr(addr.value));
         }
 
         @Override
@@ -44,6 +59,12 @@ public enum RegMode {
         }
 
         @Override
+        public List<BusAddr> getAddresses(MemoryModel memory, RegAddr regAddr, @Nullable Word nextWord) {
+            Word addr = memory.registers.fetch(regAddr.offset);
+            return Arrays.asList(new BusAddr(memory.regOffset, regAddr.offset), new BusAddr(addr.value));
+        }
+
+        @Override
         public String getAssembler(RegAddr regAddr, @Nullable Word nextWord) {
             return "(" + regAddr.name() + ")+";
         }
@@ -54,6 +75,13 @@ public enum RegMode {
             Word addr = memory.registers.fetch(regAddr.offset);
             memory.registers.load(regAddr.offset, addr.inc2());
             return new BusAddr(memory.bus.fetch(addr.value).value);
+        }
+
+        @Override
+        public List<BusAddr> getAddresses(MemoryModel memory, RegAddr regAddr, @Nullable Word nextWord) {
+            Word addr = memory.registers.fetch(regAddr.offset);
+            return Arrays.asList(new BusAddr(memory.regOffset, regAddr.offset), new BusAddr(addr.value),
+                                 new BusAddr(memory.bus.fetch(addr.value).value));
         }
 
         @Override
@@ -70,6 +98,12 @@ public enum RegMode {
         }
 
         @Override
+        public List<BusAddr> getAddresses(MemoryModel memory, RegAddr regAddr, @Nullable Word nextWord) {
+            Word newAddr = memory.registers.fetch(regAddr.offset).dec2();
+            return Arrays.asList(new BusAddr(memory.regOffset, regAddr.offset), new BusAddr(newAddr.value));
+        }
+
+        @Override
         public String getAssembler(RegAddr regAddr, @Nullable Word nextWord) {
             return "-(" + regAddr.name() + ")";
         }
@@ -83,6 +117,13 @@ public enum RegMode {
         }
 
         @Override
+        public List<BusAddr> getAddresses(MemoryModel memory, RegAddr regAddr, @Nullable Word nextWord) {
+            Word newAddr = memory.registers.fetch(regAddr.offset).dec2();
+            return Arrays.asList(new BusAddr(memory.regOffset, regAddr.offset), new BusAddr(newAddr.value),
+                                 new BusAddr(memory.bus.fetch(newAddr.value).value));
+        }
+
+        @Override
         public String getAssembler(RegAddr regAddr, @Nullable Word nextWord) {
             return "@-(" + regAddr.name() + ")";
         }
@@ -92,6 +133,13 @@ public enum RegMode {
         public BusAddr apply(MemoryModel memory, RegAddr regAddr, @Nullable Word nextWord) {
             assert nextWord != null;
             return new BusAddr(memory.registers.fetch(regAddr.offset).value + nextWord.value);
+        }
+
+        @Override
+        public List<BusAddr> getAddresses(MemoryModel memory, RegAddr regAddr, @Nullable Word nextWord) {
+            assert nextWord != null;
+            return Arrays.asList(new BusAddr(memory.regOffset, regAddr.offset),
+                                 new BusAddr(memory.registers.fetch(regAddr.offset).value + nextWord.value));
         }
 
         @Override
@@ -112,6 +160,15 @@ public enum RegMode {
         }
 
         @Override
+        public List<BusAddr> getAddresses(MemoryModel memory, RegAddr regAddr, @Nullable Word nextWord) {
+            assert nextWord != null;
+            Word reg = memory.registers.fetch(regAddr.offset);
+            return Arrays.asList(new BusAddr(memory.regOffset, regAddr.offset),
+                                 new BusAddr(memory.registers.fetch(regAddr.offset).value + nextWord.value),
+                                 new BusAddr(memory.bus.fetch(reg.value + nextWord.value).value));
+        }
+
+        @Override
         public String getAssembler(RegAddr regAddr, @Nullable Word nextWord) {
             assert nextWord != null;
             short signed = nextWord.toSigned();
@@ -123,6 +180,8 @@ public enum RegMode {
     public final int value = ordinal();
 
     public abstract BusAddr apply(MemoryModel memory, RegAddr regAddr, @Nullable Word nextWord);
+
+    public abstract List<BusAddr> getAddresses(MemoryModel memory, RegAddr regAddr, @Nullable Word nextWord);
 
     public abstract String getAssembler(RegAddr regAddr, @Nullable Word nextWord);
 

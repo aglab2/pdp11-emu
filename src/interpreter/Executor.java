@@ -1,5 +1,6 @@
 package interpreter;
 
+import bus.BusAddr;
 import com.sun.javafx.application.PlatformImpl;
 import instruction.Data;
 import instruction.Instruction;
@@ -10,6 +11,7 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import memory.MemoryModel;
 import memory.primitives.Word;
+import pipeline.LinearPipeline;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -20,9 +22,12 @@ public class Executor {
     public final MemoryModel memory;
     private final Parser parser;
 
+    private final LinearPipeline pipeline;
+
     public Executor(MemoryModel memory, Parser parser) {
         this.memory = memory;
         this.parser = parser;
+        this.pipeline = new LinearPipeline();
     }
 
     public boolean executeStep() {
@@ -38,6 +43,10 @@ public class Executor {
         Instruction instruction = parser.parseInstruction(word0, word1, word2);
 
         memory.registers.add(RegAddr.PC.offset, 2 * (1 + instruction.indexСapacity()));
+        pipeline.execute(instruction.getMicrocode(new BusAddr(pc.value), memory));
+
+        System.out.println(pipeline.clock);
+
         instruction.execute(memory);
 
         return true;

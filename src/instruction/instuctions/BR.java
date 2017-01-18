@@ -13,7 +13,7 @@ public class BR extends BranchInstruction {
 
 
     public BR(Offset offset) {
-        super(new Word(0b0000_0001_00000000), offset);
+        super(new Word(0b0000_0001_00000000), offset, 1);
     }
 
     @Override

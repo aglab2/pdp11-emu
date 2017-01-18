@@ -11,7 +11,7 @@ import memory.primitives.Word;
  */
 public class RTI extends ZeroOperandInstruction {
     public RTI() {
-        super(new Word(0b0_000000_000_000010));
+        super(new Word(0b0_000000_000_000010), 2);
     }
 
     @Override

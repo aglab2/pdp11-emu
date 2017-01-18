@@ -12,7 +12,7 @@ import memory.primitives.Word;
 public class BEQ extends BranchInstruction {
 
     public BEQ(Offset offset) {
-        super(new Word(0b0000_0011_00000000), offset);
+        super(new Word(0b0000_0011_00000000), offset, 2);
     }
 
     @Override

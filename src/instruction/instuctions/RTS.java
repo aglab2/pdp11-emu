@@ -15,7 +15,7 @@ import memory.primitives.Word;
 public class RTS extends RegisterInstruction {
 
     public RTS(RegAddr reg) {
-        super(new Word(0b0_000000_010000_000), reg);
+        super(new Word(0b0_000000_010000_000), reg, 2);
     }
 
     @Override

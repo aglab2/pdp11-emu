@@ -12,7 +12,7 @@ import memory.primitives.Word;
  */
 public class ASR extends SingleOperandInstruction {
     public ASR(RegMode dstMode, RegAddr dstIndex, Word index) {
-        super(new Word(0b0_000_110_010_000000), dstMode, dstIndex, index);
+        super(new Word(0b0_000_110_010_000000), dstMode, dstIndex, index, 1);
     }
 
     @Override
