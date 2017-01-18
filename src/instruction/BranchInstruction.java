@@ -46,7 +46,7 @@ public abstract class BranchInstruction extends Instruction {
         MicroExecute execute = new MicroExecute(cost);
         MicroMemory store = new MicroMemory(Collections.emptyList());
 
-        return new MicroCode(fetch, decode, load, execute, store);
+        return new MicroCode(fetch, decode, load, execute, store, Collections.emptySet(), Collections.emptySet());
     }
 
     @Override

@@ -12,6 +12,7 @@ import javafx.concurrent.Task;
 import memory.MemoryModel;
 import memory.primitives.Word;
 import pipeline.LinearPipeline;
+import pipeline.ParallelPipeline;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -22,12 +23,12 @@ public class Executor {
     public final MemoryModel memory;
     private final Parser parser;
 
-    private final LinearPipeline pipeline;
+    private ParallelPipeline pipeline;
 
     public Executor(MemoryModel memory, Parser parser) {
         this.memory = memory;
         this.parser = parser;
-        this.pipeline = new LinearPipeline();
+        this.pipeline = new ParallelPipeline();
     }
 
     public boolean executeStep() {
@@ -92,6 +93,7 @@ public class Executor {
     public final void cancelAll() {
         stepService.cancel();
         executeService.cancel();
+        pipeline = new ParallelPipeline();
     }
 
     public final void interrupt(int interruptCode, Word errorCode) {

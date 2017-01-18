@@ -14,6 +14,7 @@ import pipeline.microcode.instruction.MicroMemory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public abstract class SingleOperandInstruction extends Instruction {
@@ -56,7 +57,9 @@ public abstract class SingleOperandInstruction extends Instruction {
         MicroExecute execute = new MicroExecute(cost);
         MicroMemory store = new MicroMemory(dstMode.getAddresses(memory, dstAddr, index));
 
-        return new MicroCode(fetch, decode, load, execute, store);
+        return new MicroCode(fetch, decode, load, execute, store,
+                new HashSet<>(dstMode.getAddresses(memory, dstAddr, index)),
+                new HashSet<>(dstMode.getAddresses(memory, dstAddr, index)));
     }
 
     @Override

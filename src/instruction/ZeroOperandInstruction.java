@@ -13,6 +13,7 @@ import pipeline.microcode.instruction.MicroMemory;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 public abstract class ZeroOperandInstruction extends Instruction {
@@ -40,7 +41,8 @@ public abstract class ZeroOperandInstruction extends Instruction {
         MicroExecute execute = new MicroExecute(cost);
         MicroMemory store = new MicroMemory(Collections.emptyList());
 
-        return new MicroCode(fetch, decode, load, execute, store);
+        return new MicroCode(fetch, decode, load, execute, store,
+                Collections.emptySet(), Collections.emptySet());
     }
 
     @Override
