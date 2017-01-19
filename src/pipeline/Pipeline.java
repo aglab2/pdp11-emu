@@ -9,5 +9,5 @@ public abstract class Pipeline {
     public int clock;
 
     public abstract void execute(MicroCode microCode);
-    public abstract void finish(MicroCode microCode);
+    public abstract void finish();
 }

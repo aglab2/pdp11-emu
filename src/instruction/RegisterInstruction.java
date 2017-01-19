@@ -16,6 +16,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class RegisterInstruction extends Instruction {
     public final RegAddr reg;
@@ -41,14 +43,18 @@ public abstract class RegisterInstruction extends Instruction {
         MicroFetch      fetch = new MicroFetch(pc);
         List<BusAddr> indexes = new ArrayList<>();
 
-        MicroDecode decode = new MicroDecode(indexes);
-        MicroMemory load = new MicroMemory(RegMode.Register.getAddresses(memory, reg, null));
-        MicroExecute execute = new MicroExecute(cost);
-        MicroMemory store = new MicroMemory(RegMode.Register.getAddresses(memory, RegAddr.SP, null));
+        List<BusAddr> regAddresses = RegMode.Register.getAddresses(memory, reg, null);
+        List<BusAddr> spAddresses = RegMode.Register.getAddresses(memory, RegAddr.SP, null);
 
-        return new MicroCode(fetch, decode, load, execute, store,
-                new HashSet<>(RegMode.Register.getAddresses(memory, reg, null)),
-                new HashSet<>(RegMode.Register.getAddresses(memory, RegAddr.SP, null)));
+        MicroDecode decode = new MicroDecode(indexes);
+        MicroMemory load = new MicroMemory(regAddresses);
+        MicroExecute execute = new MicroExecute(cost);
+        MicroMemory store = new MicroMemory(spAddresses);
+
+        Set<Integer> srcSet = regAddresses.stream().map(addr -> addr.value).collect(Collectors.toSet());
+        Set<Integer> dstSet = spAddresses.stream().map(addr -> addr.value).collect(Collectors.toSet());
+
+        return new MicroCode(fetch, decode, load, execute, store, srcSet, dstSet);
     }
 
     @Override

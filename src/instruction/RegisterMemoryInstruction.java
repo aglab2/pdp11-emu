@@ -13,10 +13,8 @@ import pipeline.microcode.instruction.MicroFetch;
 import pipeline.microcode.instruction.MicroMemory;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class RegisterMemoryInstruction extends Instruction {
     public final RegAddr reg;
@@ -60,13 +58,17 @@ public abstract class RegisterMemoryInstruction extends Instruction {
             pc_value += 2;
             indexes.add(new BusAddr(pc_value));
         }
+
+        List<BusAddr> sodAddresses = sodMode.getAddresses(memory, sodAddr, index);
+
         MicroDecode decode = new MicroDecode(indexes);
-        MicroMemory load = new MicroMemory(sodMode.getAddresses(memory, sodAddr, index));
+        MicroMemory load = new MicroMemory(sodAddresses);
         MicroExecute execute = new MicroExecute(cost);
         MicroMemory store = new MicroMemory(Collections.emptyList());
 
-        return new MicroCode(fetch, decode, load, execute, store,
-                new HashSet<>(sodMode.getAddresses(memory, sodAddr, index)), Collections.emptySet());
+        Set<Integer> sodSet = sodAddresses.stream().map(addr -> addr.value).collect(Collectors.toSet());
+
+        return new MicroCode(fetch, decode, load, execute, store, sodSet, Collections.emptySet());
     }
     @Override
     public Instruction parse(Word word, @Nullable Word index1, @Nullable Word index2) {

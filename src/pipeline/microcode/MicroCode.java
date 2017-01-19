@@ -18,11 +18,11 @@ public class MicroCode {
     public final MicroExecute execute;
     public final MicroMemory store;
 
-    public Set<BusAddr> read;
-    public Set<BusAddr> write;
+    public Set<Integer> read;
+    public Set<Integer> write;
 
     public MicroCode(MicroFetch fetch, MicroDecode decode, MicroMemory load, MicroExecute execute, MicroMemory store,
-                     Set<BusAddr> read, Set<BusAddr> write) {
+                     Set<Integer> read, Set<Integer> write) {
         this.fetch = fetch;
         this.decode = decode;
         this.load = load;

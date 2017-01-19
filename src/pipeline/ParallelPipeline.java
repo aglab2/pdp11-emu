@@ -21,7 +21,5 @@ public class ParallelPipeline extends Pipeline {
         clock += fdles.push(microCode);
     }
 
-    public void finish(MicroCode microCode){
-        fdles.fini();
-    }
+    public void finish() { clock += fdles.finish(); }
 }

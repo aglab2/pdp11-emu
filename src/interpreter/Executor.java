@@ -23,17 +23,25 @@ public class Executor {
     public final MemoryModel memory;
     private final Parser parser;
 
-    private ParallelPipeline pipeline;
+    private LinearPipeline linearPipeline;
+    private ParallelPipeline parallelPipeline;
 
     public Executor(MemoryModel memory, Parser parser) {
         this.memory = memory;
         this.parser = parser;
-        this.pipeline = new ParallelPipeline();
+        this.parallelPipeline = new ParallelPipeline();
+        this.linearPipeline = new LinearPipeline();
     }
 
     public boolean executeStep() {
         Word pc = memory.registers.fetch(RegAddr.PC.offset);
-        if(pc == Word.NaN) return false;
+        if(pc == Word.NaN) {
+            System.out.format("Finished with: %d parallel, %d linear\n", parallelPipeline.clock, linearPipeline.clock);
+            parallelPipeline.finish();
+            linearPipeline.finish();
+            System.out.format("Finished with: %d parallel, %d linear\n", parallelPipeline.clock, linearPipeline.clock);
+            return false;
+        }
 
         Word word0 = memory.bus.fetch(pc.value);
         if(word0 == null) return false;
@@ -44,9 +52,9 @@ public class Executor {
         Instruction instruction = parser.parseInstruction(word0, word1, word2);
 
         memory.registers.add(RegAddr.PC.offset, 2 * (1 + instruction.indexСapacity()));
-        pipeline.execute(instruction.getMicrocode(new BusAddr(pc.value), memory));
-
-        System.out.println(pipeline.clock);
+        linearPipeline.execute(instruction.getMicrocode(new BusAddr(pc.value), memory));
+        parallelPipeline.execute(instruction.getMicrocode(new BusAddr(pc.value), memory));
+        if (parallelPipeline.clock != 0) System.out.format("%.4f\n", (double) linearPipeline.clock / (double) parallelPipeline.clock);
 
         instruction.execute(memory);
 
@@ -79,7 +87,6 @@ public class Executor {
                     while (true) {
                         final boolean[] result = new boolean[1];
                         PlatformImpl.runAndWait(() -> result[0] = executeStep());
-
                         if(!result[0] || isCancelled())
                             break;
                     }
@@ -93,7 +100,8 @@ public class Executor {
     public final void cancelAll() {
         stepService.cancel();
         executeService.cancel();
-        pipeline = new ParallelPipeline();
+        linearPipeline = new LinearPipeline();
+        parallelPipeline = new ParallelPipeline();
     }
 
     public final void interrupt(int interruptCode, Word errorCode) {
