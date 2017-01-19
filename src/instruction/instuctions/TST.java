@@ -12,7 +12,7 @@ import memory.primitives.Word;
  */
 public class TST extends SingleOperandInstruction {
     public TST(RegMode dstMode, RegAddr dstIndex, Word index) {
-        super(new Word(0b0_000_101_111_000000), dstMode, dstIndex, index);
+        super(new Word(0b0_000_101_111_000000), dstMode, dstIndex, index, 1);
     }
 
     @Override

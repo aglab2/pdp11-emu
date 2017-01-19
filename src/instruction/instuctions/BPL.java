@@ -12,7 +12,7 @@ import memory.primitives.Word;
 public class BPL extends BranchInstruction {
 
     public BPL(Offset offset) {
-        super(new Word(0b1000_0000_00000000), offset);
+        super(new Word(0b1000_0000_00000000), offset, 1);
     }
 
     @Override

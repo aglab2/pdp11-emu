@@ -15,7 +15,7 @@ import memory.primitives.Word;
 public class ASH extends RegisterMemoryInstruction {
 
     public ASH(RegAddr reg, RegMode srcMode, RegAddr srcAddr, @Nullable Word index) {
-        super(new Word(0b0_111010_000_000000), reg, srcMode, srcAddr, index);
+        super(new Word(0b0_111010_000_000000), reg, srcMode, srcAddr, index,4);
     }
 
     @Override

@@ -1,11 +1,21 @@
 package instruction;
 
+import bus.BusAddr;
 import com.sun.istack.internal.Nullable;
 import instruction.primitives.RegAddr;
 import instruction.primitives.RegMode;
+import memory.MemoryModel;
 import memory.primitives.Word;
+import pipeline.microcode.MicroCode;
+import pipeline.microcode.instruction.MicroDecode;
+import pipeline.microcode.instruction.MicroExecute;
+import pipeline.microcode.instruction.MicroFetch;
+import pipeline.microcode.instruction.MicroMemory;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 public abstract class SingleOperandInstruction extends Instruction {
     public final RegMode dstMode;
@@ -14,8 +24,8 @@ public abstract class SingleOperandInstruction extends Instruction {
 
     public SingleOperandInstruction(Word code,
                                     RegMode dstMode, RegAddr dstAddr,
-                                    @Nullable Word index) {
-        super(code, 10);
+                                    @Nullable Word index, int cost) {
+        super(code, 10, cost);
         this.dstMode = dstMode;
         this.dstAddr = dstAddr;
         this.index = index;
@@ -29,6 +39,27 @@ public abstract class SingleOperandInstruction extends Instruction {
     @Override
     public String getAssembler() {
         return name + " " + dstMode.getAssembler(dstAddr, index);
+    }
+
+    //TODO: Separate store from load
+    @Override
+    public MicroCode getMicrocode(BusAddr pc, MemoryModel memory) {
+        MicroFetch fetch = new MicroFetch(pc);
+        List<BusAddr> indexes = new ArrayList<>();
+
+        int pc_value = pc.value;
+        if (index == null) {
+            pc_value += 2;
+            indexes.add(new BusAddr(pc_value));
+        }
+        MicroDecode decode = new MicroDecode(indexes);
+        MicroMemory load = new MicroMemory(dstMode.getAddresses(memory, dstAddr, index));
+        MicroExecute execute = new MicroExecute(cost);
+        MicroMemory store = new MicroMemory(dstMode.getAddresses(memory, dstAddr, index));
+
+        return new MicroCode(fetch, decode, load, execute, store,
+                new HashSet<>(dstMode.getAddresses(memory, dstAddr, index)),
+                new HashSet<>(dstMode.getAddresses(memory, dstAddr, index)));
     }
 
     @Override

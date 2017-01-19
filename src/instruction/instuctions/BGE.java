@@ -12,7 +12,7 @@ import memory.primitives.Word;
 public class BGE extends BranchInstruction {
 
     public BGE(Offset offset) {
-        super(new Word(0b0000_0100_00000000), offset);
+        super(new Word(0b0000_0100_00000000), offset, 2);
     }
 
     @Override

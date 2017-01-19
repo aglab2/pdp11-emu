@@ -12,7 +12,7 @@ import memory.primitives.Word;
  */
 public class JMP extends SingleOperandInstruction {
     public JMP(RegMode dstMode, RegAddr dstIndex, Word index) {
-        super(new Word(0b0_000_000_001_000000), dstMode, dstIndex, index);
+        super(new Word(0b0_000_000_001_000000), dstMode, dstIndex, index, 2);
     }
 
     @Override

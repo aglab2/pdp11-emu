@@ -1,11 +1,22 @@
 package instruction;
 
+import bus.BusAddr;
 import com.sun.istack.internal.Nullable;
 import instruction.primitives.RegAddr;
 import instruction.primitives.RegMode;
+import memory.MemoryModel;
 import memory.primitives.Word;
+import pipeline.microcode.MicroCode;
+import pipeline.microcode.instruction.MicroDecode;
+import pipeline.microcode.instruction.MicroExecute;
+import pipeline.microcode.instruction.MicroFetch;
+import pipeline.microcode.instruction.MicroMemory;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 
 public abstract class RegisterMemoryInstruction extends Instruction {
     public final RegAddr reg;
@@ -19,8 +30,8 @@ public abstract class RegisterMemoryInstruction extends Instruction {
      */
     public RegisterMemoryInstruction(Word code, RegAddr reg,
                                      RegMode sodMode, RegAddr sodAddr,
-                                     @Nullable Word index) {
-        super(code, 7);
+                                     @Nullable Word index, int cost) {
+        super(code, 7, cost);
         this.reg = reg;
         this.sodMode = sodMode;
         this.sodAddr = sodAddr;
@@ -38,6 +49,25 @@ public abstract class RegisterMemoryInstruction extends Instruction {
         return name + " " + reg.name() + "," + sodMode.getAssembler(sodAddr, index);
     }
 
+    //TODO: Separate store and load - JSR!!!
+    @Override
+    public MicroCode getMicrocode(BusAddr pc, MemoryModel memory) {
+        MicroFetch fetch = new MicroFetch(pc);
+        List<BusAddr> indexes = new ArrayList<>();
+
+        int pc_value = pc.value;
+        if (index == null) {
+            pc_value += 2;
+            indexes.add(new BusAddr(pc_value));
+        }
+        MicroDecode decode = new MicroDecode(indexes);
+        MicroMemory load = new MicroMemory(sodMode.getAddresses(memory, sodAddr, index));
+        MicroExecute execute = new MicroExecute(cost);
+        MicroMemory store = new MicroMemory(Collections.emptyList());
+
+        return new MicroCode(fetch, decode, load, execute, store,
+                new HashSet<>(sodMode.getAddresses(memory, sodAddr, index)), Collections.emptySet());
+    }
     @Override
     public Instruction parse(Word word, @Nullable Word index1, @Nullable Word index2) {
         if (!range.contains(word))

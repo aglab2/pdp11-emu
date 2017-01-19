@@ -12,7 +12,7 @@ import memory.primitives.Word;
 public class BLE extends BranchInstruction {
 
     public BLE(Offset offset) {
-        super(new Word(0b0000_0111_00000000), offset);
+        super(new Word(0b0000_0111_00000000), offset, 2);
     }
 
     @Override

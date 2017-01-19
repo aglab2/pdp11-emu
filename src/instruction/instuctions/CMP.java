@@ -15,7 +15,7 @@ public class CMP extends DoubleOperandInstruction {
 
     public CMP(RegMode srcMode, RegAddr srcAddr, RegMode dstMode, RegAddr dstAddr,
                @Nullable Word index1, @Nullable Word index2) {
-        super(new Word(0b0_010_000000_000000), srcMode, srcAddr, dstMode, dstAddr, index1, index2);
+        super(new Word(0b0_010_000000_000000), srcMode, srcAddr, dstMode, dstAddr, index1, index2, 1);
     }
 
     @Override

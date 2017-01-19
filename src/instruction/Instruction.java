@@ -1,9 +1,11 @@
 package instruction;
 
+import bus.BusAddr;
 import com.sun.istack.internal.Nullable;
 import instruction.primitives.InstructionRange;
 import memory.MemoryModel;
 import memory.primitives.Word;
+import pipeline.microcode.MicroCode;
 
 /**
  * Created by voddan on 12/10/16.
@@ -11,10 +13,12 @@ import memory.primitives.Word;
 public abstract class Instruction {
     public final InstructionRange range;
     public final String name;
+    public int cost;
 
-    public Instruction(Word code, int bitSize) {
+    public Instruction(Word code, int bitSize, int cost) {
         this.range = new InstructionRange(code, 16 - bitSize);
         this.name = this.getClass().getSimpleName();
+        this.cost = cost;
     }
 
 
@@ -24,6 +28,8 @@ public abstract class Instruction {
 
 
     public abstract void execute(MemoryModel memory);
+
+    public abstract MicroCode getMicrocode(BusAddr pc, MemoryModel memory);
 
     public abstract Instruction parse(Word word, @Nullable Word index1, @Nullable Word index2);
 

@@ -16,7 +16,7 @@ import memory.primitives.Word;
 public class MUL extends RegisterMemoryInstruction {
 
     public MUL(RegAddr reg, RegMode srcMode, RegAddr srcAddr, @Nullable Word index) {
-        super(new Word(0b0_111000_000_000000), reg, srcMode, srcAddr, index);
+        super(new Word(0b0_111000_000_000000), reg, srcMode, srcAddr, index, 10);
     }
 
     @Override
