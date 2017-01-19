@@ -16,6 +16,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class DoubleOperandInstruction extends Instruction {
     public final RegMode srcMode;
@@ -70,14 +72,19 @@ public abstract class DoubleOperandInstruction extends Instruction {
             pc_value += 2;
             indexes.add(new BusAddr(pc_value));
         }
-        MicroDecode     decode = new MicroDecode(indexes);
-        MicroMemory     load = new MicroMemory(srcMode.getAddresses(memory, srcAddr, srcIndex));
-        MicroExecute    execute = new MicroExecute(cost);
-        MicroMemory     store = new MicroMemory(dstMode.getAddresses(memory, dstAddr, dstIndex));
 
-        return new MicroCode(fetch, decode, load, execute, store,
-                new HashSet<>(srcMode.getAddresses(memory, srcAddr, srcIndex)),
-                new HashSet<>(dstMode.getAddresses(memory, dstAddr, dstIndex)));
+        List<BusAddr> srcAddresses = srcMode.getAddresses(memory, srcAddr, srcIndex);
+        List<BusAddr> dstAddresses = dstMode.getAddresses(memory, dstAddr, dstIndex);
+
+        MicroDecode     decode = new MicroDecode(indexes);
+        MicroMemory     load = new MicroMemory(srcAddresses);
+        MicroExecute    execute = new MicroExecute(cost);
+        MicroMemory     store = new MicroMemory(dstAddresses);
+
+        Set<Integer> srcSet = srcAddresses.stream().map(addr -> addr.value).collect(Collectors.toSet());
+        Set<Integer> dstSet = dstAddresses.stream().map(addr -> addr.value).collect(Collectors.toSet());
+
+        return new MicroCode(fetch, decode, load, execute, store, srcSet, dstSet);
     }
 
     @Override

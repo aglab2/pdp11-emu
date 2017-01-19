@@ -14,5 +14,5 @@ public class LinearPipeline extends Pipeline {
         this.clock += microCode.getTotalCost();
     }
 
-    public void finish(MicroCode microCode){ }
+    public void finish(){ }
 }

@@ -16,6 +16,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class SingleOperandInstruction extends Instruction {
     public final RegMode dstMode;
@@ -52,14 +54,17 @@ public abstract class SingleOperandInstruction extends Instruction {
             pc_value += 2;
             indexes.add(new BusAddr(pc_value));
         }
-        MicroDecode decode = new MicroDecode(indexes);
-        MicroMemory load = new MicroMemory(dstMode.getAddresses(memory, dstAddr, index));
-        MicroExecute execute = new MicroExecute(cost);
-        MicroMemory store = new MicroMemory(dstMode.getAddresses(memory, dstAddr, index));
 
-        return new MicroCode(fetch, decode, load, execute, store,
-                new HashSet<>(dstMode.getAddresses(memory, dstAddr, index)),
-                new HashSet<>(dstMode.getAddresses(memory, dstAddr, index)));
+        List<BusAddr> dstAddresses = dstMode.getAddresses(memory, dstAddr, index);
+
+        MicroDecode decode = new MicroDecode(indexes);
+        MicroMemory load = new MicroMemory(dstAddresses);
+        MicroExecute execute = new MicroExecute(cost);
+        MicroMemory store = new MicroMemory(dstAddresses);
+
+        Set<Integer> dstSet = dstAddresses.stream().map(addr -> addr.value).collect(Collectors.toSet());
+
+        return new MicroCode(fetch, decode, load, execute, store, dstSet, dstSet);
     }
 
     @Override
