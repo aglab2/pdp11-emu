@@ -2,6 +2,7 @@ package instruction;
 
 import bus.BusAddr;
 import com.sun.istack.internal.Nullable;
+import com.sun.org.apache.xpath.internal.Arg;
 import instruction.primitives.RegAddr;
 import instruction.primitives.RegMode;
 import memory.MemoryModel;
@@ -22,14 +23,16 @@ import java.util.stream.Collectors;
 public abstract class SingleOperandInstruction extends Instruction {
     public final RegMode dstMode;
     public final RegAddr dstAddr;
+    public final ArgumentType dstType;
     public final @Nullable Word index;
 
     public SingleOperandInstruction(Word code,
-                                    RegMode dstMode, RegAddr dstAddr,
+                                    RegMode dstMode, RegAddr dstAddr, ArgumentType dstType,
                                     @Nullable Word index, int cost) {
         super(code, 10, cost);
         this.dstMode = dstMode;
         this.dstAddr = dstAddr;
+        this.dstType = dstType;
         this.index = index;
     }
 
@@ -43,7 +46,6 @@ public abstract class SingleOperandInstruction extends Instruction {
         return name + " " + dstMode.getAssembler(dstAddr, index);
     }
 
-    //TODO: Separate store from load
     @Override
     public MicroCode getMicrocode(BusAddr pc, MemoryModel memory) {
         MicroFetch fetch = new MicroFetch(pc);
@@ -57,14 +59,20 @@ public abstract class SingleOperandInstruction extends Instruction {
 
         List<BusAddr> dstAddresses = dstMode.getAddresses(memory, dstAddr, index);
 
+        List<BusAddr> readAddresses = new ArrayList<>();
+        if (dstType == ArgumentType.READ || dstType == ArgumentType.READWRITE) readAddresses.addAll(dstAddresses);
+        List<BusAddr> writeAddresses = new ArrayList<>();
+        if (dstType == ArgumentType.WRITE || dstType == ArgumentType.READWRITE) writeAddresses.addAll(dstAddresses);
+
         MicroDecode decode = new MicroDecode(indexes);
-        MicroMemory load = new MicroMemory(dstAddresses);
+        MicroMemory load = new MicroMemory(readAddresses);
         MicroExecute execute = new MicroExecute(cost);
-        MicroMemory store = new MicroMemory(dstAddresses);
+        MicroMemory store = new MicroMemory(writeAddresses);
 
-        Set<Integer> dstSet = dstAddresses.stream().map(addr -> addr.value).collect(Collectors.toSet());
+        Set<Integer> readSet = readAddresses.stream().map(addr -> addr.value).collect(Collectors.toSet());
+        Set<Integer> writeSet = writeAddresses.stream().map(addr -> addr.value).collect(Collectors.toSet());
 
-        return new MicroCode(fetch, decode, load, execute, store, dstSet, dstSet);
+        return new MicroCode(fetch, decode, load, execute, store, readSet, writeSet);
     }
 
     @Override

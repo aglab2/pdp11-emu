@@ -2,6 +2,7 @@ package instruction.instuctions;
 
 import bus.BusAddr;
 import com.sun.istack.internal.Nullable;
+import instruction.ArgumentType;
 import instruction.RegisterMemoryInstruction;
 import instruction.primitives.RegAddr;
 import instruction.primitives.RegMode;
@@ -15,7 +16,7 @@ import memory.primitives.Word;
 public class JSR extends RegisterMemoryInstruction {
 
     public JSR(RegAddr reg, RegMode sodMode, RegAddr sodAddr, @Nullable Word index) {
-        super(new Word(0b0_000100_000_000000), reg, sodMode, sodAddr, index, 2);
+        super(new Word(0b0_000100_000_000000), reg, ArgumentType.READWRITE ,sodMode, sodAddr, ArgumentType.READWRITE, index, 2);
     }
 
     @Override

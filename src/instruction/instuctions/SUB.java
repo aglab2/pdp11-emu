@@ -2,6 +2,7 @@ package instruction.instuctions;
 
 import bus.BusAddr;
 import com.sun.istack.internal.Nullable;
+import instruction.ArgumentType;
 import instruction.DoubleOperandInstruction;
 import instruction.primitives.RegAddr;
 import instruction.primitives.RegMode;
@@ -15,7 +16,7 @@ public class SUB extends DoubleOperandInstruction {
 
     public SUB(RegMode srcMode, RegAddr srcAddr, RegMode dstMode, RegAddr dstAddr,
                @Nullable Word index1, @Nullable Word index2) {
-        super(new Word(0b1_110_000000_000000), srcMode, srcAddr, dstMode, dstAddr, index1, index2, 1);
+        super(new Word(0b1_110_000000_000000), srcMode, srcAddr, ArgumentType.READ, dstMode, dstAddr, ArgumentType.WRITE, index1, index2, 1);
     }
 
     @Override

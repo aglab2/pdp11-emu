@@ -8,6 +8,9 @@ import instruction.primitives.RegMode;
 import memory.MemoryModel;
 import memory.primitives.Word;
 
+import static instruction.ArgumentType.READ;
+import static instruction.ArgumentType.READWRITE;
+
 /**
  * Created by voddan on 23/10/16.
  */
@@ -15,7 +18,7 @@ public class ADD extends DoubleOperandInstruction {
 
     public ADD(RegMode srcMode, RegAddr srcAddr, RegMode dstMode, RegAddr dstAddr,
                @Nullable Word index1, @Nullable Word index2) {
-        super(new Word(0b0_110_000000_000000), srcMode, srcAddr, dstMode, dstAddr, index1, index2, 1);
+        super(new Word(0b0_110_000000_000000), srcMode, srcAddr, READ, dstMode, dstAddr, READWRITE, index1, index2, 1);
     }
 
     @Override
