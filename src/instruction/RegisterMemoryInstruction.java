@@ -18,21 +18,27 @@ import java.util.stream.Collectors;
 
 public abstract class RegisterMemoryInstruction extends Instruction {
     public final RegAddr reg;
+    public final ArgumentType regType;
+
     public final RegMode sodMode;
     public final RegAddr sodAddr;
+    public final ArgumentType sodType;
+
     public final @Nullable Word index;
 
     /**
      * @param sodMode is a srcMode OR a dstMode
      * @param sodAddr is a srcAddr OR a dstAddr
      */
-    public RegisterMemoryInstruction(Word code, RegAddr reg,
-                                     RegMode sodMode, RegAddr sodAddr,
+    public RegisterMemoryInstruction(Word code, RegAddr reg, ArgumentType regType,
+                                     RegMode sodMode, RegAddr sodAddr, ArgumentType sodType,
                                      @Nullable Word index, int cost) {
         super(code, 7, cost);
         this.reg = reg;
+        this.regType = regType;
         this.sodMode = sodMode;
         this.sodAddr = sodAddr;
+        this.sodType = sodType;
         this.index = index;
     }
 
@@ -47,7 +53,6 @@ public abstract class RegisterMemoryInstruction extends Instruction {
         return name + " " + reg.name() + "," + sodMode.getAssembler(sodAddr, index);
     }
 
-    //TODO: Separate store and load - JSR!!!
     @Override
     public MicroCode getMicrocode(BusAddr pc, MemoryModel memory) {
         MicroFetch fetch = new MicroFetch(pc);
@@ -59,17 +64,27 @@ public abstract class RegisterMemoryInstruction extends Instruction {
             indexes.add(new BusAddr(pc_value));
         }
 
+        List<BusAddr> regAddresses = RegMode.Register.getAddresses(memory, reg, null);
         List<BusAddr> sodAddresses = sodMode.getAddresses(memory, sodAddr, index);
 
+        List<BusAddr> readAddresses = new ArrayList<>();
+        if (regType == ArgumentType.READ || regType == ArgumentType.READWRITE) readAddresses.addAll(regAddresses);
+        if (sodType == ArgumentType.READ || sodType == ArgumentType.READWRITE) readAddresses.addAll(sodAddresses);
+        List<BusAddr> writeAddresses = new ArrayList<>();
+        if (regType == ArgumentType.WRITE || regType == ArgumentType.READWRITE) writeAddresses.addAll(regAddresses);
+        if (sodType == ArgumentType.WRITE || sodType == ArgumentType.READWRITE) writeAddresses.addAll(sodAddresses);
+
         MicroDecode decode = new MicroDecode(indexes);
-        MicroMemory load = new MicroMemory(sodAddresses);
+        MicroMemory load = new MicroMemory(readAddresses);
         MicroExecute execute = new MicroExecute(cost);
-        MicroMemory store = new MicroMemory(Collections.emptyList());
+        MicroMemory store = new MicroMemory(writeAddresses);
 
-        Set<Integer> sodSet = sodAddresses.stream().map(addr -> addr.value).collect(Collectors.toSet());
+        Set<Integer> readSet = readAddresses.stream().map(addr -> addr.value).collect(Collectors.toSet());
+        Set<Integer> writeSet = writeAddresses.stream().map(addr -> addr.value).collect(Collectors.toSet());
 
-        return new MicroCode(fetch, decode, load, execute, store, sodSet, Collections.emptySet());
+        return new MicroCode(fetch, decode, load, execute, store, readSet, writeSet);
     }
+
     @Override
     public Instruction parse(Word word, @Nullable Word index1, @Nullable Word index2) {
         if (!range.contains(word))

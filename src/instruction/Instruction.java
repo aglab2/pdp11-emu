@@ -10,6 +10,7 @@ import pipeline.microcode.MicroCode;
 /**
  * Created by voddan on 12/10/16.
  */
+
 public abstract class Instruction {
     public final InstructionRange range;
     public final String name;

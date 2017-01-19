@@ -2,6 +2,7 @@ package instruction.instuctions;
 
 import bus.BusAddr;
 import com.sun.istack.internal.Nullable;
+import instruction.ArgumentType;
 import instruction.RegisterMemoryInstruction;
 import instruction.primitives.RegAddr;
 import instruction.primitives.RegMode;
@@ -15,7 +16,7 @@ import memory.primitives.Word;
 public class DIV extends RegisterMemoryInstruction {
 
     public DIV(RegAddr reg, RegMode srcMode, RegAddr srcAddr, @Nullable Word index) {
-        super(new Word(0b0_111001_000_000000), reg, srcMode, srcAddr, index, 10);
+        super(new Word(0b0_111001_000_000000), reg, ArgumentType.READWRITE, srcMode, srcAddr, ArgumentType.READWRITE, index, 10);
     }
 
     @Override

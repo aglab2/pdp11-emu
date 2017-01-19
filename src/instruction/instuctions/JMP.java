@@ -1,6 +1,7 @@
 package instruction.instuctions;
 
 import bus.BusAddr;
+import instruction.ArgumentType;
 import instruction.SingleOperandInstruction;
 import instruction.primitives.RegAddr;
 import instruction.primitives.RegMode;
@@ -12,7 +13,7 @@ import memory.primitives.Word;
  */
 public class JMP extends SingleOperandInstruction {
     public JMP(RegMode dstMode, RegAddr dstIndex, Word index) {
-        super(new Word(0b0_000_000_001_000000), dstMode, dstIndex, index, 2);
+        super(new Word(0b0_000_000_001_000000), dstMode, dstIndex, ArgumentType.READ, index, 2);
     }
 
     @Override

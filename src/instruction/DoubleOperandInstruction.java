@@ -2,6 +2,7 @@ package instruction;
 
 import bus.BusAddr;
 import com.sun.istack.internal.Nullable;
+import com.sun.org.apache.xpath.internal.Arg;
 import instruction.primitives.RegAddr;
 import instruction.primitives.RegMode;
 import memory.MemoryModel;
@@ -22,8 +23,11 @@ import java.util.stream.Collectors;
 public abstract class DoubleOperandInstruction extends Instruction {
     public final RegMode srcMode;
     public final RegAddr srcAddr;
+    public final ArgumentType srcType;
     public final RegMode dstMode;
     public final RegAddr dstAddr;
+    public final ArgumentType dstType;
+
     public final @Nullable Word srcIndex;
     public final @Nullable Word dstIndex;
 
@@ -33,14 +37,16 @@ public abstract class DoubleOperandInstruction extends Instruction {
      * @param index2 the second `Word` after the instruction
      */
     public DoubleOperandInstruction(Word code,
-                                    RegMode srcMode, RegAddr srcAddr,
-                                    RegMode dstMode, RegAddr dstAddr,
+                                    RegMode srcMode, RegAddr srcAddr, ArgumentType srcType,
+                                    RegMode dstMode, RegAddr dstAddr, ArgumentType dstType,
                                     @Nullable Word index1, @Nullable Word index2, int cost) {
         super(code, 4, cost);
         this.srcMode = srcMode;
         this.srcAddr = srcAddr;
+        this.srcType = srcType;
         this.dstMode = dstMode;
         this.dstAddr = dstAddr;
+        this.dstType = dstType;
 
         this.srcIndex = index1;
         this.dstIndex = (srcMode.needsIndex()) ? index2 : index1;
@@ -76,15 +82,22 @@ public abstract class DoubleOperandInstruction extends Instruction {
         List<BusAddr> srcAddresses = srcMode.getAddresses(memory, srcAddr, srcIndex);
         List<BusAddr> dstAddresses = dstMode.getAddresses(memory, dstAddr, dstIndex);
 
+        List<BusAddr> readAddresses = new ArrayList<>();
+        if (srcType == ArgumentType.READ || srcType == ArgumentType.READWRITE) readAddresses.addAll(srcAddresses);
+        if (dstType == ArgumentType.READ || dstType == ArgumentType.READWRITE) readAddresses.addAll(dstAddresses);
+        List<BusAddr> writeAddresses = new ArrayList<>();
+        if (srcType == ArgumentType.WRITE || srcType == ArgumentType.READWRITE) writeAddresses.addAll(srcAddresses);
+        if (dstType == ArgumentType.WRITE || dstType == ArgumentType.READWRITE) writeAddresses.addAll(dstAddresses);
+
         MicroDecode     decode = new MicroDecode(indexes);
-        MicroMemory     load = new MicroMemory(srcAddresses);
+        MicroMemory     load = new MicroMemory(readAddresses);
         MicroExecute    execute = new MicroExecute(cost);
-        MicroMemory     store = new MicroMemory(dstAddresses);
+        MicroMemory     store = new MicroMemory(writeAddresses);
 
-        Set<Integer> srcSet = srcAddresses.stream().map(addr -> addr.value).collect(Collectors.toSet());
-        Set<Integer> dstSet = dstAddresses.stream().map(addr -> addr.value).collect(Collectors.toSet());
+        Set<Integer> readSet = readAddresses.stream().map(addr -> addr.value).collect(Collectors.toSet());
+        Set<Integer> writeSet = writeAddresses.stream().map(addr -> addr.value).collect(Collectors.toSet());
 
-        return new MicroCode(fetch, decode, load, execute, store, srcSet, dstSet);
+        return new MicroCode(fetch, decode, load, execute, store, readSet, writeSet);
     }
 
     @Override

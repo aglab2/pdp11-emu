@@ -1,6 +1,7 @@
 package instruction.instuctions;
 
 import bus.BusAddr;
+import instruction.ArgumentType;
 import instruction.SingleOperandInstruction;
 import instruction.primitives.RegAddr;
 import instruction.primitives.RegMode;
@@ -12,7 +13,7 @@ import memory.primitives.Word;
  */
 public class ASR extends SingleOperandInstruction {
     public ASR(RegMode dstMode, RegAddr dstIndex, Word index) {
-        super(new Word(0b0_000_110_010_000000), dstMode, dstIndex, index, 1);
+        super(new Word(0b0_000_110_010_000000), dstMode, dstIndex, ArgumentType.READWRITE, index, 1);
     }
 
     @Override
