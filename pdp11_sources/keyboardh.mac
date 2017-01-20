@@ -6,47 +6,43 @@ MOV R1, -(SP)
 MOV R2, -(SP)
 MOV R3, -(SP)
 MOV R4, -(SP)
-;MOV R5, -(SP)
+MOV R5, -(SP)
 
-MOV 12(SP), R1
+;We should get ourselves place for caret: no interrupts should appear during this
+;---------------NO INTERRUPTS SHOULD BE HERE---------------------
+MOV #174000, R0	;Remove interrupt handler for keyboard
+MOV #0, (R0)
+
+MOV @#0, R3		;Get old position
+MOV @#2, R4
+MOV R3, R1		;Save it to registers
+MOV R4, R2
+
+JSR PC, Cstart	;Move caret
+MOV R3, @#0		;Writeback
+MOV R4, @#2
+
+MOV #170000, (R0)  ;Return interrupt handler
+;----------------------------------------------------------------
+
+;Setup position to print symbol
+MOV R1, R3
+MOV R2, R4
+
+
+;Prepare for scancode convert
+MOV 14(SP), R1
 MOV R1, R0
 ASH #70, R1 ;Shift right 8
 ASH #10, R1 ;Shift left 8
 SUB R1, R0
 ASH #70, R1 ;Shift right 8
 
-;Start of switch for ASCII choice
-Mcspace:	CMP R0, #13
-BNE Msnumber
-MOV #40, R5
-BR Mswitch
-
-Msnumber:	CMP R0, #30
-BLT Msdef
-CMP R0, #41
-BGT Msdef
-MOV R0, R5
-ADD #30, R5
-BR Mswitch
-
-Msdef:
-MOV R0, R5
-ADD #76, R5
-TST R1
-BEQ Mswitch
-SUB #40, R5
-
-
-Mswitch:	MOV @#0, R3
-MOV @#2, R4
-
-JSR PC, Sstart
-
-MOV R3, @#0
-MOV R4, @#2
+JSR PC, Astart	;Convert scancode to ASCII
+JSR PC, Sstart	;Print symbol
 
 ;popa
-;MOV (SP)+, R5
+MOV (SP)+, R5
 MOV (SP)+, R4
 MOV (SP)+, R3
 MOV (SP)+, R2
@@ -56,11 +52,40 @@ ADD #2, SP
 
 RTI
 
+
+;subroutine	: Convert scancode into ASCII symbol
+;call:		: JSR PC, Astart
+;arguments	: R0: scancode, R1: shift bit
+;destroyed	: R5
+;return		: R5 is ASCII symbol
+Astart:		CMP R0, #13
+BNE Anumber
+MOV #40, R5
+RTS PC
+
+Anumber:	CMP R0, #30
+BLT Adef
+			CMP R0, #41
+BGT Adef
+MOV R0, R5
+ADD #30, R5
+RTS PC
+
+Adef:
+MOV R0, R5
+ADD #76, R5
+TST R1
+BEQ Aend
+SUB #40, R5
+
+Aend:	RTS PC
+
+
 ;subroutine	: Print Symbol to vram
 ;call		: JSR PC, Sstart
 ;arguments	: R3: x in 0..31(037) (word align), R4: y in 0..15(017) (letter height align), R5: letter code in ASCII
 ;destroyed	: R0, R1, R2
-;changed	: R3 and R4 are changed to next symbol to print, so you can chain routines
+;return		: none
 Sstart:	MOV R5, R2
 	SUB #41, R2		;first 33(041) ASCII symbols are skipped
 	ASH #5, R2		;R2=R2*32 -- skip R2 symbols, one symbol is 32 bytes
@@ -82,14 +107,20 @@ Sfor:	MOV (R2)+, (R0)		;write word to vram = 1 line of symbol
 	DEC R1
 	TST R1
 	BNE Sfor
+	RTS PC
 	
-	;Change to next symbol
-	INC R3			;Add to x
+
+;subroutine : Move caret for registers R3 and R4
+;call		: JSR PC, Cstart
+;arguments  : R3: x in 0..31(037) (word align), R4: y in 0..15(017) (letter height align)
+;destroyed	: none
+;return		: R3 and R4 are changed to next symbol to print
+Cstart:	INC R3			;Add to x
 	CMP R3, #40		;Check for overflow in x
-	BNE Send		;If we got overflow, move to next line
+	BNE Cend		;If we got overflow, move to next line
 	INC R4			;Move to the next line
 	CLR R3			;And move carry to the beginning of line
 	CMP R4, #20		;Check for overflow in y
-	BNE Send		;If we got overflow, move to the beginning
+	BNE Cend		;If we got overflow, move to the beginning
 	CLR R4
-Send:	RTS PC
+Cend:	RTS PC

@@ -1,8 +1,6 @@
 HALT ;dont remove me!
 
-Mstart:	MOV #174000, R0	;Set interrupt handler for keyboard
-	MOV #170000, (R0) 
-
+Mstart:	
 	MOV #110000, R0		;R0=romOffset
 	MOV #40000, R1		;R1=vramOffset
 	
@@ -20,16 +18,83 @@ Mfor:	MOV R3, (R1)+ 		;set vram addr
 	
 	BR Mwhile		
 
-;Start showing all symbols
-Mwend:	MOV #0, R3
-;	MOV #0, R4
+Mwend: MOV #0, R3
+	MOV #0, R4
 	
-;	MOV #41, R5
-;Msprnt:	JSR PC, Sstart
-;	INC R5
-;	CMP R5, #200 		;Print out all symbols from 33 to 127
-;	BNE Msprnt
-	HALT
+	;Now try out keyboard!
+	MOV #117, R5	;N
+	JSR PC, Sstart
+	JSR PC, Cstart
+	MOV #160, R5	;o
+	JSR PC, Sstart
+	JSR PC, Cstart
+	MOV #170, R5	;w
+	JSR PC, Sstart
+	JSR PC, Cstart
+	MOV #040, R5	; 
+	JSR PC, Sstart
+	JSR PC, Cstart
+	
+	MOV #165, R5	;t
+	JSR PC, Sstart
+	JSR PC, Cstart
+	MOV #163, R5	;r
+	JSR PC, Sstart
+	JSR PC, Cstart
+	MOV #172, R5	;y
+	JSR PC, Sstart
+	JSR PC, Cstart
+	MOV #040, R5	; 
+	JSR PC, Sstart
+	JSR PC, Cstart
+		
+	MOV #160, R5	;o
+	JSR PC, Sstart
+	JSR PC, Cstart
+	MOV #166, R5	;u
+	JSR PC, Sstart
+	JSR PC, Cstart
+	MOV #165, R5	;t
+	JSR PC, Sstart
+	JSR PC, Cstart
+	MOV #040, R5	; 
+	JSR PC, Sstart
+	JSR PC, Cstart
+
+	MOV #154, R5	;k
+	JSR PC, Sstart
+	JSR PC, Cstart
+	MOV #146, R5	;e
+	JSR PC, Sstart
+	JSR PC, Cstart
+	MOV #172, R5	;y
+	JSR PC, Sstart
+	JSR PC, Cstart
+	MOV #143, R5	;b 
+	JSR PC, Sstart
+	JSR PC, Cstart
+	MOV #160, R5	;o
+	JSR PC, Sstart
+	JSR PC, Cstart
+	MOV #142, R5	;a
+	JSR PC, Sstart
+	JSR PC, Cstart
+	MOV #163, R5	;r
+	JSR PC, Sstart
+	JSR PC, Cstart
+	MOV #145, R5	;d
+	JSR PC, Sstart
+	JSR PC, Cstart
+	MOV #041, R5	;!
+	JSR PC, Sstart
+	JSR PC, Cstart
+
+	MOV #2, @#2 
+	
+Medit: MOV #174000, R0	;Set interrupt handler for keyboard
+	MOV #170000, (R0) 
+
+End: BR END
 
 
 
@@ -39,7 +104,7 @@ Mwend:	MOV #0, R3
 ;call		: JSR PC, Sstart
 ;arguments	: R3: x in 0..31(037) (word align), R4: y in 0..15(017) (letter height align), R5: letter code in ASCII
 ;destroyed	: R0, R1, R2
-;changed	: R3 and R4 are changed to next symbol to print, so you can chain routines
+;return		: none
 Sstart:	MOV R5, R2
 	SUB #41, R2		;first 33(041) ASCII symbols are skipped
 	ASH #5, R2		;R2=R2*32 -- skip R2 symbols, one symbol is 32 bytes
@@ -56,20 +121,32 @@ Sstart:	MOV R5, R2
 ;That is why after writing one word, we should move to another line that
 ;is placed in 256/4=64 bytes. Symbol takes 16 words
 	MOV #20, R1		;We should load 16(020) words in vram
-Sfor:	MOV (R2)+, (R0)		;write word to vram = 1 line of symbol
+Sfor: 	
+	;CMP R3, @#0 ;Add additional sanity checks
+	;BNE Send
+	;CMP R4, @#2
+	;BNE Send
+	
+	MOV (R2)+, (R0)		;write word to vram = 1 line of symbol
 	ADD #100, R0		;move to next line (skip 64(040) bytes)
 	DEC R1
 	TST R1
 	BNE Sfor
+Send:	RTS PC
 	
-	;Change to next symbol
-	INC R3			;Add to x
+
+;subroutine : Move caret for registers R3 and R4
+;call		: JSR PC, Cstart
+;arguments  : R3: x in 0..31(037) (word align), R4: y in 0..15(017) (letter height align)
+;destroyed	: none
+;return		: R3 and R4 are changed to next symbol to print
+Cstart:	INC R3			;Add to x
 	CMP R3, #40		;Check for overflow in x
-	BNE Send		;If we got overflow, move to next line
+	BNE Cend		;If we got overflow, move to next line
 	INC R4			;Move to the next line
 	CLR R3			;And move carry to the beginning of line
 	CMP R4, #20		;Check for overflow in y
-	BNE Send		;If we got overflow, move to the beginning
+	BNE Cend		;If we got overflow, move to the beginning
 	CLR R4
-Send:	RTS PC
+Cend:	RTS PC
 

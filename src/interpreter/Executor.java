@@ -130,13 +130,20 @@ public class Executor {
     }
 
     public final void interrupt(int interruptCode, Word errorCode) {
-        if (!stepService.isRunning() && !executeService.isRunning())
+        boolean stepRunning = stepService.isRunning();
+        boolean execRunning = executeService.isRunning();
+
+        if (!stepRunning && !execRunning)
             return;
 
+        Word interruptHandlerPtr = memory.bus.fetch(memory.interruptOffset + interruptCode * 2);
+        if (interruptHandlerPtr.value == 0) return;
+
         try {
-            stepService.wait();
+            if (stepRunning) stepService.wait();
+            if (execRunning) executeService.wait();
         }catch(Exception e){ }
-        this.cancelAll();
+        cancelAll();
 
         System.out.println("Interrupt " + interruptCode + ": " + errorCode);
 
@@ -147,9 +154,9 @@ public class Executor {
         RegMode.AutoDec.apply(memory, RegAddr.SP, null).load(memory, pc);
         RegMode.AutoDec.apply(memory, RegAddr.SP, null).load(memory, errorCode);
 
-        Word interruptHandlerPtr = memory.bus.fetch(memory.interruptOffset + interruptCode * 2);
         memory.registers.load(RegAddr.PC.offset, interruptHandlerPtr);
 
-        executeService.restart(); //TODO: This does not work in step service!
+        if (execRunning) executeService.restart();
+        if (stepRunning) stepService.restart();
     }
 }
