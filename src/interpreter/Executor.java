@@ -7,6 +7,8 @@ import instruction.Instruction;
 import instruction.instuctions.MOV;
 import instruction.primitives.RegAddr;
 import instruction.primitives.RegMode;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import memory.MemoryModel;
@@ -26,10 +28,12 @@ public class Executor {
     private final Parser parser;
 
     public final Set<Integer> breakpointsAddresses;
-    public boolean isFirstStep;
+    private boolean isFirstStep;
 
     private LinearPipeline linearPipeline;
     private ParallelPipeline parallelPipeline;
+
+    public Property<Integer> executedPC; //TODO: Remove this bullshit
 
     public Executor(MemoryModel memory, Parser parser) {
         this.memory = memory;
@@ -39,6 +43,7 @@ public class Executor {
 
         this.breakpointsAddresses = new HashSet<>();
         this.isFirstStep = true;
+        this.executedPC = new SimpleObjectProperty<>();
     }
 
     public boolean executeStep() {
@@ -51,6 +56,7 @@ public class Executor {
             return false;
         }
 
+        executedPC.setValue((pc.value - memory.romOffset) / 2);
         if (breakpointsAddresses.contains(pc.value) && !isFirstStep){
             memory.registers.load(RegAddr.PC.offset, Word.NaN);
             memory.registers.load(RegAddr.PC.offset, pc);

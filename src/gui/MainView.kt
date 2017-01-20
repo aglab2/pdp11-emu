@@ -87,6 +87,8 @@ class MainView : View() {
                     val pc = Bindings.valueAt(memoryModel.registers.dataObservableList, RegAddr.PC.offset.value)
                     pc.addListener { observableValue, old, new -> print(new) }
 
+                    executor.executedPC.addListener { word, old, new -> this.selectionModel.select(new) }
+
                     cellFormat {
                         val busAddr = memoryModel.bus.getBusAddr(memoryModel.rom as RWMemory, Offset(index))
 
