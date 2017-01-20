@@ -14,6 +14,8 @@ import memory.primitives.Word;
 import pipeline.LinearPipeline;
 import pipeline.ParallelPipeline;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -23,6 +25,9 @@ public class Executor {
     public final MemoryModel memory;
     private final Parser parser;
 
+    public final Set<Integer> breakpointsAddresses;
+    public boolean isFirstStep;
+
     private LinearPipeline linearPipeline;
     private ParallelPipeline parallelPipeline;
 
@@ -31,6 +36,9 @@ public class Executor {
         this.parser = parser;
         this.parallelPipeline = new ParallelPipeline();
         this.linearPipeline = new LinearPipeline();
+
+        this.breakpointsAddresses = new HashSet<>();
+        this.isFirstStep = true;
     }
 
     public boolean executeStep() {
@@ -42,6 +50,15 @@ public class Executor {
             System.out.format("Finished with: %d parallel, %d linear\n", parallelPipeline.clock, linearPipeline.clock);
             return false;
         }
+
+        if (breakpointsAddresses.contains(pc.value) && !isFirstStep){
+            memory.registers.load(RegAddr.PC.offset, Word.NaN);
+            memory.registers.load(RegAddr.PC.offset, pc);
+            isFirstStep = true;
+            return false;
+        }
+
+        isFirstStep = false;
 
         Word word0 = memory.bus.fetch(pc.value);
         if(word0 == null) return false;
@@ -102,6 +119,8 @@ public class Executor {
         executeService.cancel();
         linearPipeline = new LinearPipeline();
         parallelPipeline = new ParallelPipeline();
+
+        isFirstStep = true;
     }
 
     public final void interrupt(int interruptCode, Word errorCode) {

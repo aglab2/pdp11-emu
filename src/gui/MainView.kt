@@ -88,7 +88,16 @@ class MainView : View() {
 
                         graphic = hbox {
                             centeredLabel(Word(busAddr).fmtOctal()) { minWidth = 60.0 }
-                            radiobutton()
+                            radiobutton() {
+                                selectedProperty().addListener { v, b, isPressed ->
+                                    if (isPressed) {
+                                        executor.breakpointsAddresses.add(busAddr)
+                                    }else{
+                                        executor.breakpointsAddresses.remove(busAddr)
+                                    }
+                                    print(executor.breakpointsAddresses)
+                                }
+                            }
                             centeredLabel(it.fmtOctal()) { minWidth = 60.0 }
 
                             for (instr in controller.instructions) {
