@@ -71,7 +71,7 @@ public class Executor {
         memory.registers.add(RegAddr.PC.offset, 2 * (1 + instruction.indexСapacity()));
         linearPipeline.execute(instruction.getMicrocode(new BusAddr(pc.value), memory));
         parallelPipeline.execute(instruction.getMicrocode(new BusAddr(pc.value), memory));
-        if (parallelPipeline.clock != 0) System.out.format("%.4f\n", (double) linearPipeline.clock / (double) parallelPipeline.clock);
+        //if (parallelPipeline.clock != 0) System.out.format("%.4f\n", (double) linearPipeline.clock / (double) parallelPipeline.clock);
 
         instruction.execute(memory);
 

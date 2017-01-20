@@ -83,12 +83,16 @@ class MainView : View() {
                     vgrow(Priority.ALWAYS)
                     prefWidth = 60.0 + 20 + 60 + 130 + 70
 
+                    //TODO: Why this does not work?
+                    val pc = Bindings.valueAt(memoryModel.registers.dataObservableList, RegAddr.PC.offset.value)
+                    pc.addListener { observableValue, old, new -> print(new) }
+
                     cellFormat {
                         val busAddr = memoryModel.bus.getBusAddr(memoryModel.rom as RWMemory, Offset(index))
 
                         graphic = hbox {
                             centeredLabel(Word(busAddr).fmtOctal()) { minWidth = 60.0 }
-                            radiobutton() {
+                            radiobutton {
                                 selectedProperty().addListener { v, b, isPressed ->
                                     if (isPressed) {
                                         executor.breakpointsAddresses.add(busAddr)

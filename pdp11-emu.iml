@@ -31,5 +31,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="org.fxmisc.easybind:easybind:1.0.3" level="project" />
+    <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
   </component>
 </module>
