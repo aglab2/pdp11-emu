@@ -12,19 +12,17 @@ import javafx.scene.*
 import javafx.scene.control.*
 import javafx.scene.image.*
 import javafx.scene.input.*
+import javafx.scene.input.KeyCode
 import javafx.scene.layout.*
 import javafx.scene.paint.*
 import javafx.scene.text.*
+import keyboard.*
 import memory.*
 import memory.primitives.*
 import org.fxmisc.easybind.*
 import tornadofx.*
 import java.nio.file.*
 import java.util.concurrent.*
-import javafx.scene.input.KeyCode
-import org.apache.http.util.EntityUtils.consume
-
-
 
 
 class MainView : View() {
@@ -32,10 +30,11 @@ class MainView : View() {
     val memoryModel: MemoryModel = controller.memoryModel
     val screen: WritableImage = controller.screen
     val executor: Executor = controller.executor
-    val keyboard = controller.keyboard
+    val keyboard: VirtualKeyboard = controller.keyboard
 
     init { title = "PDP-11-40" }
 
+    var lastRunTimeMilisec = 0L
 
     override val root = vbox(1.0) {
         padding = Insets(3.0)
@@ -43,19 +42,21 @@ class MainView : View() {
         hbox(11.0) {
             vgrow(Priority.ALWAYS)
 
-            stackpane {
+            stackpane pane@ {
+
                 imageview {
                     image = screen
                     isPreserveRatio = true
 
-                    val h = this@stackpane.heightProperty().divide(screen.height)
-                    val w = this@stackpane.widthProperty().divide(screen.width)
+                    val h = this@pane.heightProperty().divide(screen.height)
+                    val w = this@pane.widthProperty().divide(screen.width)
 
                     val scale = Bindings.min(h, w)
 
                     scaleXProperty().bind(scale)
                     scaleYProperty().bind(scale)
                 }
+
 
                 hgrow(Priority.ALWAYS)
                 vgrow(Priority.ALWAYS)
@@ -146,6 +147,12 @@ class MainView : View() {
                 }
             }
 
+            isPlaying.addListener {pr, old, new ->
+                if(new == false) {
+                    updateLastRunTime()
+                }
+            }
+
 
             combobox<String> {
                 items = EasyBind.map(controller.romFiles) { path -> path.fileName.toString()}
@@ -175,10 +182,12 @@ class MainView : View() {
             buttonbar {
                 button("Start") {
                     setOnAction {
+                        lastRunTimeMilisec = System.currentTimeMillis()
                         isPlaying.set(true)
                         executor.executeService.restart()
                     }
                     disableProperty().bind(isPlaying.or(isHalted).or(isRomLoading))
+
                 }
                 button("Pause") {
                     setOnAction {
@@ -222,7 +231,15 @@ class MainView : View() {
         }
     }
 
+    private fun updateLastRunTime() {
+        if(lastRunTimeMilisec == 0L) return
 
+        val current = System.currentTimeMillis()
+        val lastRun = current - lastRunTimeMilisec
+        lastRunTimeMilisec = 0L
+
+        println("Last run time: $lastRun ms")
+    }
 }
 
 fun Node.hgrow(priority: Priority) = HBox.setHgrow(this, priority)
