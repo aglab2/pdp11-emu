@@ -7,8 +7,11 @@ import instruction.Instruction;
 import instruction.instuctions.MOV;
 import instruction.primitives.RegAddr;
 import instruction.primitives.RegMode;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableIntegerValue;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import memory.MemoryModel;
@@ -27,23 +30,17 @@ public class Executor {
     public final MemoryModel memory;
     private final Parser parser;
 
-    public final Set<Integer> breakpointsAddresses;
-    private boolean isFirstStep;
+    public final Set<Integer> breakpointsAddresses = new HashSet<>();
+    private boolean isFirstStep = true;
 
-    private LinearPipeline linearPipeline;
-    private ParallelPipeline parallelPipeline;
+    private LinearPipeline linearPipeline = new LinearPipeline();
+    private ParallelPipeline parallelPipeline = new ParallelPipeline();
 
-    public Property<Integer> executedPC; //TODO: Remove this bullshit
+    public IntegerProperty executedPC = new SimpleIntegerProperty(); //TODO: Remove this bullshit
 
     public Executor(MemoryModel memory, Parser parser) {
         this.memory = memory;
         this.parser = parser;
-        this.parallelPipeline = new ParallelPipeline();
-        this.linearPipeline = new LinearPipeline();
-
-        this.breakpointsAddresses = new HashSet<>();
-        this.isFirstStep = true;
-        this.executedPC = new SimpleObjectProperty<>();
     }
 
     public boolean executeStep() {

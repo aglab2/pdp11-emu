@@ -4,6 +4,7 @@ import MainController
 import instruction.primitives.*
 import interpreter.Executor
 import javafx.beans.binding.*
+import javafx.beans.binding.When
 import javafx.beans.property.*
 import javafx.collections.*
 import javafx.event.*
@@ -35,6 +36,12 @@ class MainView : View() {
     init { title = "PDP-11-40" }
 
     var lastRunTimeMilisec = 0L
+
+    val isPlaying: BooleanProperty = SimpleBooleanProperty(false)
+    val isRomLoading = SimpleBooleanProperty(false)
+    val isHalted = Bindings.equal(
+            Bindings.valueAt(memoryModel.registers.dataObservableList, RegAddr.PC.offset.value), Word.NaN)
+
 
     override val root = vbox(1.0) {
         padding = Insets(3.0)
@@ -88,7 +95,18 @@ class MainView : View() {
                     val pc = Bindings.valueAt(memoryModel.registers.dataObservableList, RegAddr.PC.offset.value)
                     pc.addListener { observableValue, old, new -> print(new) }
 
-                    executor.executedPC.addListener { word, old, new -> this.selectionModel.select(new) }
+                    var changeCounter = 0
+                    executor.executedPC.addListener { word, old, new ->
+                        changeCounter += 1
+                        changeCounter %= 200
+
+                        if(!isPlaying.value || changeCounter == 0) {
+                            this.selectionModel.select(new as Int)
+                        }
+                    }
+
+//                    When(isPlaying).then(selectionModel.selectedIndex).otherwise(executor.executedPC)
+//                            .addListener { word, old, new -> this.selectionModel.select(new as Int) }
 
                     cellFormat {
                         val busAddr = memoryModel.bus.getBusAddr(memoryModel.rom as RWMemory, Offset(index))
@@ -135,12 +153,6 @@ class MainView : View() {
 
 
         hbox(10.0) {
-            val isPlaying: BooleanProperty = SimpleBooleanProperty(false)
-            val isRomLoading = SimpleBooleanProperty(false)
-
-            val isHalted = Bindings.equal(
-                    Bindings.valueAt(memoryModel.registers.dataObservableList, RegAddr.PC.offset.value), Word.NaN)
-
             isHalted.addListener {pr, old, new ->
                 if(new == true) {
                     isPlaying.set(false)
@@ -240,6 +252,49 @@ class MainView : View() {
 
         println("Last run time: $lastRun ms")
     }
+
+    fun EventTarget.registersLayout(registerList: ObservableList<Word>) {
+        for(index in registerList.indices) {
+            hbox(5.0) {
+                label("R$index") {
+                    minWidth = 20.0
+                    alignment = Pos.CENTER_RIGHT
+                }
+
+                textfield {
+                    alignment = Pos.BASELINE_CENTER
+                    prefWidth = 70.0
+
+                    val word = Bindings.valueAt(registerList, index)
+                    val text = Bindings.createStringBinding(Callable {word.get().fmtOctal()}, word)
+
+                    textProperty().bind(When(isPlaying).then("--").otherwise(text))
+                    disableProperty().bind(isPlaying)
+                }
+            }
+        }
+    }
+
+    fun EventTarget.flagsLayout(flags: FlagsStorage) {
+        for(f in listOf(flags.T, flags.N, flags.Z, flags.V, flags.C)) {
+            hbox(5.0) {
+                label(f.name) {
+                    minWidth = 20.0
+                    alignment = Pos.CENTER_RIGHT
+                }
+
+                textfield {
+                    alignment = Pos.BASELINE_CENTER
+                    prefWidth = 70.0
+
+                    val text = Bindings.createStringBinding(Callable {f.get().toString()}, f)
+
+                    textProperty().bind(When(isPlaying).then("--").otherwise(text))
+                    disableProperty().bind(isPlaying)
+                }
+            }
+        }
+    }
 }
 
 fun Node.hgrow(priority: Priority) = HBox.setHgrow(this, priority)
@@ -261,41 +316,3 @@ fun EventTarget.centeredLabel(str: String, op: (Label.() -> Unit)? = null) = lab
     op?.invoke(this)
 }
 
-fun EventTarget.registersLayout(registerList: ObservableList<Word>) {
-    for(index in registerList.indices) {
-        hbox(5.0) {
-            label("R$index") {
-                minWidth = 20.0
-                alignment = Pos.CENTER_RIGHT
-            }
-
-            textfield {
-                alignment = Pos.BASELINE_CENTER
-                prefWidth = 70.0
-
-                val word = Bindings.valueAt(registerList, index)
-                val text = Bindings.createStringBinding(Callable {word.get().fmtOctal()}, word)
-                textProperty().bind(text)
-            }
-        }
-    }
-}
-
-fun EventTarget.flagsLayout(flags: FlagsStorage) {
-    for(f in listOf(flags.T, flags.N, flags.Z, flags.V, flags.C)) {
-        hbox(5.0) {
-            label(f.name) {
-                minWidth = 20.0
-                alignment = Pos.CENTER_RIGHT
-            }
-
-            textfield {
-                alignment = Pos.BASELINE_CENTER
-                prefWidth = 70.0
-
-                val text = Bindings.createStringBinding(Callable {f.get().toString()}, f)
-                textProperty().bind(text)
-            }
-        }
-    }
-}
