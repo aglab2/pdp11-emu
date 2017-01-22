@@ -185,6 +185,8 @@ class MainView : View() {
                     isPlaying.set(false)
 
                     memoryModel.reset()
+                    executor.clearCache()
+
                     controller.memoryModel.rom.reload(Files.readAllBytes(controller.romFile.value))
 
                     isRomLoading.set(false)

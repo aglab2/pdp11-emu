@@ -2,16 +2,11 @@ package interpreter;
 
 import bus.BusAddr;
 import com.sun.javafx.application.PlatformImpl;
-import instruction.Data;
 import instruction.Instruction;
-import instruction.instuctions.MOV;
 import instruction.primitives.RegAddr;
 import instruction.primitives.RegMode;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableIntegerValue;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import memory.MemoryModel;
@@ -21,7 +16,6 @@ import pipeline.ParallelPipeline;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by voddan on 01/11/16.
@@ -41,6 +35,10 @@ public class Executor {
     public Executor(MemoryModel memory, Parser parser) {
         this.memory = memory;
         this.parser = parser;
+    }
+
+    public void clearCache() {
+        parser.clearCache();
     }
 
     public boolean executeStep() {
@@ -70,7 +68,6 @@ public class Executor {
         Word word2 = memory.bus.fetch(pc.value + 4);
 
         Instruction instruction = parser.parseInstructionCached(pc.value, word0, word1, word2);
-//        Instruction instruction = parser.parseInstruction(word0, word1, word2);
 
         memory.registers.add(RegAddr.PC.offset, 2 * (1 + instruction.indexСapacity()));
         linearPipeline.execute(instruction.getMicrocode(new BusAddr(pc.value), memory));
