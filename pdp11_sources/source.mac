@@ -18,7 +18,15 @@ Mfor:	MOV R3, (R1)+ 		;set vram addr
 	
 	BR Mwhile		
 
-Mwend:	WAIT 
+Mwend:	WAIT
+	MOV #20000, R0
+	MOV #40000, R1
+	
+Mblack:	MOV #0, (R1)+
+	DEC R0
+	TST R0
+	BNE Mblack
+
 	MOV #0, R3
 	MOV #0, R4
 	

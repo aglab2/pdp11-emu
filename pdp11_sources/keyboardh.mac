@@ -39,10 +39,14 @@ SUB R1, R0
 ASH #70, R1 ;Shift right 8
 
 JSR PC, Astart	;Convert scancode to ASCII
-JSR PC, Sstart	;Print symbol
+CMP R0, #1
+BNE HPrint
+MOV R3, @#0
+MOV R4, @#2
+Hprint:	JSR PC, Sstart	;Print symbol
 
 ;popa
-MOV (SP)+, R5
+HEnd:	MOV (SP)+, R5
 MOV (SP)+, R4
 MOV (SP)+, R3
 MOV (SP)+, R2
@@ -64,11 +68,40 @@ MOV #40, R5
 RTS PC
 
 Anumber:	CMP R0, #30
-BLT Adef
+BLT Abkspace
 			CMP R0, #41
-BGT Adef
+BGT Abkspace
 MOV R0, R5
 ADD #30, R5
+TST R1
+BEQ Aend
+SUB #20, R5
+RTS PC
+
+Abkspace:	CMP R0, #1
+BNE Aleft
+DEC R3
+MOV #40, R5
+RTS PC
+
+Aleft: 		CMP R0, #20
+BNE Aright
+DEC R3
+RTS PC
+
+Aright:		CMP R0, #22
+BNE Adown
+INC R3
+RTS PC
+
+Adown:		CMP R0, #23
+BNE Aup
+INC R4
+RTS PC
+
+Aup:		CMP R0, #21
+BNE Adef
+DEC R4
 RTS PC
 
 Adef:

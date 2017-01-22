@@ -12,12 +12,12 @@ public class BusAddr {
     public final int value; //Addresses on Bus are bigger then Word!
 
     public BusAddr(int value) {
-        if(value % 2 != 0) { throw new RuntimeException("Byte addresses must be even"); }
+        //if(value % 2 != 0) { throw new RuntimeException("Byte addresses must be even"); }
         this.value = value;
     }
 
     public BusAddr(int regionOffset, Offset offset) {
-        if(regionOffset % 2 != 0) throw new RuntimeException("Byte addresses must be even");
+        //if(regionOffset % 2 != 0) throw new RuntimeException("Byte addresses must be even");
         this.value = regionOffset + offset.value * 2;
     }
 

@@ -137,6 +137,8 @@ public class Executor {
         linearPipeline = new LinearPipeline();
         parallelPipeline = new ParallelPipeline();
 
+        memory.bus.load(memory.interruptOffset, Word.ZERO);
+
         isFirstStep = true;
     }
 
@@ -152,6 +154,8 @@ public class Executor {
         if (interruptHandlerPtr.value == 0) {
             if (isExecWaiting) executeService.restart();
             if (isStepWaiting) stepService.restart();
+            isExecWaiting = false;
+            isStepWaiting = false;
             return;
         }
 
