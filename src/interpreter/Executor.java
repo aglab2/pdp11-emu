@@ -69,7 +69,8 @@ public class Executor {
         Word word1 = memory.bus.fetch(pc.value + 2);
         Word word2 = memory.bus.fetch(pc.value + 4);
 
-        Instruction instruction = parser.parseInstruction(word0, word1, word2);
+        Instruction instruction = parser.parseInstructionCached(pc.value, word0, word1, word2);
+//        Instruction instruction = parser.parseInstruction(word0, word1, word2);
 
         memory.registers.add(RegAddr.PC.offset, 2 * (1 + instruction.indexСapacity()));
         linearPipeline.execute(instruction.getMicrocode(new BusAddr(pc.value), memory));
@@ -100,22 +101,33 @@ public class Executor {
         @Override
         protected Task<Void> createTask() {
             boolean graceEnd = false;
+            final int stepsInBunch = 100;
 
             return new Task<Void>() {
                 @Override
                 protected Void call() {
                     while (true) {
-                        final boolean[] result = new boolean[1];
-                        PlatformImpl.runAndWait(() -> result[0] = executeStep());
-                        if(!result[0] || isCancelled())
-                            break;
-                    }
+                        final boolean[] keepGoing = new boolean[1];
 
-                    return null;
+                        PlatformImpl.runAndWait(() -> {
+                            for (int i = 0; i < stepsInBunch; i++) {
+                                boolean res = executeStep();
+                                if(!res) {
+                                    keepGoing[0] = res;
+                                    return;
+                                }
+                            }
+                            keepGoing[0] = true;
+                        });
+
+                        if(!keepGoing[0] || isCancelled())
+                            return null;
+                    }
                 }
             };
         }
     };
+
 
     public final void cancelAll() {
         stepService.cancel();

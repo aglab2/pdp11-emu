@@ -55,6 +55,12 @@ public class Parser {
         throw new UnsupportedOperationException("Word " + word.fmtBinary() + " belongs to no known instruction");
     }
 
+    private Map<Integer, Instruction> instructionCache = new HashMap<>();
+
+    public Instruction parseInstructionCached(int pos, Word word, @Nullable Word index1, @Nullable Word index2) {
+        return instructionCache.computeIfAbsent(pos, (key) -> parseInstruction(word, index1, index2));
+    }
+
     public Instruction[] parse(Word[] words) {
         int len = words.length;
         List<Instruction> instructions = new ArrayList<>(len);

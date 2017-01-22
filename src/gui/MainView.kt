@@ -42,6 +42,20 @@ class MainView : View() {
     val isHalted = Bindings.equal(
             Bindings.valueAt(memoryModel.registers.dataObservableList, RegAddr.PC.offset.value), Word.NaN)
 
+    init {
+        isHalted.addListener {pr, old, new ->
+            if(new == true) {
+                isPlaying.set(false)
+            }
+        }
+
+        isPlaying.addListener {pr, old, new ->
+            if(new == false) {
+                updateLastRunTime()
+            }
+        }
+    }
+
 
     override val root = vbox(1.0) {
         padding = Insets(3.0)
@@ -91,22 +105,22 @@ class MainView : View() {
                     vgrow(Priority.ALWAYS)
                     prefWidth = 60.0 + 20 + 60 + 130 + 70
 
-                    //TODO: Why this does not work?
-                    val pc = Bindings.valueAt(memoryModel.registers.dataObservableList, RegAddr.PC.offset.value)
-                    pc.addListener { observableValue, old, new -> print(new) }
 
-                    var changeCounter = 0
-                    executor.executedPC.addListener { word, old, new ->
-                        changeCounter += 1
-                        changeCounter %= 200
-
-                        if(!isPlaying.value || changeCounter == 0) {
-                            this.selectionModel.select(new as Int)
-                        }
-                    }
+//                    var changeCounter = 0
+//                    executor.executedPC.addListener { word, old, new ->
+//                        changeCounter += 1
+//                        changeCounter %= 200
+//
+//                        if(!isPlaying.value || changeCounter == 0) {
+//                            this.selectionModel.select(new as Int)
+//                        }
+//                    }
 
 //                    When(isPlaying).then(selectionModel.selectedIndex).otherwise(executor.executedPC)
 //                            .addListener { word, old, new -> this.selectionModel.select(new as Int) }
+//
+                    executor.executedPC
+                            .addListener { word, old, new -> this.selectionModel.select(new as Int) }
 
                     cellFormat {
                         val busAddr = memoryModel.bus.getBusAddr(memoryModel.rom as RWMemory, Offset(index))
@@ -153,19 +167,6 @@ class MainView : View() {
 
 
         hbox(10.0) {
-            isHalted.addListener {pr, old, new ->
-                if(new == true) {
-                    isPlaying.set(false)
-                }
-            }
-
-            isPlaying.addListener {pr, old, new ->
-                if(new == false) {
-                    updateLastRunTime()
-                }
-            }
-
-
             combobox<String> {
                 items = EasyBind.map(controller.romFiles) { path -> path.fileName.toString()}
                 selectionModel.select(controller.romFiles.indexOf(controller.romFile.value))
