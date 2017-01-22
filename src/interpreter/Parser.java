@@ -29,7 +29,7 @@ public class Parser {
             BR.class, CLR.class, CMP.class, DEC.class,
             DIV.class, INC.class, MOV.class, MUL.class,
             SUB.class, SWAP.class, TST.class,
-            HALT.class,
+            HALT.class, WAIT.class,
             JMP.class, JSR.class, RTS.class, RTI.class,
             Data.class};  // TODO: hack
 

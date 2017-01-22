@@ -3,6 +3,7 @@ package interpreter;
 import bus.BusAddr;
 import com.sun.javafx.application.PlatformImpl;
 import instruction.Instruction;
+import instruction.instuctions.WAIT;
 import instruction.primitives.RegAddr;
 import instruction.primitives.RegMode;
 import javafx.beans.property.IntegerProperty;
@@ -26,6 +27,8 @@ public class Executor {
 
     public final Set<Integer> breakpointsAddresses = new HashSet<>();
     private boolean isFirstStep = true;
+    private boolean isStepWaiting = false;
+    private boolean isExecWaiting = false;
 
     private LinearPipeline linearPipeline = new LinearPipeline();
     private ParallelPipeline parallelPipeline = new ParallelPipeline();
@@ -56,8 +59,6 @@ public class Executor {
             return false;
         }
 
-        isFirstStep = false;
-
         Word word0 = memory.bus.fetch(pc.value);
         if(word0 == null) return false;
 
@@ -66,13 +67,20 @@ public class Executor {
 
         Instruction instruction = parser.parseInstructionCached(pc.value, word0, word1, word2);
 
+        if (instruction.getClass() == WAIT.class && !isFirstStep) {
+            isStepWaiting = stepService.isRunning();
+            isExecWaiting = executeService.isRunning();
+            isFirstStep = true;
+            return false;
+        }
+
         memory.registers.add(RegAddr.PC.offset, 2 * (1 + instruction.indexСapacity()));
         linearPipeline.execute(instruction.getMicrocode(new BusAddr(pc.value), memory));
         parallelPipeline.execute(instruction.getMicrocode(new BusAddr(pc.value), memory));
         //if (parallelPipeline.clock != 0) System.out.format("%.4f\n", (double) linearPipeline.clock / (double) parallelPipeline.clock);
 
         instruction.execute(memory);
-
+        isFirstStep = false;
         return true;
     }
 
@@ -136,11 +144,16 @@ public class Executor {
         boolean stepRunning = stepService.isRunning();
         boolean execRunning = executeService.isRunning();
 
-        if (!stepRunning && !execRunning)
+        if (!stepRunning && !execRunning && !isExecWaiting && !isStepWaiting) {
             return;
+        }
 
         Word interruptHandlerPtr = memory.bus.fetch(memory.interruptOffset + interruptCode * 2);
-        if (interruptHandlerPtr.value == 0) return;
+        if (interruptHandlerPtr.value == 0) {
+            if (isExecWaiting) executeService.restart();
+            if (isStepWaiting) stepService.restart();
+            return;
+        }
 
         try {
             if (stepRunning) stepService.wait();
@@ -161,5 +174,7 @@ public class Executor {
 
         if (execRunning) executeService.restart();
         if (stepRunning) stepService.restart();
+        if (isExecWaiting) executeService.restart();
+        if (isStepWaiting) stepService.restart();
     }
 }

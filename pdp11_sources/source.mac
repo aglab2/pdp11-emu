@@ -18,7 +18,8 @@ Mfor:	MOV R3, (R1)+ 		;set vram addr
 	
 	BR Mwhile		
 
-Mwend: MOV #0, R3
+Mwend:	WAIT 
+	MOV #0, R3
 	MOV #0, R4
 	
 	;Now try out keyboard!
@@ -94,7 +95,8 @@ Mwend: MOV #0, R3
 Medit: MOV #174000, R0	;Set interrupt handler for keyboard
 	MOV #170000, (R0) 
 
-End: BR END
+End:	WAIT 
+	BR END
 
 
 
