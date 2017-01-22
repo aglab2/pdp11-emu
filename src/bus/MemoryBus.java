@@ -17,9 +17,8 @@ import java.util.Map;
 
 
 public class MemoryBus {
-    private Map<Integer, MemoryRegion> regions= new HashMap();
+    private MemoryRegion[] regions = new MemoryRegion[33000]; //Yes, I hardcode this constant
     private List<MemoryRegion> regionList = new ArrayList<>();
-
 
     public void addRegion(String name, int dstart, RWMemory storage) {
         int start = dstart / 2;
@@ -29,7 +28,7 @@ public class MemoryBus {
         regionList.add(memoryRegion);
 
         for (int offset = start; offset < start + size; offset++) {
-            regions.put(offset, memoryRegion);
+            regions[offset] = memoryRegion;
         }
     }
 
@@ -44,13 +43,13 @@ public class MemoryBus {
     public @Nullable MemoryRegion getRegion(int daddr) {
         assert daddr % 2 == 0;
         int addr = daddr / 2;
-        return regions.get(addr);
+        return regions[addr];
     }
 
     public @Nullable Word fetch(int daddr) {
         assert daddr % 2 == 0;
         int addr = daddr / 2;
-        MemoryRegion region = regions.get(addr);
+        MemoryRegion region = regions[addr];
         if(region == null) return null;
         Offset offset = new Offset(addr - region.start);
         return region.storage.fetch(offset);
@@ -59,7 +58,7 @@ public class MemoryBus {
     public void load(int daddr, Word value) {
         assert daddr % 2 == 0;
         int addr = daddr / 2;
-        MemoryRegion region = regions.get(addr);
+        MemoryRegion region = regions[addr];
         if(region == null) throw new IndexOutOfBoundsException();
         Offset offset = new Offset(addr - region.start);
         region.storage.load(offset, value);
