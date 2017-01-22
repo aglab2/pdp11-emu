@@ -24,6 +24,7 @@ import org.fxmisc.easybind.*
 import tornadofx.*
 import java.nio.file.*
 import java.util.concurrent.*
+import kotlin.concurrent.*
 
 
 class MainView : View() {
@@ -55,6 +56,9 @@ class MainView : View() {
             }
         }
     }
+
+    val pcWord: ObjectBinding<Word> = Bindings.valueAt(memoryModel.registers.dataObservableList, RegAddr.PC.value)!!
+    val executedPC = Bindings.createIntegerBinding(Callable {(pcWord.get().value - memoryModel.romOffset) / 2}, pcWord)
 
 
     override val root = vbox(1.0) {
@@ -105,22 +109,11 @@ class MainView : View() {
                     vgrow(Priority.ALWAYS)
                     prefWidth = 60.0 + 20 + 60 + 130 + 70
 
-
-//                    var changeCounter = 0
-//                    executor.executedPC.addListener { word, old, new ->
-//                        changeCounter += 1
-//                        changeCounter %= 200
-//
-//                        if(!isPlaying.value || changeCounter == 0) {
-//                            this.selectionModel.select(new as Int)
-//                        }
-//                    }
-
-//                    When(isPlaying).then(selectionModel.selectedIndex).otherwise(executor.executedPC)
-//                            .addListener { word, old, new -> this.selectionModel.select(new as Int) }
-//
-                    executor.executedPC
-                            .addListener { word, old, new -> this.selectionModel.select(new as Int) }
+                    executedPC.onChangeDelayed(20) { value ->
+                        try {
+                            selectionModel.select(value as Int)
+                        } catch(e: IndexOutOfBoundsException) {}
+                    }
 
                     cellFormat {
                         val busAddr = memoryModel.bus.getBusAddr(memoryModel.rom as RWMemory, Offset(index))
@@ -268,10 +261,10 @@ class MainView : View() {
                     alignment = Pos.BASELINE_CENTER
                     prefWidth = 70.0
 
-                    val word = Bindings.valueAt(registerList, index)
-                    val text = Bindings.createStringBinding(Callable {word.get().fmtOctal()}, word)
+                    val valueWord = Bindings.valueAt(registerList, index)
+                    val valueText = Bindings.createStringBinding(Callable {valueWord.get().fmtOctal()}, valueWord)
 
-                    textProperty().bind(When(isPlaying).then("--").otherwise(text))
+                    textProperty().bind(When(isPlaying).then("--").otherwise(valueText))
                     disableProperty().bind(isPlaying)
                 }
             }
@@ -319,3 +312,19 @@ fun EventTarget.centeredLabel(str: String, op: (Label.() -> Unit)? = null) = lab
     op?.invoke(this)
 }
 
+inline fun <T> Binding<T>.onChangeDelayed(delay: Long, crossinline block: (T) -> Unit) {
+    var lastValue: T? = null
+    var changed = false
+
+    this.addListener { word, old, new ->
+        lastValue = new
+        changed = true
+    }
+
+    timer(period = delay) {
+        if (changed) {
+            changed = false
+            block(lastValue!!)
+        }
+    }
+}

@@ -30,8 +30,6 @@ public class Executor {
     private LinearPipeline linearPipeline = new LinearPipeline();
     private ParallelPipeline parallelPipeline = new ParallelPipeline();
 
-    public IntegerProperty executedPC = new SimpleIntegerProperty(); //TODO: Remove this bullshit
-
     public Executor(MemoryModel memory, Parser parser) {
         this.memory = memory;
         this.parser = parser;
@@ -51,7 +49,6 @@ public class Executor {
             return false;
         }
 
-        executedPC.setValue((pc.value - memory.romOffset) / 2);
         if (breakpointsAddresses.contains(pc.value) && !isFirstStep){
             memory.registers.load(RegAddr.PC.offset, Word.NaN);
             memory.registers.load(RegAddr.PC.offset, pc);
@@ -98,7 +95,7 @@ public class Executor {
         @Override
         protected Task<Void> createTask() {
             boolean graceEnd = false;
-            final int stepsInBunch = 100;
+            final int stepsInBunch = 200;
 
             return new Task<Void>() {
                 @Override
