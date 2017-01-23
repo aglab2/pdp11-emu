@@ -4,6 +4,7 @@ import MainController
 import com.sun.javafx.application.*
 import com.sun.javafx.application.PlatformImpl.*
 import instruction.primitives.*
+import interpreter.*
 import interpreter.Executor
 import javafx.beans.binding.*
 import javafx.beans.binding.When
@@ -62,7 +63,6 @@ class MainView : View() {
     val pcWord: ObjectBinding<Word> = Bindings.valueAt(memoryModel.registers.dataObservableList, RegAddr.PC.value)!!
     val executedPC = Bindings.createIntegerBinding(Callable {(pcWord.get().value - memoryModel.romOffset) / 2}, pcWord)
 
-    enum class SynchronisationMode { OFF, Linear, Parallel }
 
     override val root = vbox(1.0) {
         padding = Insets(3.0)
@@ -70,6 +70,7 @@ class MainView : View() {
         hbox(11.0) {
             vgrow(Priority.ALWAYS)
 
+            // screan
             stackpane pane@ {
 
                 imageview {
@@ -95,6 +96,7 @@ class MainView : View() {
                 }
             }
 
+            // registers & flags
             vbox(1.0) {
                 centeredLabel("REGs") { alignment = Pos.BASELINE_RIGHT }
 
@@ -105,6 +107,7 @@ class MainView : View() {
                 hgrow(Priority.NEVER)
             }
 
+            // rom
             vbox {
                 centeredLabel("ROM")
 
@@ -112,9 +115,9 @@ class MainView : View() {
                     vgrow(Priority.ALWAYS)
                     prefWidth = 60.0 + 20 + 60 + 130 + 70
 
-                    executedPC.onChangeDelayed(20) { value ->
+                    onChangeDo(20, {memoryModel.registers.fetch(RegAddr.PC.offset).value}) { pc ->
                         try {
-                            selectionModel.select(value as Int)
+                            selectionModel.select((pc - memoryModel.romOffset) / 2)
                         } catch(e: IndexOutOfBoundsException) {}
                     }
 
@@ -147,6 +150,7 @@ class MainView : View() {
                 }
             }
 
+            // ram
             vbox {
                 centeredLabel("RAM")
 
@@ -161,6 +165,7 @@ class MainView : View() {
             }
         }
 
+        // control buttons
         hbox(10.0) {
             combobox<String> {
                 items = EasyBind.map(controller.romFiles) { path -> path.fileName.toString()}
@@ -233,6 +238,7 @@ class MainView : View() {
             }
         }
 
+        // synchronisation controls
         hbox(10.0) {
             alignment = Pos.CENTER
 
@@ -281,15 +287,8 @@ class MainView : View() {
 
             choicebox<SynchronisationMode>{
                 items = FXCollections.observableList(SynchronisationMode.values().toList())
-                selectionModel.select(SynchronisationMode.OFF)
-
-                selectionModel.selectedItemProperty().addListener { o, old, new ->
-                    when(new) {
-                        SynchronisationMode.OFF -> println("off")
-                        SynchronisationMode.Linear -> println("linear")
-                        SynchronisationMode.Parallel -> println("paral")
-                    }
-                }
+                selectionModel.select(executor.synchronisationMode.get())
+                executor.synchronisationMode.bind(selectionModel.selectedItemProperty())
             }
 
         }

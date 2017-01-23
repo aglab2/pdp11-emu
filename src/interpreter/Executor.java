@@ -6,8 +6,8 @@ import instruction.Instruction;
 import instruction.instuctions.WAIT;
 import instruction.primitives.RegAddr;
 import instruction.primitives.RegMode;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import memory.MemoryModel;
@@ -32,6 +32,9 @@ public class Executor {
 
     public LinearPipeline linearPipeline = new LinearPipeline();
     public ParallelPipeline parallelPipeline = new ParallelPipeline();
+
+    public ObjectProperty<SynchronisationMode> synchronisationMode = new SimpleObjectProperty<>(SynchronisationMode.OFF);
+    public double milisecondsInOneTact = 0.1;
 
     public Executor(MemoryModel memory, Parser parser) {
         this.memory = memory;
@@ -103,23 +106,54 @@ public class Executor {
         @Override
         protected Task<Void> createTask() {
             boolean graceEnd = false;
-            final int stepsInBunch = 200;
 
             return new Task<Void>() {
                 @Override
                 protected Void call() {
+                    int stepsInBunch = 1;
+                    switch(synchronisationMode.get()) {
+                        case OFF: stepsInBunch = 200; break;
+                        case Linear: stepsInBunch = 1; break;
+                        case Parallel: stepsInBunch = 1; break;
+                    }
+
                     while (true) {
                         final boolean[] keepGoing = new boolean[1];
 
+                        int finalStepsInBunch = stepsInBunch;
+
                         PlatformImpl.runAndWait(() -> {
-                            for (int i = 0; i < stepsInBunch; i++) {
+                            long clock = System.currentTimeMillis();
+                            int linearClock = linearPipeline.clock;
+                            int parallelClock = parallelPipeline.clock;
+
+                            for (int i = 0; i < finalStepsInBunch; i++) {
                                 boolean res = executeStep();
                                 if(!res) {
-                                    keepGoing[0] = res;
+                                    keepGoing[0] = false;
                                     return;
                                 }
                             }
                             keepGoing[0] = true;
+
+                            long difference;
+                            switch(synchronisationMode.get()) {
+                                case Linear: difference = linearPipeline.clock - linearClock; break;
+                                case Parallel: difference = parallelPipeline.clock - parallelClock; break;
+                                default: return;
+                            }
+
+                            long now = System.currentTimeMillis();
+                            long compensateMilliseconds = Math.round(difference * milisecondsInOneTact) - (now - clock);
+
+                            if(compensateMilliseconds > 0) {
+                                try {
+                                    System.out.println("compensate: " + compensateMilliseconds);
+                                    Thread.sleep(compensateMilliseconds);
+                                } catch (InterruptedException e) { }
+                            } else {
+                                System.out.println("emulation is slower than beats on " + (-compensateMilliseconds) + " ms");
+                            }
                         });
 
                         if(!keepGoing[0] || isCancelled())
