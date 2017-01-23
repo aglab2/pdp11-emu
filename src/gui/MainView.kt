@@ -394,7 +394,7 @@ inline fun <T> onChangeDo(period: Long, crossinline getValue: () -> T, crossinli
     var lastValue = getValue()
     block(lastValue)
 
-    timer(period = period) {
+    timer(period = period, daemon = true) {
         val now = getValue()
 
         if(now != lastValue) {
