@@ -167,6 +167,8 @@ class MainView : View() {
 
         // control buttons
         hbox(10.0) {
+            alignment = Pos.CENTER_LEFT
+
             combobox<String> {
                 items = EasyBind.map(controller.romFiles) { path -> path.fileName.toString()}
                 selectionModel.select(controller.romFiles.indexOf(controller.romFile.value))
@@ -192,6 +194,11 @@ class MainView : View() {
                     isRomLoading.set(false)
                 }
                 disableProperty().bind(isRomLoading)
+            }
+
+            progressindicator {  // never visible with my setup
+                maxHeight = 17.0
+                visibleProperty().bind(isRomLoading)
             }
 
             buttonbar {
