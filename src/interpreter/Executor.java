@@ -30,8 +30,8 @@ public class Executor {
     private boolean isStepWaiting = false;
     private boolean isExecWaiting = false;
 
-    private LinearPipeline linearPipeline = new LinearPipeline();
-    private ParallelPipeline parallelPipeline = new ParallelPipeline();
+    public LinearPipeline linearPipeline = new LinearPipeline();
+    public ParallelPipeline parallelPipeline = new ParallelPipeline();
 
     public Executor(MemoryModel memory, Parser parser) {
         this.memory = memory;

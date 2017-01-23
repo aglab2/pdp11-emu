@@ -1,6 +1,8 @@
 package gui
 
 import MainController
+import com.sun.javafx.application.*
+import com.sun.javafx.application.PlatformImpl.*
 import instruction.primitives.*
 import interpreter.Executor
 import javafx.beans.binding.*
@@ -60,6 +62,7 @@ class MainView : View() {
     val pcWord: ObjectBinding<Word> = Bindings.valueAt(memoryModel.registers.dataObservableList, RegAddr.PC.value)!!
     val executedPC = Bindings.createIntegerBinding(Callable {(pcWord.get().value - memoryModel.romOffset) / 2}, pcWord)
 
+    enum class SynchronisationMode { OFF, Linear, Parallel }
 
     override val root = vbox(1.0) {
         padding = Insets(3.0)
@@ -158,7 +161,6 @@ class MainView : View() {
             }
         }
 
-
         hbox(10.0) {
             combobox<String> {
                 items = EasyBind.map(controller.romFiles) { path -> path.fileName.toString()}
@@ -231,6 +233,66 @@ class MainView : View() {
             }
         }
 
+        hbox(10.0) {
+            alignment = Pos.CENTER
+
+            label("Linear time:")
+
+            textfield() {
+                onChangeDo(100, {executor.linearPipeline.clock}) { clock ->
+                    text = clock.toString()
+                }
+
+                prefWidth = 85.0
+                alignment = Pos.CENTER
+            }
+
+            label("Parallel time:")
+
+            textfield()  {
+                onChangeDo(100, {executor.parallelPipeline.clock}) { clock ->
+                    text = clock.toString()
+                }
+
+                prefWidth = 85.0
+                alignment = Pos.CENTER
+            }
+
+            label("Acceleration ratio:")
+
+            textfield()  {
+                onChangeDo(100, {executor.parallelPipeline.clock }) { parallelClock ->
+                    if(parallelClock == 0)
+                        text = "---"
+                    else
+                        text = "${100 * executor.linearPipeline.clock / parallelClock}%"
+                }
+
+                prefWidth = 70.0
+                alignment = Pos.CENTER
+            }
+
+            label{
+                maxWidth = Double.MAX_VALUE
+                hgrow(Priority.ALWAYS)
+            }
+
+            label("Synchronization:")
+
+            choicebox<SynchronisationMode>{
+                items = FXCollections.observableList(SynchronisationMode.values().toList())
+                selectionModel.select(SynchronisationMode.OFF)
+
+                selectionModel.selectedItemProperty().addListener { o, old, new ->
+                    when(new) {
+                        SynchronisationMode.OFF -> println("off")
+                        SynchronisationMode.Linear -> println("linear")
+                        SynchronisationMode.Parallel -> println("paral")
+                    }
+                }
+            }
+
+        }
 
         centeredLabel("Developed by Daniil Vodopian (@voddan) and Denis Kopyrin (@aglab2)") {
             alignment = Pos.BASELINE_CENTER
@@ -325,6 +387,23 @@ inline fun <T> Binding<T>.onChangeDelayed(delay: Long, crossinline block: (T) ->
         if (changed) {
             changed = false
             block(lastValue!!)
+        }
+    }
+}
+
+inline fun <T> onChangeDo(period: Long, crossinline getValue: () -> T, crossinline block: (T) -> Unit) {
+    var lastValue = getValue()
+    block(lastValue)
+
+    timer(period = period) {
+        val now = getValue()
+
+        if(now != lastValue) {
+            lastValue = now
+
+            runLater {
+                block(now)
+            }
         }
     }
 }
