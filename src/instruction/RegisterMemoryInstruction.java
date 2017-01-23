@@ -55,7 +55,7 @@ public abstract class RegisterMemoryInstruction extends Instruction {
 
     @Override
     public MicroCode getMicrocode(BusAddr pc, MemoryModel memory) {
-        MicroFetch fetch = new MicroFetch(pc);
+        MicroFetch fetch = new MicroFetch(pc, memory.cache);
         List<BusAddr> indexes = new ArrayList<>();
 
         int pc_value = pc.value;
@@ -74,10 +74,10 @@ public abstract class RegisterMemoryInstruction extends Instruction {
         if (regType == ArgumentType.WRITE || regType == ArgumentType.READWRITE) writeAddresses.addAll(regAddresses);
         if (sodType == ArgumentType.WRITE || sodType == ArgumentType.READWRITE) writeAddresses.addAll(sodAddresses);
 
-        MicroDecode decode = new MicroDecode(indexes);
-        MicroMemory load = new MicroMemory(readAddresses);
+        MicroDecode decode = new MicroDecode(indexes, memory.cache);
+        MicroMemory load = new MicroMemory(readAddresses, memory.cache);
         MicroExecute execute = new MicroExecute(cost);
-        MicroMemory store = new MicroMemory(writeAddresses);
+        MicroMemory store = new MicroMemory(writeAddresses, memory.cache);
 
         Set<Integer> readSet = readAddresses.stream().map(addr -> addr.value).collect(Collectors.toSet());
         Set<Integer> writeSet = writeAddresses.stream().map(addr -> addr.value).collect(Collectors.toSet());

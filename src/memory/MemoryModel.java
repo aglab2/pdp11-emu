@@ -23,12 +23,14 @@ public class MemoryModel {
     public final RWMemory interruptTable = new MemoryStorage(new MemSize(1));
 
     public final MemoryBus bus;
+    public final Cache cache;
 
     public MemoryModel(MemSize ramSize, MemSize vramSize, MemoryStorage rom) {
         this.ram = new MemoryStorage(ramSize);
         this.vram = new MemoryStorage(vramSize);
         this.rom = rom;
         this.bus = new MemoryBus();
+        this.cache = new Cache(4, 1024);
 
         //All addresses are multiplied by 2 in real asm
         this.bus.addRegion("ram", ramOffset, this.ram);

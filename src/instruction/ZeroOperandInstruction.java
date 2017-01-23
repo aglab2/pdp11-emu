@@ -33,13 +33,13 @@ public abstract class ZeroOperandInstruction extends Instruction {
 
     @Override
     public MicroCode getMicrocode(BusAddr pc, MemoryModel memory) {
-        MicroFetch fetch = new MicroFetch(pc);
+        MicroFetch fetch = new MicroFetch(pc, memory.cache);
         List<BusAddr> indexes = new ArrayList<>();
 
-        MicroDecode decode = new MicroDecode(indexes);
-        MicroMemory load = new MicroMemory(Collections.emptyList());
+        MicroDecode decode = new MicroDecode(indexes, memory.cache);
+        MicroMemory load = new MicroMemory(Collections.emptyList(), memory.cache);
         MicroExecute execute = new MicroExecute(cost);
-        MicroMemory store = new MicroMemory(Collections.emptyList());
+        MicroMemory store = new MicroMemory(Collections.emptyList(), memory.cache);
 
         return new MicroCode(fetch, decode, load, execute, store,
                 Collections.emptySet(), Collections.emptySet());

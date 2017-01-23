@@ -40,16 +40,16 @@ public abstract class RegisterInstruction extends Instruction {
     //TODO: This is used for only one function: RTS that uses more SP -_-
     @Override
     public MicroCode getMicrocode(BusAddr pc, MemoryModel memory) {
-        MicroFetch      fetch = new MicroFetch(pc);
+        MicroFetch      fetch = new MicroFetch(pc, memory.cache);
         List<BusAddr> indexes = new ArrayList<>();
 
         List<BusAddr> regAddresses = RegMode.Register.getAddresses(memory, reg, null);
         List<BusAddr> spAddresses = RegMode.Register.getAddresses(memory, RegAddr.SP, null);
 
-        MicroDecode decode = new MicroDecode(indexes);
-        MicroMemory load = new MicroMemory(regAddresses);
+        MicroDecode decode = new MicroDecode(indexes, memory.cache);
+        MicroMemory load = new MicroMemory(regAddresses, memory.cache);
         MicroExecute execute = new MicroExecute(cost);
-        MicroMemory store = new MicroMemory(spAddresses);
+        MicroMemory store = new MicroMemory(spAddresses, memory.cache);
 
         Set<Integer> srcSet = regAddresses.stream().map(addr -> addr.value).collect(Collectors.toSet());
         Set<Integer> dstSet = spAddresses.stream().map(addr -> addr.value).collect(Collectors.toSet());

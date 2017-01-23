@@ -37,14 +37,14 @@ public abstract class BranchInstruction extends Instruction {
 
     @Override
     public MicroCode getMicrocode(BusAddr pc, MemoryModel memory) {
-        MicroFetch fetch = new MicroFetch(pc);
+        MicroFetch fetch = new MicroFetch(pc, memory.cache);
 
         List<BusAddr> indexes = Collections.singletonList(new BusAddr(pc.value + 2)); //TODO: This is kinda bad approach
-        MicroDecode decode = new MicroDecode(indexes);
+        MicroDecode decode = new MicroDecode(indexes, memory.cache);
 
-        MicroMemory load = new MicroMemory(Collections.emptyList());
+        MicroMemory load = new MicroMemory(Collections.emptyList(), memory.cache);
         MicroExecute execute = new MicroExecute(cost);
-        MicroMemory store = new MicroMemory(Collections.emptyList());
+        MicroMemory store = new MicroMemory(Collections.emptyList(), memory.cache);
 
         return new MicroCode(fetch, decode, load, execute, store, Collections.emptySet(), Collections.emptySet());
     }
